@@ -1,7 +1,7 @@
 {
   "contactActions": {
     "phone": "+255659740712",
-    "email": " archipelagoproperties.zanzibar@gmail.com",
+    "email": "archipelagoproperties.zanzibar@gmail.com",
     "whatsapp": "+255659740712",
     "whatsappMessage": "Hello Archipelago Estates, I want to know more about your properties."
   },
@@ -18,10 +18,11 @@
     ]
   },
   "homePage": {
+    "companyLogoUrl": "/logo.webp",
     "heroEyebrow": "MAKE YOUR NEXT MOVE WITH US",
     "heroTitleLine1": "Your Future Home",
     "heroTitleLine2": "Starts Here",
-    "heroBackgroundImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1800&q=80",
+    "heroBackgroundImage": "/uploads/1776197584640-na.jpg",
     "aboutBadge": "ABOUT US",
     "aboutTitleLine1": "Find Your Perfect Property",
     "aboutTitleLine2": "in Zanzibar",
@@ -69,9 +70,13 @@
       "mapUrl": "https://maps.google.com/?q=Mlandege,+Zanzibar",
       "description": "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
       "image": "https://images.unsplash.com/photo-1540541338537-ad197cffc7f8?w=600&q=80",
-      "contactEmail": "info@archipelagoestates.com",
+      "contactEmail": "archipelagoproperties.zanzibar@gmail.com",
       "contactPhone": "+255659740712",
-      "contactWhatsapp": "+255659740712"
+      "otherMobilePhone": "+255659740712",
+      "contactWhatsapp": "+255659740712",
+      "images": [
+        "https://images.unsplash.com/photo-1540541338537-ad197cffc7f8?w=600&q=80"
+      ]
     },
     {
       "id": 2,
@@ -88,9 +93,13 @@
       "mapUrl": "https://maps.google.com/?q=Nungwi,+Zanzibar",
       "description": "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
       "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80",
-      "contactEmail": "info@archipelagoestates.com",
+      "contactEmail": "archipelagoproperties.zanzibar@gmail.com",
       "contactPhone": "+255659740712",
-      "contactWhatsapp": "+255659740712"
+      "otherMobilePhone": "+255659740712",
+      "contactWhatsapp": "+255659740712",
+      "images": [
+        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80"
+      ]
     },
     {
       "id": 3,
@@ -107,9 +116,13 @@
       "mapUrl": "https://maps.google.com/?q=Stone+Town,+Zanzibar",
       "description": "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
       "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80",
-      "contactEmail": "info@archipelagoestates.com",
+      "contactEmail": "archipelagoproperties.zanzibar@gmail.com",
       "contactPhone": "+255659740712",
-      "contactWhatsapp": "+255659740712"
+      "otherMobilePhone": "+255659740712",
+      "contactWhatsapp": "+255659740712",
+      "images": [
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80"
+      ]
     }
   ],
   "companyTeam": [
@@ -144,7 +157,7 @@
       "name": "NAWAF",
       "role": "Role",
       "description": "happy nawaf",
-      "image": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80",
+      "image": "/uploads/1776199783554-na.jpg",
       "email": "info@archipelagoestates.com",
       "phone": "+255775048453",
       "whatsapp": "+25565974071",
@@ -173,32 +186,10 @@
       "name": "Sharima Aziz",
       "role": "Happy Investor",
       "text": "I appreciated the transparency and clear communication. They helped me understand all steps before committing to the deal.",
-      "stars": 5
+      "stars": 2
     }
   ],
-  "blogSidebarItems": [
-    {
-      "id": 1,
-      "title": "Sample Property in Zanzibar 3",
-      "price": "$ 770,000",
-      "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&q=80",
-      "href": "/properties"
-    },
-    {
-      "id": 2,
-      "title": "Sample Property in Zanzibar 2",
-      "price": "$ 770,000",
-      "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=200&q=80",
-      "href": "/properties"
-    },
-    {
-      "id": 3,
-      "title": "Sample Property in Zanzibar 1",
-      "price": "$ 770,000",
-      "image": "https://images.unsplash.com/photo-1540541338537-ad197cffc7f8?w=200&q=80",
-      "href": "/properties"
-    }
-  ],
+  "blogSidebarItems": [],
   "testimonials": [
     {
       "id": 1,
@@ -221,7 +212,7 @@
       "name": "Sharima Aziz",
       "role": "Happy Investor",
       "text": "I appreciated the transparency and clear communication. They helped me understand all steps before committing to the deal.",
-      "stars": 5,
+      "stars": 2,
       "avatar": "https://ui-avatars.com/api/?name=Sharima%20Aziz&background=c49a6c&color=fff&size=48"
     }
   ],
@@ -252,6 +243,15 @@
       "excerpt": "Zanzibar is a beautiful island destination that offers more than just holidays. It is a place where you can enjoy a ...",
       "image": "https://images.unsplash.com/photo-1540541338537-ad197cffc7f8?w=600&q=80",
       "content": "Zanzibar is a beautiful island destination that offers more than just holidays. It is a place where you can enjoy a unique blend of culture, history, and natural beauty while also exploring excellent property investment opportunities."
+    },
+    {
+      "id": 4,
+      "slug": "new-article-4",
+      "title": "New Article Title",
+      "date": "4/14/2026",
+      "excerpt": "Short article summary",
+      "image": "https://images.unsplash.com/photo-1494526585095-c41746248156?w=1200&q=80",
+      "content": "Article content goes here."
     }
   ]
 }

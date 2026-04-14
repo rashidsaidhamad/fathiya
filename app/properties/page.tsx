@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FaPhone, FaEnvelope, FaWhatsapp, FaThLarge, FaList, FaMapMarkerAlt } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -27,11 +27,24 @@ function parsePrice(price: string) {
   return Number.isFinite(numeric) ? numeric : 0;
 }
 
+function inferPropertyType(title: string, description: string) {
+  const text = `${title} ${description}`.toLowerCase();
+  if (text.includes("villa")) return "Villa";
+  if (text.includes("apartment") || text.includes("flat")) return "Apartment";
+  if (text.includes("land") || text.includes("plot")) return "Land";
+  if (text.includes("house") || text.includes("home")) return "House";
+  return "Property";
+}
+
 export default function PropertiesPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [propertyImageIndexes, setPropertyImageIndexes] = useState<Record<number, number>>({});
   const [categoryFilter, setCategoryFilter] = useState(ALL_CATEGORIES);
   const [cityFilter, setCityFilter] = useState(ALL_CITIES);
   const [sortBy, setSortBy] = useState<SortOption>("Price High to Low");
+  const [requestedType, setRequestedType] = useState("");
+  const [requestedActive, setRequestedActive] = useState("");
+  const [requestedLocation, setRequestedLocation] = useState("");
   const content = useSiteContent();
   const properties = content.properties;
 
@@ -56,10 +69,34 @@ export default function PropertiesPage() {
     () => [ALL_CITIES, ...Array.from(new Set(enhancedProperties.map((p) => p.city))).sort()],
     [enhancedProperties],
   );
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const requestedCategory = params.get("category");
+    const nextRequestedLocation = params.get("location");
+    const nextRequestedType = params.get("type");
+    const nextRequestedActive = params.get("active");
+
+    if (requestedCategory) {
+      setCategoryFilter(requestedCategory);
+    }
+
+    if (nextRequestedLocation) {
+      setCityFilter(nextRequestedLocation.split(",")[0]?.trim() || nextRequestedLocation);
+    }
+
+    setRequestedType(nextRequestedType?.trim() ?? "");
+    setRequestedActive(nextRequestedActive?.trim() ?? "");
+    setRequestedLocation(nextRequestedLocation?.trim() ?? "");
+  }, []);
+
   const filteredProperties = useMemo(() => {
     const matches = enhancedProperties.filter((property) => {
       if (categoryFilter !== ALL_CATEGORIES && property.status !== categoryFilter) return false;
       if (cityFilter !== ALL_CITIES && property.city !== cityFilter) return false;
+      if (requestedType.length > 0 && inferPropertyType(property.title, property.description) !== requestedType) return false;
+      if (requestedActive.length > 0 && property.active !== requestedActive) return false;
+      if (requestedLocation.length > 0 && !property.location.toLowerCase().includes(requestedLocation.toLowerCase())) return false;
       return true;
     });
 
@@ -71,10 +108,32 @@ export default function PropertiesPage() {
     });
 
     return matches;
-  }, [enhancedProperties, categoryFilter, cityFilter, sortBy]);
+  }, [enhancedProperties, categoryFilter, cityFilter, requestedActive, requestedLocation, requestedType, sortBy]);
 
   const getMapUrl = (location: string, mapUrl?: string) =>
     mapUrl?.trim() || `https://maps.google.com/?q=${encodeURIComponent(location)}`;
+
+  const getPropertyImages = (images?: string[], image?: string) => {
+    const gallery = (images ?? []).filter((item) => typeof item === "string" && item.trim().length > 0);
+    if (gallery.length > 0) return gallery;
+    return image ? [image] : [];
+  };
+
+  const goToNextPropertyImage = (propertyId: number, totalImages: number) => {
+    if (totalImages <= 1) return;
+    setPropertyImageIndexes((prev) => ({
+      ...prev,
+      [propertyId]: ((prev[propertyId] ?? 0) + 1) % totalImages,
+    }));
+  };
+
+  const goToPrevPropertyImage = (propertyId: number, totalImages: number) => {
+    if (totalImages <= 1) return;
+    setPropertyImageIndexes((prev) => ({
+      ...prev,
+      [propertyId]: ((prev[propertyId] ?? 0) - 1 + totalImages) % totalImages,
+    }));
+  };
 
   return (
     <>
@@ -96,6 +155,7 @@ export default function PropertiesPage() {
 
         {/* Filter bar */}
         <div
+          className="properties-page-filter-bar"
           style={{
             background: "#fff",
             border: "1px solid #e5e5e5",
@@ -197,6 +257,7 @@ export default function PropertiesPage() {
 
         {/* Properties grid */}
         <div
+          className="properties-page-grid"
           style={{
             display: "grid",
             gridTemplateColumns: viewMode === "grid" ? "repeat(3, 1fr)" : "1fr",
@@ -206,6 +267,9 @@ export default function PropertiesPage() {
           {filteredProperties.map((p) => (
             (() => {
               const propertyMapUrl = getMapUrl(p.location, p.mapUrl);
+              const propertyImages = getPropertyImages(p.images, p.image);
+              const currentImageIndex = propertyImages.length > 0 ? (propertyImageIndexes[p.id] ?? 0) % propertyImages.length : 0;
+              const currentImage = propertyImages[currentImageIndex] ?? p.image;
               return (
             <div
               key={p.id}
@@ -230,7 +294,7 @@ export default function PropertiesPage() {
                 <div
                   style={{
                     width: "100%", height: "100%",
-                    backgroundImage: `url('${p.image}')`,
+                    backgroundImage: `url('${currentImage}')`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
@@ -276,8 +340,22 @@ export default function PropertiesPage() {
                   </a>
                 </div>
                 {/* Prev/Next arrows */}
-                <button style={{ position: "absolute", left: "8px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.8)", border: "none", borderRadius: "50%", width: 26, height: 26, cursor: "pointer", fontSize: "14px" }}>‹</button>
-                <button style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.8)", border: "none", borderRadius: "50%", width: 26, height: 26, cursor: "pointer", fontSize: "14px" }}>›</button>
+                <button
+                  onClick={() => goToPrevPropertyImage(p.id, propertyImages.length)}
+                  disabled={propertyImages.length <= 1}
+                  style={{ position: "absolute", left: "8px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.8)", border: "none", borderRadius: "50%", width: 26, height: 26, cursor: propertyImages.length <= 1 ? "default" : "pointer", fontSize: "14px", opacity: propertyImages.length <= 1 ? 0.5 : 1 }}
+                  aria-label={`Previous image for ${p.title}`}
+                >
+                  ‹
+                </button>
+                <button
+                  onClick={() => goToNextPropertyImage(p.id, propertyImages.length)}
+                  disabled={propertyImages.length <= 1}
+                  style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.8)", border: "none", borderRadius: "50%", width: 26, height: 26, cursor: propertyImages.length <= 1 ? "default" : "pointer", fontSize: "14px", opacity: propertyImages.length <= 1 ? 0.5 : 1 }}
+                  aria-label={`Next image for ${p.title}`}
+                >
+                  ›
+                </button>
               </div>
 
               {/* Info */}

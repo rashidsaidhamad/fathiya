@@ -22,6 +22,7 @@ export default function ContactPage() {
   const [hearAboutUs, setHearAboutUs] = useState<string[]>([]);
   const [hearAboutUsStatus, setHearAboutUsStatus] = useState("");
   const content = useSiteContent();
+  const companyLogoUrl = content.homePage.companyLogoUrl?.trim() || "/logo.webp";
   const hearAboutUsOptions = content.contactFormSettings?.hearAboutUsOptions ?? [
     "Facebook",
     "Instagram",
@@ -116,7 +117,7 @@ export default function ContactPage() {
           </div>
 
           {/* Two-column layout */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "28px", alignItems: "start" }}>
+          <div className="contact-page-grid" style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "28px", alignItems: "start" }}>
             {/* Left: Contact info + form */}
             <div style={{ backgroundColor: "#fff", borderRadius: "8px", padding: "36px", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
               <h1 style={{ fontSize: "28px", fontWeight: 700, color: "#1a1a2e", marginBottom: "6px" }}>
@@ -162,6 +163,8 @@ export default function ContactPage() {
                 <a href={toTelHref(content.contactActions.phone)} style={{ color: "#333", fontWeight: 500, textDecoration: "none" }}>{content.contactActions.phone}</a>
                 <span style={{ color: "#888" }}>Mobile:</span>
                 <a href={toTelHref(content.contactActions.phone)} style={{ color: "#333", fontWeight: 500, textDecoration: "none" }}>{content.contactActions.phone}</a>
+                <span style={{ color: "#888" }}>Other:</span>
+                <a href={toTelHref("+255659741770")} style={{ color: "#333", fontWeight: 500, textDecoration: "none" }}>+255659741770</a>
                 <span style={{ color: "#888" }}>Email:</span>
                 <a href={toMailtoHref(content.contactActions.email)} style={{ color: "#c49a6c", textDecoration: "none", fontWeight: 500 }}>
                   {content.contactActions.email}
@@ -176,7 +179,7 @@ export default function ContactPage() {
 
               {/* Logo */}
               <div style={{ marginBottom: "28px" }}>
-                <img src="/logo.webp" alt="Archipelago Real Estate" style={{ height: "60px", filter: "brightness(0) saturate(100%) invert(20%) sepia(10%) saturate(300%)" }} />
+                <img src={companyLogoUrl} alt="Archipelago Real Estate" style={{ height: "60px", filter: "brightness(0) saturate(100%) invert(20%) sepia(10%) saturate(300%)" }} />
               </div>
 
               {/* Contact form */}

@@ -33,13 +33,15 @@ export default function Footer() {
 
   return (
     <footer
+      className="footer-root"
       style={{
         backgroundColor: "#1a1e2e",
         color: "#ccc",
-        padding: "60px 80px 0",
+        padding: "60px clamp(18px, 6vw, 80px) 0",
       }}
     >
       <div
+        className="footer-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "2fr 1.5fr 1fr",
@@ -104,6 +106,12 @@ export default function Footer() {
               </a>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <FaPhone color="#c49a6c" size={14} />
+              <a href={toTelHref("+255659741770")} style={{ fontSize: "13px", color: "#aaa", textDecoration: "none" }}>
+                +255659741770
+              </a>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <FaEnvelope color="#c49a6c" size={14} />
               <a href={toMailtoHref(content.contactActions.email)} style={{ fontSize: "13px", color: "#aaa", textDecoration: "none" }}>
                 {content.contactActions.email}
@@ -149,6 +157,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div
+        className="footer-bottom"
         style={{
           display: "flex",
           justifyContent: "space-between",

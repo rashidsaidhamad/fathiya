@@ -1,34 +1,65 @@
 ﻿"use client";
 
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSiteContent } from "../hooks/useSiteContent";
 
 export default function HeroSection() {
+  const router = useRouter();
   const content = useSiteContent();
+  const [selectedLocation, setSelectedLocation] = useState("Search by location");
+  const [selectedType, setSelectedType] = useState("Property Type");
+  const [selectedCategory, setSelectedCategory] = useState("Sell or Rent");
+  const [selectedActive, setSelectedActive] = useState("Property Status");
   const heroBackgroundUrl = content.homePage.heroBackgroundImage?.trim() ?? "";
   const heroBackgroundCss = heroBackgroundUrl
     ? `url("${heroBackgroundUrl.replace(/"/g, '\\"')}")`
     : "none";
-  const locationDistrictGroups = [
-    {
-      group: "Zanzibar (Unguja) Districts",
-      districts: [
-        "Urban",
-        "West A",
-        "West B",
-        "North A",
-        "North B",
-        "Central",
-        "South",
-      ],
-    },
-    {
-      group: "Pemba Districts",
-      districts: ["Wete", "Micheweni", "Chake Chake", "Mkoani"],
-    },
-  ];
+
+  const availableLocations = useMemo(
+    () => Array.from(new Set(content.properties.map((property) => property.location))).sort(),
+    [content.properties],
+  );
+
+  const availableCategories = useMemo(
+    () => Array.from(new Set(content.properties.map((property) => property.status))).sort(),
+    [content.properties],
+  );
+
+  const availableActiveStates = useMemo(
+    () => Array.from(new Set(content.properties.map((property) => property.active))).sort(),
+    [content.properties],
+  );
+
+  const availableTypes = useMemo(() => {
+    const inferType = (title: string, description: string) => {
+      const text = `${title} ${description}`.toLowerCase();
+      if (text.includes("villa")) return "Villa";
+      if (text.includes("apartment") || text.includes("flat")) return "Apartment";
+      if (text.includes("land") || text.includes("plot")) return "Land";
+      if (text.includes("house") || text.includes("home")) return "House";
+      return "Property";
+    };
+
+    return Array.from(
+      new Set(content.properties.map((property) => inferType(property.title, property.description))),
+    ).sort();
+  }, [content.properties]);
+
+  const runSearch = () => {
+    const query = new URLSearchParams();
+    if (selectedLocation !== "Search by location") query.set("location", selectedLocation);
+    if (selectedType !== "Property Type") query.set("type", selectedType);
+    if (selectedCategory !== "Sell or Rent") query.set("category", selectedCategory);
+    if (selectedActive !== "Property Status") query.set("active", selectedActive);
+
+    const suffix = query.toString();
+    router.push(suffix ? `/properties?${suffix}` : "/properties");
+  };
 
   return (
     <section
+      className="hero-section"
       style={{
         position: "relative",
         height: "100vh",
@@ -42,6 +73,7 @@ export default function HeroSection() {
       }}
     >
       <div
+        className="hero-bg"
         style={{
           position: "absolute",
           top: "-90px",
@@ -56,6 +88,7 @@ export default function HeroSection() {
       />
 
       <div
+        className="hero-copy"
         style={{
           position: "relative",
           zIndex: 5,
@@ -94,7 +127,7 @@ export default function HeroSection() {
       </div>
 
       <div
-        className="animate-fade-up delay-400"
+        className="hero-search-bar animate-fade-up delay-400"
         style={{
           position: "absolute",
           bottom: "30px",
@@ -107,43 +140,104 @@ export default function HeroSection() {
           borderRadius: "6px",
           padding: "16px 24px",
           display: "flex",
+          flexWrap: "wrap",
           gap: "12px",
           alignItems: "center",
           zIndex: 10,
         }}
       >
-        {[
-          { label: "Search by location", options: [] },
-          { label: "Property Type", options: ["House", "Villa", "Land", "Apartment"] },
-          { label: "Sell or Rent", options: ["For Sale", "For Rent"] },
-          { label: "Property Status", options: ["Active", "Sold", "Pending"] },
-        ].map((sel) => (
-          <select
-            key={sel.label}
-            style={{
-              flex: sel.label === "Search by location" ? 2 : 1,
-              padding: "14px 16px",
-              fontSize: "15px",
-              border: "none",
-              borderRadius: "4px",
-              backgroundColor: "#fff",
-              color: "#555",
-              cursor: "pointer",
-            }}
-          >
-            <option>{sel.label}</option>
-            {sel.label === "Search by location"
-              ? locationDistrictGroups.map((group) => (
-                  <optgroup key={group.group} label={group.group}>
-                    {group.districts.map((district) => (
-                      <option key={district}>{district}</option>
-                    ))}
-                  </optgroup>
-                ))
-              : sel.options.map((o) => <option key={o}>{o}</option>)}
-          </select>
-        ))}
+        <select
+          className="hero-search-field"
+          value={selectedLocation}
+          onChange={(e) => setSelectedLocation(e.target.value)}
+          style={{
+            flex: 2,
+            padding: "14px 16px",
+            fontSize: "15px",
+            border: "none",
+            borderRadius: "4px",
+            backgroundColor: "#fff",
+            color: "#555",
+            cursor: "pointer",
+          }}
+        >
+          <option value="Search by location">Search by location</option>
+          {availableLocations.map((location) => (
+            <option key={location} value={location}>
+              {location}
+            </option>
+          ))}
+        </select>
+        <select
+          className="hero-search-field"
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+          style={{
+            flex: 1,
+            padding: "14px 16px",
+            fontSize: "15px",
+            border: "none",
+            borderRadius: "4px",
+            backgroundColor: "#fff",
+            color: "#555",
+            cursor: "pointer",
+          }}
+        >
+          <option value="Property Type">Property Type</option>
+          {availableTypes.map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+        </select>
+        <select
+          className="hero-search-field"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          style={{
+            flex: 1,
+            padding: "14px 16px",
+            fontSize: "15px",
+            border: "none",
+            borderRadius: "4px",
+            backgroundColor: "#fff",
+            color: "#555",
+            cursor: "pointer",
+          }}
+        >
+          <option value="Sell or Rent">Sell or Rent</option>
+          {availableCategories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+        <select
+          className="hero-search-field"
+          value={selectedActive}
+          onChange={(e) => setSelectedActive(e.target.value)}
+          style={{
+            flex: 1,
+            padding: "14px 16px",
+            fontSize: "15px",
+            border: "none",
+            borderRadius: "4px",
+            backgroundColor: "#fff",
+            color: "#555",
+            cursor: "pointer",
+          }}
+        >
+          <option value="Property Status">Property Status</option>
+          {availableActiveStates.map((activeState) => (
+            <option key={activeState} value={activeState}>
+              {activeState}
+            </option>
+          ))}
+        </select>
         <button
+          className="hero-search-btn"
+          type="button"
+          onClick={runSearch}
           style={{
             backgroundColor: "#c49a6c",
             border: "none",

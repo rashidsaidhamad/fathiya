@@ -10,6 +10,7 @@ export default function AboutSection() {
 
   return (
     <section
+      className="about-root"
       ref={ref}
       style={{
         width: "100%",
@@ -17,6 +18,7 @@ export default function AboutSection() {
         margin: "0 auto",
         padding: "80px 32px",
         display: "flex",
+        flexWrap: "wrap",
         alignItems: "center",
         justifyContent: "space-between",
         gap: "60px",
@@ -25,8 +27,10 @@ export default function AboutSection() {
     >
       {/* Left Text */}
       <div
+        className="about-text"
         style={{
           flex: 1,
+          minWidth: "300px",
           opacity: inView ? 1 : 0,
           transform: inView ? "translateX(0)" : "translateX(-40px)",
           transition: "opacity 0.8s ease, transform 0.8s ease",
@@ -120,8 +124,10 @@ export default function AboutSection() {
 
       {/* Right Image Grid */}
       <div
+        className="about-images"
         style={{
           flex: 0.94,
+          minWidth: "300px",
           position: "relative",
           minHeight: "540px",
           display: "flex",

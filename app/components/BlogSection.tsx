@@ -25,7 +25,7 @@ export default function BlogSection() {
   }, [maxIndex]);
 
   return (
-    <section ref={ref} style={{ padding: "80px 80px", backgroundColor: "#faf8f5", overflow: "hidden" }}>
+    <section ref={ref} className="blog-root" style={{ padding: "80px clamp(18px, 6vw, 80px)", backgroundColor: "#faf8f5", overflow: "hidden" }}>
       <div style={{ textAlign: "center", marginBottom: "50px" }}>
         <p
           style={{
@@ -54,7 +54,7 @@ export default function BlogSection() {
       </div>
 
       {/* Carousel wrapper */}
-      <div style={{ position: "relative" }}>
+      <div className="blog-carousel" style={{ position: "relative" }}>
         {/* Prev arrow */}
         <button
           onClick={prev}
@@ -85,8 +85,9 @@ export default function BlogSection() {
         </button>
 
         {/* Track */}
-        <div style={{ overflow: "hidden" }}>
+        <div className="blog-viewport" style={{ overflow: "hidden" }}>
           <div
+            className="blog-track"
             style={{
               display: "flex",
               gap: "28px",

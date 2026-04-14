@@ -39,6 +39,8 @@ export async function getSiteContent(): Promise<SiteContent> {
       homePage: {
         ...defaultSiteContent.homePage,
         ...(parsed as Partial<SiteContent>).homePage,
+        companyLogoUrl:
+          (parsed as Partial<SiteContent>).homePage?.companyLogoUrl ?? defaultSiteContent.homePage.companyLogoUrl,
         aboutChecklist: Array.isArray((parsed as Partial<SiteContent>).homePage?.aboutChecklist)
           ? (parsed as Partial<SiteContent>).homePage?.aboutChecklist ?? defaultSiteContent.homePage.aboutChecklist
           : defaultSiteContent.homePage.aboutChecklist,
@@ -48,10 +50,20 @@ export async function getSiteContent(): Promise<SiteContent> {
         ...(parsed as Partial<SiteContent>).videoSection,
       },
       properties: Array.isArray((parsed as Partial<SiteContent>).properties)
-        ? ((parsed as Partial<SiteContent>).properties ?? defaultSiteContent.properties).map((item, index) => ({
-            ...defaultSiteContent.properties[index % defaultSiteContent.properties.length],
-            ...item,
-          }))
+        ? ((parsed as Partial<SiteContent>).properties ?? defaultSiteContent.properties).map((item, index) => {
+            const merged = {
+              ...defaultSiteContent.properties[index % defaultSiteContent.properties.length],
+              ...item,
+            };
+            const gallery = Array.isArray((item as Partial<typeof merged>).images)
+              ? ((item as Partial<typeof merged>).images ?? []).filter((image) => typeof image === "string" && image.trim().length > 0)
+              : [];
+            return {
+              ...merged,
+              images: gallery.length > 0 ? gallery : [merged.image],
+              otherMobilePhone: typeof merged.otherMobilePhone === "string" ? merged.otherMobilePhone : "",
+            };
+          })
         : defaultSiteContent.properties,
       companyTeam: Array.isArray((parsed as Partial<SiteContent>).companyTeam)
         ? ((parsed as Partial<SiteContent>).companyTeam ?? defaultSiteContent.companyTeam).map((item, index) => ({

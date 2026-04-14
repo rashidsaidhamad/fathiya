@@ -61,7 +61,6 @@ function AnimatedNumber({ numeric, suffix, decimal }: { numeric: number; suffix:
 }
 
 export default function VideoStatsSection() {
-  const [isVideoOpen, setIsVideoOpen] = useState(false);
   const content = useSiteContent();
   const videoSrc = content.videoSection.videoUrl;
 
@@ -69,97 +68,118 @@ export default function VideoStatsSection() {
     <>
       {/* Video Section */}
       <section
+        className="video-root"
         style={{
           position: "relative",
           height: "460px",
           overflow: "hidden",
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
         }}
       >
+        {videoSrc ? (
+          <video
+            src={videoSrc}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster={content.videoSection.videoPoster || content.videoSection.backgroundImage}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              filter: "brightness(0.5)",
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage:
+                `url('${content.videoSection.backgroundImage}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              filter: "brightness(0.5)",
+            }}
+          />
+        )}
         <div
+          className="video-overlay-card"
           style={{
             position: "absolute",
-            inset: 0,
-            backgroundImage:
-                `url('${content.videoSection.backgroundImage}')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            filter: "brightness(0.5)",
+            left: "42px",
+            bottom: "36px",
+            zIndex: 5,
+            textAlign: "left",
+            color: "#fff",
+            backgroundColor: "rgba(10, 16, 28, 0.52)",
+            border: "1px solid rgba(255,255,255,0.24)",
+            borderRadius: "16px",
+            padding: "30px 36px",
+            backdropFilter: "blur(3px)",
+            maxWidth: "620px",
+            boxShadow: "0 16px 45px rgba(0,0,0,0.35)",
+            display: "grid",
+            gap: "14px",
           }}
-        />
-        <div style={{ position: "relative", zIndex: 5, textAlign: "center", color: "#fff" }}>
+        >
           <p
             style={{
-              fontSize: "11px",
-              letterSpacing: "4px",
+              fontSize: "10px",
+              letterSpacing: "3px",
               textTransform: "uppercase",
-              marginBottom: "16px",
-              color: "#ddd",
+              margin: 0,
+              color: "#d8c3a5",
+              fontWeight: 700,
             }}
           >
-              {content.videoSection.badge}
+            Archipelago Real Estate
           </p>
           <h2
             style={{
-              fontSize: "42px",
+              fontSize: "40px",
               fontFamily: "Georgia, serif",
               fontWeight: 700,
-              marginBottom: "32px",
+              margin: "2px 0 4px",
               lineHeight: 1.2,
             }}
           >
-            {content.videoSection.headingLine1}
-            <br />
-            {content.videoSection.headingLine2}
+            Professional Property Advisory
           </h2>
-          <button
-            type="button"
-            style={{
-              width: 84,
-              height: 84,
-              borderRadius: "50%",
-              backgroundColor: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.45)",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto",
-              transition: "transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease",
-              boxShadow: "0 12px 30px rgba(0,0,0,0.22)",
-            }}
-            onClick={() => setIsVideoOpen(true)}
-            onMouseEnter={(e) => {
-              const target = e.currentTarget as HTMLElement;
-              target.style.backgroundColor = "rgba(196,154,108,0.28)";
-              target.style.borderColor = "rgba(196,154,108,0.9)";
-              target.style.transform = "scale(1.05)";
-            }}
-            onMouseLeave={(e) => {
-              const target = e.currentTarget as HTMLElement;
-              target.style.backgroundColor = "rgba(255,255,255,0.08)";
-              target.style.borderColor = "rgba(255,255,255,0.45)";
-              target.style.transform = "scale(1)";
-            }}
-            aria-label="Play company video"
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="#ffffff">
-              <polygon points="5,3 19,12 5,21" />
-            </svg>
-          </button>
-          <p style={{ margin: "14px 0 0", fontSize: "13px", color: "#ddd" }}>
-            {content.videoSection.helperText}
+          <p style={{ margin: 0, fontSize: "14px", color: "#e5e7eb", lineHeight: 1.7 }}>
+            Trusted support for buying, selling, and investing in Zanzibar real estate.
           </p>
+          <a
+            href="/contact"
+            style={{
+              display: "inline-block",
+              width: "fit-content",
+              textDecoration: "none",
+              backgroundColor: "#c49a6c",
+              color: "#fff",
+              fontSize: "13px",
+              fontWeight: 700,
+              letterSpacing: "0.8px",
+              textTransform: "uppercase",
+              padding: "11px 18px",
+              borderRadius: "8px",
+            }}
+          >
+            Start Now
+          </a>
         </div>
       </section>
 
       {/* Stats Bar */}
       <section
+        className="video-stats-row"
         style={{
           backgroundColor: "#1a1e2e",
-          padding: "48px 80px",
+          padding: "48px clamp(18px, 6vw, 80px)",
           display: "flex",
           justifyContent: "center",
           gap: "80px",
@@ -184,66 +204,6 @@ export default function VideoStatsSection() {
           </div>
         ))}
       </section>
-
-      {isVideoOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Company video"
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 4000,
-            backgroundColor: "rgba(10, 12, 18, 0.78)",
-            display: "grid",
-            placeItems: "center",
-            padding: "24px",
-          }}
-          onClick={() => setIsVideoOpen(false)}
-        >
-          <div
-            style={{
-              position: "relative",
-              width: "min(920px, 100%)",
-              backgroundColor: "#0d1220",
-              borderRadius: "18px",
-              overflow: "hidden",
-              boxShadow: "0 24px 80px rgba(0,0,0,0.4)",
-            }}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setIsVideoOpen(false)}
-              aria-label="Close video"
-              style={{
-                position: "absolute",
-                top: "14px",
-                right: "14px",
-                width: "40px",
-                height: "40px",
-                borderRadius: "50%",
-                border: "none",
-                backgroundColor: "rgba(255,255,255,0.14)",
-                color: "#fff",
-                cursor: "pointer",
-                fontSize: "20px",
-                zIndex: 1,
-              }}
-            >
-              ×
-            </button>
-            <video
-              src={videoSrc}
-              controls
-              autoPlay
-              playsInline
-              poster={content.videoSection.videoPoster}
-              style={{ width: "100%", display: "block", aspectRatio: "16 / 9", objectFit: "cover" }}
-            />
-          </div>
-        </div>
-      )}
     </>
   );
 }

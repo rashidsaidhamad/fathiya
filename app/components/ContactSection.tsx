@@ -47,6 +47,7 @@ export default function ContactSection() {
 
   return (
     <section
+      className="contact-home-root"
       style={{
         position: "relative",
         minHeight: "500px",
@@ -56,7 +57,7 @@ export default function ContactSection() {
         backgroundPosition: "center",
         display: "flex",
         alignItems: "center",
-        padding: "80px",
+        padding: "80px clamp(18px, 6vw, 80px)",
       }}
     >
       <div
@@ -67,9 +68,10 @@ export default function ContactSection() {
         }}
       />
 
-      <div style={{ position: "relative", zIndex: 5, display: "flex", gap: "60px", width: "100%", alignItems: "center", flexWrap: "wrap" }}>
+      <div className="contact-home-inner" style={{ position: "relative", zIndex: 5, display: "flex", gap: "60px", width: "100%", alignItems: "center", flexWrap: "wrap" }}>
         {/* Contact Form Card */}
         <div
+          className="contact-home-form-card"
           style={{
             backgroundColor: "#fff",
             borderRadius: "8px",
@@ -91,7 +93,7 @@ export default function ContactSection() {
             Contact Form
           </h2>
           <form onSubmit={handleSubmit}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "14px" }}>
+            <div className="contact-home-form-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "14px" }}>
               <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
                 Last name*
                 <input

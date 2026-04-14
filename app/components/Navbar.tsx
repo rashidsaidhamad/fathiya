@@ -7,8 +7,10 @@ import { toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
 
 export default function Navbar({ forceWhite = false }: { forceWhite?: boolean }) {
   const [scrolledState, setScrolledState] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const scrolled = forceWhite || scrolledState;
   const content = useSiteContent();
+  const companyLogoUrl = content.homePage.companyLogoUrl?.trim() || "/logo.webp";
 
   useEffect(() => {
     if (forceWhite) return;
@@ -30,8 +32,17 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
     { icon: <FaFacebookF size={14} />, href: "https://www.facebook.com/share/18dtiBWTnj/", title: "Facebook" },
   ];
 
+  const navItems = [
+    { label: "Home", href: "/" },
+    { label: "Properties", href: "/properties" },
+    { label: "Our company", href: "/company" },
+    { label: "Blog", href: "/blog" },
+    { label: "Contact Us", href: "/contact" },
+  ];
+
   return (
     <header
+      className="nav-root"
       style={{
         position: "fixed",
         top: 0,
@@ -50,14 +61,8 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
       }}
     >
       {/* Left Nav */}
-      <nav style={{ display: "flex", gap: "32px" }}>
-        {[
-          { label: "Home", href: "/" },
-          { label: "Properties", href: "/properties" },
-          { label: "Our company", href: "/company" },
-          { label: "Blog", href: "/blog" },
-          { label: "Contact Us", href: "/contact" },
-        ].map((item) => (
+      <nav className="nav-links" style={{ display: "flex", gap: "32px" }}>
+        {navItems.map((item) => (
           <Link
             key={item.label}
             href={item.href}
@@ -84,8 +89,29 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
         ))}
       </nav>
 
+      <button
+        type="button"
+        className="nav-menu-btn"
+        onClick={() => setMenuOpen((prev) => !prev)}
+        aria-label="Toggle menu"
+        style={{
+          display: "none",
+          border: "1px solid rgba(255,255,255,0.5)",
+          background: "transparent",
+          color: scrolled ? "#222" : "#fff",
+          borderRadius: "8px",
+          padding: "8px 10px",
+          fontSize: "18px",
+          cursor: "pointer",
+          zIndex: 3001,
+        }}
+      >
+        {menuOpen ? "×" : "☰"}
+      </button>
+
       {/* Center Logo — hangs below when transparent, fits inside when scrolled */}
       <div
+        className="nav-logo-wrap"
         style={{
           position: "absolute",
           left: "50%",
@@ -97,7 +123,7 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
         }}
       >
         <img
-          src="/logo.webp"
+          src={companyLogoUrl}
           alt="Archipelago Real Estate"
           style={{
             height: scrolled ? "54px" : "105px",
@@ -112,7 +138,7 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
       </div>
 
       {/* Right Phone */}
-      <a href={toTelHref(content.contactActions.phone)} style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
+      <a className="nav-phone" href={toTelHref(content.contactActions.phone)} style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
         <FaPhone size={16} color={scrolled ? "#c49a6c" : "#fff"} />
         <span style={{ color: scrolled ? "#222" : "#fff", fontSize: "15px", fontWeight: 500 }}>
           {content.contactActions.phone}
@@ -122,6 +148,7 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
       {/* Floating side social icons — only visible before scroll */}
       {!scrolled && (
       <div
+        className="nav-social"
         style={{
           position: "fixed",
           right: "16px",
@@ -158,6 +185,39 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
           </a>
         ))}
       </div>
+      )}
+
+      {menuOpen && (
+        <div
+          className="nav-mobile-panel"
+          style={{
+            position: "fixed",
+            top: "70px",
+            left: 0,
+            right: 0,
+            backgroundColor: "#111827",
+            borderTop: "1px solid rgba(255,255,255,0.1)",
+            padding: "14px 20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+            zIndex: 2500,
+          }}
+        >
+          {navItems.map((item) => (
+            <Link
+              key={`mobile-${item.label}`}
+              href={item.href}
+              onClick={() => setMenuOpen(false)}
+              style={{ color: "#fff", textDecoration: "none", fontSize: "15px", fontWeight: 500 }}
+            >
+              {item.label}
+            </Link>
+          ))}
+          <a href={toTelHref(content.contactActions.phone)} style={{ color: "#d1d5db", textDecoration: "none", fontSize: "14px" }}>
+            {content.contactActions.phone}
+          </a>
+        </div>
       )}
     </header>
   );

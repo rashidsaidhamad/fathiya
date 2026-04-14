@@ -174,7 +174,7 @@ export default function CompanyPage() {
         </div>
       </section>
 
-      <section className="company-section company-testimonials">
+      <section id="testimonials" className="company-section company-testimonials">
         <div className="section-head">
           <h2>Testimonials</h2>
           <span>Publish the best of your client testimonials and let the world know what a great real estate agency you are.</span>

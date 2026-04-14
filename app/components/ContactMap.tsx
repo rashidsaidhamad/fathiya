@@ -103,6 +103,9 @@ export default function ContactMap() {
             <span>📞</span> +255 659 740 712
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span>📞</span> +255 659 741 770
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <span>✉️</span> archipelagoproperties.zanzibar@gmail.com
           </div>
           <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>

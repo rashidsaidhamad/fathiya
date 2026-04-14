@@ -6,7 +6,7 @@ import { isAdminRequest } from "../../../lib/adminAuth";
 import type { NextRequest } from "next/server";
 import nodemailer from "nodemailer";
 
-const COMPANY_EMAIL = "info@archipelagoestates.com";
+const COMPANY_EMAIL = "archipelagoproperties.zanzibar@gmail.com";
 
 type EmailRoutingInfo = {
   to: string;

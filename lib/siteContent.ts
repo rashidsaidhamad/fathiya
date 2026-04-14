@@ -20,6 +20,7 @@ export type VideoSectionContent = {
 };
 
 export type HomePageContent = {
+  companyLogoUrl: string;
   heroEyebrow: string;
   heroTitleLine1: string;
   heroTitleLine2: string;
@@ -57,8 +58,10 @@ export type PropertyItem = {
   mapUrl: string;
   description: string;
   image: string;
+  images?: string[];
   contactEmail: string;
   contactPhone: string;
+  otherMobilePhone: string;
   contactWhatsapp: string;
 };
 
@@ -138,7 +141,7 @@ export type ContactSubmission = {
 export const defaultSiteContent: SiteContent = {
   contactActions: {
     phone: "+255659740712",
-    email: "info@archipelagoestates.com",
+    email: "archipelagoproperties.zanzibar@gmail.com",
     whatsapp: "+255659740712",
     whatsappMessage: "Hello Archipelago Estates, I want to know more about your properties.",
   },
@@ -155,6 +158,7 @@ export const defaultSiteContent: SiteContent = {
     ],
   },
   homePage: {
+    companyLogoUrl: "/logo.webp",
     heroEyebrow: "MAKE YOUR NEXT MOVE WITH US",
     heroTitleLine1: "Your Future Home",
     heroTitleLine2: "Starts Here",
@@ -208,6 +212,7 @@ export const defaultSiteContent: SiteContent = {
       image: "https://images.unsplash.com/photo-1540541338537-ad197cffc7f8?w=600&q=80",
       contactEmail: "info@archipelagoestates.com",
       contactPhone: "+255659740712",
+      otherMobilePhone: "+255659740712",
       contactWhatsapp: "+255659740712",
     },
     {
@@ -227,6 +232,7 @@ export const defaultSiteContent: SiteContent = {
       image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80",
       contactEmail: "info@archipelagoestates.com",
       contactPhone: "+255659740712",
+      otherMobilePhone: "+255659740712",
       contactWhatsapp: "+255659740712",
     },
     {
@@ -246,6 +252,7 @@ export const defaultSiteContent: SiteContent = {
       image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80",
       contactEmail: "info@archipelagoestates.com",
       contactPhone: "+255659740712",
+      otherMobilePhone: "+255659740712",
       contactWhatsapp: "+255659740712",
     }
   ],

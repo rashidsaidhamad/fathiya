@@ -67,6 +67,7 @@ export default function AdminPage() {
   }, [submissions]);
 
   const contactFormOptions = content.contactFormSettings?.hearAboutUsOptions ?? defaultSiteContent.contactFormSettings.hearAboutUsOptions;
+  const companyLogoUrl = content.homePage.companyLogoUrl?.trim() || "/logo.webp";
   const heroPreviewUrl = content.homePage.heroBackgroundImage?.trim() ?? "";
   const heroPreviewBackground = heroPreviewUrl ? `url("${heroPreviewUrl.replace(/"/g, '\\"')}")` : "none";
 
@@ -84,6 +85,164 @@ export default function AdminPage() {
     { key: "blog", label: "Blog" },
     { key: "contact", label: "Contact Us" },
   ];
+
+  async function uploadAsset(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/admin/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      throw new Error(payload?.error ?? "Upload failed");
+    }
+
+    const payload = (await response.json()) as { url: string };
+    return payload.url;
+  }
+
+  async function handleHomeImageUpload(file: File | null) {
+    if (!file) return;
+    setStatus("Uploading hero image...");
+    try {
+      const url = await uploadAsset(file);
+      setContent((prev) => ({
+        ...prev,
+        homePage: {
+          ...prev.homePage,
+          heroBackgroundImage: url,
+        },
+      }));
+      setStatus("Hero image uploaded. Save all changes to publish.");
+    } catch (error) {
+      setStatus((error as Error).message || "Hero image upload failed");
+    }
+  }
+
+  async function handleCompanyLogoUpload(file: File | null) {
+    if (!file) return;
+    setStatus("Uploading company logo...");
+    try {
+      const url = await uploadAsset(file);
+      setContent((prev) => ({
+        ...prev,
+        homePage: {
+          ...prev.homePage,
+          companyLogoUrl: url,
+        },
+      }));
+      setStatus("Company logo uploaded. Save all changes to publish.");
+    } catch (error) {
+      setStatus((error as Error).message || "Company logo upload failed");
+    }
+  }
+
+  async function handleVideoImageUpload(file: File | null, field: "backgroundImage" | "videoPoster") {
+    if (!file) return;
+    setStatus("Uploading image...");
+    try {
+      const url = await uploadAsset(file);
+      setContent((prev) => ({
+        ...prev,
+        videoSection: {
+          ...prev.videoSection,
+          [field]: url,
+        },
+      }));
+      setStatus("Image uploaded. Save all changes to publish.");
+    } catch (error) {
+      setStatus((error as Error).message || "Image upload failed");
+    }
+  }
+
+  async function handleVideoUpload(file: File | null) {
+    if (!file) return;
+    setStatus("Uploading video...");
+    try {
+      const url = await uploadAsset(file);
+      setContent((prev) => ({
+        ...prev,
+        videoSection: {
+          ...prev.videoSection,
+          videoUrl: url,
+        },
+      }));
+      setStatus("Video uploaded. Save all changes to publish.");
+    } catch (error) {
+      setStatus((error as Error).message || "Video upload failed");
+    }
+  }
+
+  async function handlePropertyMainImageUpload(index: number, file: File | null) {
+    if (!file) return;
+    setStatus("Uploading property image...");
+    try {
+      const url = await uploadAsset(file);
+      updateProperty(index, {
+        image: url,
+        images: [url, ...((content.properties[index].images ?? []).filter((item) => item !== url))],
+      });
+      setStatus("Property main image uploaded. Save all changes to publish.");
+    } catch (error) {
+      setStatus((error as Error).message || "Property image upload failed");
+    }
+  }
+
+  async function handlePropertyGalleryUpload(index: number, files: FileList | null) {
+    if (!files || files.length === 0) return;
+    setStatus("Uploading property gallery images...");
+    try {
+      const uploadedUrls = await Promise.all(Array.from(files).map((file) => uploadAsset(file)));
+      const previous = content.properties[index];
+      const mergedGallery = Array.from(new Set([...(previous.images ?? [previous.image]), ...uploadedUrls]));
+      updateProperty(index, {
+        images: mergedGallery,
+        image: mergedGallery[0] ?? previous.image,
+      });
+      setStatus("Property gallery uploaded. Save all changes to publish.");
+    } catch (error) {
+      setStatus((error as Error).message || "Property gallery upload failed");
+    }
+  }
+
+  async function handleTeamImageUpload(index: number, file: File | null) {
+    if (!file) return;
+    setStatus("Uploading team image...");
+    try {
+      const url = await uploadAsset(file);
+      updateTeamMember(index, { image: url });
+      setStatus("Team image uploaded. Save all changes to publish.");
+    } catch (error) {
+      setStatus((error as Error).message || "Team image upload failed");
+    }
+  }
+
+  async function handleBlogSidebarImageUpload(index: number, file: File | null) {
+    if (!file) return;
+    setStatus("Uploading blog sidebar image...");
+    try {
+      const url = await uploadAsset(file);
+      updateBlogSidebarItem(index, { image: url });
+      setStatus("Blog sidebar image uploaded. Save all changes to publish.");
+    } catch (error) {
+      setStatus((error as Error).message || "Blog sidebar image upload failed");
+    }
+  }
+
+  async function handleArticleImageUpload(index: number, file: File | null) {
+    if (!file) return;
+    setStatus("Uploading article image...");
+    try {
+      const url = await uploadAsset(file);
+      updateArticle(index, { image: url });
+      setStatus("Article image uploaded. Save all changes to publish.");
+    } catch (error) {
+      setStatus((error as Error).message || "Article image upload failed");
+    }
+  }
 
   async function saveAll() {
     try {
@@ -170,8 +329,10 @@ export default function AdminPage() {
           mapUrl: "https://maps.google.com/?q=Zanzibar",
           description: "Property description",
           image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80",
+          images: ["https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80"],
           contactEmail: prev.contactActions.email,
           contactPhone: prev.contactActions.phone,
+          otherMobilePhone: prev.contactActions.phone,
           contactWhatsapp: prev.contactActions.whatsapp,
         },
       ],
@@ -385,6 +546,28 @@ export default function AdminPage() {
               <>
                 <section style={{ backgroundColor: "#fff", borderRadius: "14px", padding: "20px 22px", boxShadow: "0 4px 22px rgba(0,0,0,0.06)", display: "grid", gap: "18px" }}>
                   <h2 style={{ margin: 0, fontSize: "20px", color: "#111827" }}>Home Hero and Section Headings</h2>
+                  <div style={{ border: "1px solid #e5e7eb", borderRadius: "10px", padding: "12px", backgroundColor: "#f9fafb", display: "grid", gap: "10px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                      <p style={{ margin: 0, fontSize: "13px", color: "#374151", fontWeight: 700 }}>Company Logo</p>
+                      <p style={{ margin: 0, fontSize: "12px", color: "#6b7280" }}>Used in the main header and contact page</p>
+                    </div>
+                    <label style={{ display: "grid", gap: "6px" }}>
+                      <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Upload Company Logo</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleCompanyLogoUpload(e.target.files?.[0] ?? null)}
+                        style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
+                      />
+                    </label>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                      <img src={companyLogoUrl} alt="Company logo preview" style={{ height: "54px", width: "auto", objectFit: "contain", backgroundColor: "#fff", padding: "6px", borderRadius: "8px", border: "1px solid #e5e7eb" }} />
+                      <div style={{ display: "grid", gap: "4px" }}>
+                        <span style={{ fontSize: "12px", color: "#6b7280" }}>Current logo URL</span>
+                        <span style={{ fontSize: "12px", color: "#374151", wordBreak: "break-all" }}>{companyLogoUrl}</span>
+                      </div>
+                    </div>
+                  </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "12px" }}>
                     {([
                       ["Hero Eyebrow", "heroEyebrow"],
@@ -429,8 +612,17 @@ export default function AdminPage() {
                   <div style={{ border: "1px solid #e5e7eb", borderRadius: "10px", padding: "12px", backgroundColor: "#f9fafb", display: "grid", gap: "10px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
                       <p style={{ margin: 0, fontSize: "13px", color: "#374151", fontWeight: 700 }}>Hero Background Preview</p>
-                      <p style={{ margin: 0, fontSize: "12px", color: "#6b7280" }}>Paste image URL and preview instantly</p>
+                      <p style={{ margin: 0, fontSize: "12px", color: "#6b7280" }}>Paste image URL or upload image and preview instantly</p>
                     </div>
+                    <label style={{ display: "grid", gap: "6px" }}>
+                      <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Upload Hero Background Image</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleHomeImageUpload(e.target.files?.[0] ?? null)}
+                        style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
+                      />
+                    </label>
                     <p style={{ margin: 0, fontSize: "12px", color: "#4b5563", lineHeight: 1.5 }}>
                       Valid image URL: public direct link ending with .jpg, .jpeg, .png, or .webp (example: https://example.com/hero.jpg).
                     </p>
@@ -488,6 +680,43 @@ export default function AdminPage() {
                       </label>
                     ))}
                   </div>
+                  <div style={{ marginTop: "12px", border: "1px solid #e5e7eb", borderRadius: "10px", padding: "12px", backgroundColor: "#f9fafb", display: "grid", gap: "10px" }}>
+                    <p style={{ margin: 0, fontSize: "13px", color: "#374151", fontWeight: 700 }}>
+                      Upload Media (if you do not have URLs)
+                    </p>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "10px" }}>
+                      <label style={{ display: "grid", gap: "6px" }}>
+                        <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Video Section Background Image</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleVideoImageUpload(e.target.files?.[0] ?? null, "backgroundImage")}
+                          style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
+                        />
+                      </label>
+                      <label style={{ display: "grid", gap: "6px" }}>
+                        <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Video File</span>
+                        <input
+                          type="file"
+                          accept="video/*"
+                          onChange={(e) => handleVideoUpload(e.target.files?.[0] ?? null)}
+                          style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
+                        />
+                      </label>
+                      <label style={{ display: "grid", gap: "6px" }}>
+                        <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Video Poster Image</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleVideoImageUpload(e.target.files?.[0] ?? null, "videoPoster")}
+                          style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
+                        />
+                      </label>
+                    </div>
+                    <p style={{ margin: 0, fontSize: "12px", color: "#6b7280" }}>
+                      Uploaded files are saved to /public/uploads and their URLs are filled automatically.
+                    </p>
+                  </div>
                 </section>
 
                 <section style={{ backgroundColor: "#fff", borderRadius: "14px", padding: "20px 22px", boxShadow: "0 4px 22px rgba(0,0,0,0.06)", display: "grid", gap: "10px" }}>
@@ -514,6 +743,14 @@ export default function AdminPage() {
                 <div style={{ display: "grid", gap: "14px" }}>
                   {content.properties.map((item, index) => (
                     <article key={item.id} style={{ border: "1px solid #e5e7eb", borderRadius: "10px", padding: "14px", display: "grid", gap: "12px" }}>
+                      {(() => {
+                        const propertyImages = Array.isArray(item.images) && item.images.length > 0
+                          ? item.images
+                          : item.image
+                            ? [item.image]
+                            : [];
+                        return (
+                          <>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px" }}>
                         <p style={{ margin: 0, fontWeight: 700, color: "#374151" }}>Property #{item.id}</p>
                         <button onClick={() => removeProperty(index)} style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "6px 10px", cursor: "pointer" }}>
@@ -581,6 +818,68 @@ export default function AdminPage() {
                           style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px", resize: "vertical" }}
                         />
                       </label>
+
+                      <div style={{ border: "1px solid #e5e7eb", borderRadius: "10px", padding: "12px", backgroundColor: "#f9fafb", display: "grid", gap: "10px" }}>
+                        <p style={{ margin: 0, fontSize: "13px", color: "#374151", fontWeight: 700 }}>Property Photos (Multiple)</p>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "10px" }}>
+                          <label style={{ display: "grid", gap: "6px" }}>
+                            <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Upload Main Image</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handlePropertyMainImageUpload(index, e.target.files?.[0] ?? null)}
+                              style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
+                            />
+                          </label>
+                          <label style={{ display: "grid", gap: "6px" }}>
+                            <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Upload More Photos</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              onChange={(e) => handlePropertyGalleryUpload(index, e.target.files)}
+                              style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
+                            />
+                          </label>
+                        </div>
+                        <label style={{ display: "grid", gap: "6px" }}>
+                          <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Gallery URLs (one URL per line)</span>
+                          <textarea
+                            value={propertyImages.join("\n")}
+                            onChange={(e) => {
+                              const urls = e.target.value
+                                .split("\n")
+                                .map((line) => line.trim())
+                                .filter((line) => line.length > 0);
+                              updateProperty(index, {
+                                images: urls,
+                                image: urls[0] ?? item.image,
+                              });
+                            }}
+                            rows={4}
+                            style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "12px", fontFamily: "monospace", resize: "vertical", backgroundColor: "#fff" }}
+                          />
+                        </label>
+                        {propertyImages.length > 0 ? (
+                          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "8px" }}>
+                            {propertyImages.map((imageUrl, imageIndex) => (
+                              <div key={`${item.id}-${imageIndex}`} style={{ borderRadius: "8px", overflow: "hidden", border: "1px solid #e5e7eb", backgroundColor: "#fff" }}>
+                                <div
+                                  style={{
+                                    height: "80px",
+                                    backgroundImage: `url('${imageUrl}')`,
+                                    backgroundSize: "cover",
+                                    backgroundPosition: "center",
+                                  }}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                          </>
+                        );
+                      })()}
                     </article>
                   ))}
                 </div>
@@ -629,6 +928,16 @@ export default function AdminPage() {
                             </label>
                           ))}
                         </div>
+
+                        <label style={{ display: "grid", gap: "6px" }}>
+                          <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Upload Staff Image</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleTeamImageUpload(index, e.target.files?.[0] ?? null)}
+                            style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
+                          />
+                        </label>
 
                         <label style={{ display: "grid", gap: "6px" }}>
                           <span style={{ fontSize: "12px", color: "#555", fontWeight: 600 }}>Description</span>
@@ -759,6 +1068,16 @@ export default function AdminPage() {
                             </div>
 
                             <label style={{ display: "grid", gap: "6px" }}>
+                              <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Upload Article Image</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleArticleImageUpload(index, e.target.files?.[0] ?? null)}
+                                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
+                              />
+                            </label>
+
+                            <label style={{ display: "grid", gap: "6px" }}>
                               <span style={{ fontSize: "12px", color: "#555", fontWeight: 600 }}>Excerpt</span>
                               <textarea
                                 value={item.excerpt}
@@ -818,6 +1137,16 @@ export default function AdminPage() {
                             </label>
                           ))}
                         </div>
+
+                        <label style={{ display: "grid", gap: "6px" }}>
+                          <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Upload Sidebar Image</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleBlogSidebarImageUpload(index, e.target.files?.[0] ?? null)}
+                            style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
+                          />
+                        </label>
                       </article>
                     ))}
                   </div>

@@ -26,9 +26,10 @@ export default function PropertiesSection() {
 
   return (
     <section
+      className="properties-root"
       ref={ref}
       style={{
-        padding: "80px 80px",
+        padding: "80px clamp(18px, 6vw, 80px)",
         backgroundColor: "#faf8f5",
         backgroundImage:
           "radial-gradient(circle at 10% 20%, rgba(196,154,108,0.05) 0%, transparent 50%)",
@@ -63,7 +64,7 @@ export default function PropertiesSection() {
       </div>
 
       {/* Carousel wrapper */}
-      <div style={{ position: "relative" }}>
+      <div className="properties-carousel" style={{ position: "relative" }}>
         {/* Prev arrow */}
         <button
           onClick={prev}
@@ -94,8 +95,9 @@ export default function PropertiesSection() {
         </button>
 
         {/* Track */}
-        <div style={{ overflow: "hidden" }}>
+        <div className="properties-viewport" style={{ overflow: "hidden" }}>
           <div
+            className="properties-track"
             style={{
               display: "flex",
               gap: "28px",
@@ -104,6 +106,10 @@ export default function PropertiesSection() {
             }}
           >
             {properties.map((p, idx) => (
+              (() => {
+                const propertyImages = Array.isArray(p.images) && p.images.length > 0 ? p.images : [p.image];
+                const primaryImage = propertyImages[0] ?? p.image;
+                return (
               <div
                 key={p.id}
                 style={{
@@ -130,7 +136,7 @@ export default function PropertiesSection() {
                     style={{
                       width: "100%",
                       height: "100%",
-                      backgroundImage: `url('${p.image}')`,
+                      backgroundImage: `url('${primaryImage}')`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
@@ -259,6 +265,8 @@ export default function PropertiesSection() {
                   </div>
                 </div>
               </div>
+                );
+              })()
             ))}
           </div>
         </div>

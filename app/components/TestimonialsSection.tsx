@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useInView } from "../hooks/useInView";
 import { useSiteContent } from "../hooks/useSiteContent";
 
@@ -8,7 +9,7 @@ export default function TestimonialsSection() {
   const testimonials = content.companyTestimonials;
 
   return (
-    <section ref={ref} style={{ padding: "80px 80px", backgroundColor: "#fff" }}>
+    <section ref={ref} className="testimonials-root" style={{ padding: "80px clamp(18px, 6vw, 80px)", backgroundColor: "#fff" }}>
       <div style={{ textAlign: "center", marginBottom: "50px" }}>
         <p
           style={{
@@ -34,9 +35,31 @@ export default function TestimonialsSection() {
         <p style={{ color: "#888", fontSize: "14px" }}>
           {content.homePage.testimonialsDescription}
         </p>
+        <div style={{ marginTop: "18px" }}>
+          <Link
+            href="/company#testimonials"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              padding: "10px 18px",
+              borderRadius: "999px",
+              border: "1px solid #c49a6c",
+              color: "#c49a6c",
+              textDecoration: "none",
+              fontSize: "13px",
+              fontWeight: 700,
+              letterSpacing: "0.4px",
+            }}
+          >
+            See More
+          </Link>
+        </div>
       </div>
 
       <div
+        className="testimonials-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(3, 1fr)",

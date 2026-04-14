@@ -1,16 +1,24 @@
 "use client";
 import { useInView } from "../hooks/useInView";
+import Link from "next/link";
+import { useSiteContent } from "../hooks/useSiteContent";
+import { toWhatsAppHref } from "../../lib/contactLinks";
 
 export default function AboutSection() {
   const { ref, inView } = useInView();
+  const content = useSiteContent();
 
   return (
     <section
       ref={ref}
       style={{
-        padding: "80px 80px",
+        width: "100%",
+        maxWidth: "1240px",
+        margin: "0 auto",
+        padding: "80px 32px",
         display: "flex",
         alignItems: "center",
+        justifyContent: "space-between",
         gap: "60px",
         backgroundColor: "#fff",
       }}
@@ -36,7 +44,7 @@ export default function AboutSection() {
             gap: "8px",
           }}
         >
-          <span style={{ fontSize: "16px" }}>⊞</span> ABOUT US
+          <span style={{ fontSize: "16px" }}>⊞</span> {content.homePage.aboutBadge}
         </p>
         <h2
           style={{
@@ -47,28 +55,20 @@ export default function AboutSection() {
             lineHeight: 1.2,
           }}
         >
-          Find Your Perfect Property
+          {content.homePage.aboutTitleLine1}
           <br />
-          in Zanzibar
+          {content.homePage.aboutTitleLine2}
         </h2>
         <p style={{ color: "#555", fontSize: "14px", marginBottom: "10px", lineHeight: 1.7 }}>
-          Buy land, own a home, or rent a property with{" "}
-          <a href="#" style={{ color: "#c49a6c" }}>Archipelago Property Zanzibar.</a>
+          {content.homePage.aboutIntroLine1}
         </p>
         <p style={{ color: "#555", fontSize: "14px", marginBottom: "10px", lineHeight: 1.7 }}>
-          We support both local and foreign investors with all{" "}
-          <a href="#" style={{ color: "#c49a6c" }}>legal</a> documents, land regulations, and{" "}
-          <a href="#" style={{ color: "#c49a6c" }}>ZIPA</a> investment procedures.
+          {content.homePage.aboutIntroLine2}
         </p>
         <p style={{ color: "#555", fontSize: "14px", marginBottom: "20px", lineHeight: 1.7 }}>
-          Our service is safe, transparent, and trusted across Zanzibar.
+          {content.homePage.aboutIntroLine3}
         </p>
-        {[
-          "Secure Land Purchases",
-          "Buy or Rent Quality Properties",
-          "Complete Legal and Government Support",
-          "Investor Guidance with ZIPA",
-        ].map((item) => (
+        {content.homePage.aboutChecklist.map((item) => (
           <p key={item} style={{ color: "#555", fontSize: "14px", marginBottom: "6px", display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ color: "#c49a6c", fontWeight: "bold" }}>✓</span> {item}
           </p>
@@ -77,7 +77,8 @@ export default function AboutSection() {
           Begin your property journey today, we are ready to assist you.
         </p>
         <div style={{ display: "flex", gap: "16px" }}>
-          <button
+          <Link
+            href="/company"
             style={{
               backgroundColor: "#c49a6c",
               color: "#fff",
@@ -87,11 +88,17 @@ export default function AboutSection() {
               fontSize: "14px",
               cursor: "pointer",
               fontWeight: 500,
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
             }}
           >
             About Us
-          </button>
-          <button
+          </Link>
+          <a
+            href={toWhatsAppHref(content.contactActions.whatsapp, content.contactActions.whatsappMessage)}
+            target="_blank"
+            rel="noreferrer"
             style={{
               backgroundColor: "transparent",
               color: "#333",
@@ -101,19 +108,25 @@ export default function AboutSection() {
               fontSize: "14px",
               cursor: "pointer",
               fontWeight: 500,
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
             }}
           >
             Chat on WhatsApp
-          </button>
+          </a>
         </div>
       </div>
 
       {/* Right Image Grid */}
       <div
         style={{
-          flex: 1,
+          flex: 0.94,
           position: "relative",
-          height: "380px",
+          minHeight: "540px",
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "flex-start",
           opacity: inView ? 1 : 0,
           transform: inView ? "translateX(0)" : "translateX(40px)",
           transition: "opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s",
@@ -123,13 +136,13 @@ export default function AboutSection() {
         <div
           style={{
             position: "absolute",
-            left: "0",
-            top: "20px",
-            width: "55%",
-            height: "260px",
+            left: "6%",
+            top: "16px",
+            width: "44%",
+            height: "530px",
             borderRadius: "8px",
             overflow: "hidden",
-            boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
+            boxShadow: "0 14px 34px rgba(0,0,0,0.18)",
           }}
         >
           <div
@@ -144,31 +157,16 @@ export default function AboutSection() {
           <div
             style={{
               position: "absolute",
-              top: "12px",
-              left: "12px",
-              backgroundColor: "#4caf50",
+              top: "16px",
+              left: "18px",
               color: "#fff",
-              padding: "4px 10px",
-              borderRadius: "3px",
-              fontSize: "12px",
-              fontWeight: 600,
+              fontSize: "20px",
+              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: 400,
+              textShadow: "0 1px 4px rgba(0,0,0,0.3)",
             }}
           >
             For Rent
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              bottom: "12px",
-              left: "12px",
-              backgroundColor: "rgba(0,0,0,0.6)",
-              color: "#fff",
-              padding: "4px 10px",
-              borderRadius: "3px",
-              fontSize: "12px",
-            }}
-          >
-            1 listing
           </div>
         </div>
 
@@ -177,12 +175,12 @@ export default function AboutSection() {
           style={{
             position: "absolute",
             right: "0",
-            top: "80px",
-            width: "55%",
-            height: "260px",
+            top: "0",
+            width: "44%",
+            height: "530px",
             borderRadius: "8px",
             overflow: "hidden",
-            boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
+            boxShadow: "0 14px 34px rgba(0,0,0,0.18)",
           }}
         >
           <div
@@ -197,31 +195,16 @@ export default function AboutSection() {
           <div
             style={{
               position: "absolute",
-              top: "12px",
-              left: "12px",
-              backgroundColor: "#c49a6c",
+              top: "16px",
+              left: "18px",
               color: "#fff",
-              padding: "4px 10px",
-              borderRadius: "3px",
-              fontSize: "12px",
-              fontWeight: 600,
+              fontSize: "20px",
+              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: 400,
+              textShadow: "0 1px 4px rgba(0,0,0,0.3)",
             }}
           >
             For Sale
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              bottom: "12px",
-              left: "12px",
-              backgroundColor: "rgba(0,0,0,0.6)",
-              color: "#fff",
-              padding: "4px 10px",
-              borderRadius: "3px",
-              fontSize: "12px",
-            }}
-          >
-            2 listings
           </div>
         </div>
       </div>

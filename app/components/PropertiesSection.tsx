@@ -1,92 +1,18 @@
 ﻿"use client";
 import { useState, useEffect } from "react";
 import { useInView } from "../hooks/useInView";
-
-const properties = [
-  {
-    id: 1,
-    title: "Sample Property in Zanzibar 1",
-    price: "$ 770,000",
-    status: "For Sale",
-    active: "Active",
-    statusColor: "#c49a6c",
-    beds: 5,
-    baths: 6,
-    size: 190,
-    year: 1982,
-    description:
-      "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
-    image: "https://images.unsplash.com/photo-1540541338537-ad197cffc7f8?w=600&q=80",
-  },
-  {
-    id: 2,
-    title: "Sample Property in Zanzibar 2",
-    price: "$ 770,000",
-    status: "For Rent",
-    active: "Active",
-    statusColor: "#c49a6c",
-    beds: 5,
-    baths: 6,
-    size: 190,
-    year: 1982,
-    description:
-      "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
-    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80",
-  },
-  {
-    id: 3,
-    title: "Sample Property in Zanzibar 3",
-    price: "$ 770,000",
-    status: "For Sale",
-    active: "Active",
-    statusColor: "#c49a6c",
-    beds: 5,
-    baths: 5,
-    size: 190,
-    year: 1982,
-    description:
-      "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80",
-  },
-  {
-    id: 4,
-    title: "Luxury Villa in Nungwi Zanzibar",
-    price: "$ 950,000",
-    status: "For Sale",
-    active: "Active",
-    statusColor: "#c49a6c",
-    beds: 6,
-    baths: 7,
-    size: 350,
-    year: 2021,
-    description:
-      "Stunning beachfront villa with panoramic ocean views and premium finishes throughout ...",
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80",
-  },
-  {
-    id: 5,
-    title: "Modern Apartment in Stone Town",
-    price: "$ 420,000",
-    status: "For Rent",
-    active: "Active",
-    statusColor: "#8ab4a0",
-    beds: 3,
-    baths: 2,
-    size: 120,
-    year: 2019,
-    description:
-      "Contemporary apartment in the heart of Stone Town with city and sea views ...",
-    image: "https://images.unsplash.com/photo-1582610116397-edb72c0ff479?w=600&q=80",
-  },
-];
+import { useSiteContent } from "../hooks/useSiteContent";
+import { toMailtoHref, toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
 
 const VISIBLE = 3;
 
 export default function PropertiesSection() {
   const { ref, inView } = useInView();
+  const content = useSiteContent();
+  const properties = content.properties;
   const [current, setCurrent] = useState(0);
 
-  const maxIndex = properties.length - VISIBLE;
+  const maxIndex = Math.max(properties.length - VISIBLE, 0);
 
   const prev = () => setCurrent((c) => Math.max(0, c - 1));
   const next = () => setCurrent((c) => Math.min(maxIndex, c + 1));
@@ -119,7 +45,7 @@ export default function PropertiesSection() {
             marginBottom: "12px",
           }}
         >
-          ARCHIPELAGO PROPERTY ZANZIBAR
+          {content.homePage.propertiesBadge}
         </p>
         <h2
           style={{
@@ -129,12 +55,10 @@ export default function PropertiesSection() {
             marginBottom: "12px",
           }}
         >
-          Our Latest Properties
+          {content.homePage.propertiesTitle}
         </h2>
         <p style={{ color: "#888", fontSize: "14px", maxWidth: "520px", margin: "0 auto", lineHeight: 1.7 }}>
-          Browse our newest properties available for sale or rent. Each listing is chosen to
-          meet high standards of{" "}
-          <a href="#" style={{ color: "#c49a6c" }}>quality, safety, and location</a>
+          {content.homePage.propertiesDescription}
         </p>
       </div>
 
@@ -291,6 +215,17 @@ export default function PropertiesSection() {
                   <p style={{ color: "#555", fontSize: "13px", marginBottom: "14px", lineHeight: 1.6 }}>
                     {p.description}
                   </p>
+                  <p style={{ color: "#666", fontSize: "12px", marginBottom: "12px" }}>
+                    Location: {p.location}
+                    {p.mapUrl ? (
+                      <>
+                        {" "}
+                        <a href={p.mapUrl} target="_blank" rel="noreferrer" style={{ color: "#c49a6c", textDecoration: "none", fontWeight: 600 }}>
+                          View Map
+                        </a>
+                      </>
+                    ) : null}
+                  </p>
                   <div
                     style={{
                       display: "flex",
@@ -305,22 +240,22 @@ export default function PropertiesSection() {
                     <span>Beds: {p.beds}</span>
                     <span>Baths: {p.baths}</span>
                     <span>
-                      Size: {p.size} ft<sup>2</sup>
+                      Size: {p.size} m<sup>2</sup>
                     </span>
                     <span>Year Built: {p.year}</span>
                   </div>
                   <div style={{ display: "flex", gap: "8px" }}>
-                    <button style={{ flex: 1, padding: "8px 10px", border: "1px solid #e0e0e0", borderRadius: "4px", backgroundColor: "#fff", fontSize: "12px", cursor: "pointer", color: "#555", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
+                    <a href={toTelHref(p.contactPhone)} style={{ flex: 1, padding: "8px 10px", border: "1px solid #e0e0e0", borderRadius: "4px", backgroundColor: "#fff", fontSize: "12px", cursor: "pointer", color: "#555", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", textDecoration: "none" }}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.5 12 19.79 19.79 0 011.5 3.18 2 2 0 013.5 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
                       Call
-                    </button>
-                    <button style={{ flex: 1, padding: "8px 10px", border: "1px solid #e0e0e0", borderRadius: "4px", backgroundColor: "#fff", fontSize: "12px", cursor: "pointer", color: "#555", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
+                    </a>
+                    <a href={toMailtoHref(p.contactEmail)} style={{ flex: 1, padding: "8px 10px", border: "1px solid #e0e0e0", borderRadius: "4px", backgroundColor: "#fff", fontSize: "12px", cursor: "pointer", color: "#555", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", textDecoration: "none" }}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                       Email
-                    </button>
-                    <button style={{ padding: "8px 12px", border: "1px solid #e0e0e0", borderRadius: "4px", backgroundColor: "#fff", fontSize: "16px", cursor: "pointer", color: "#25d366", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    </a>
+                    <a href={toWhatsAppHref(p.contactWhatsapp, content.contactActions.whatsappMessage)} target="_blank" rel="noreferrer" style={{ padding: "8px 12px", border: "1px solid #e0e0e0", borderRadius: "4px", backgroundColor: "#fff", fontSize: "16px", cursor: "pointer", color: "#25d366", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>

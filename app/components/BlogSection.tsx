@@ -1,62 +1,18 @@
 ﻿"use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useInView } from "../hooks/useInView";
-
-const articles = [
-  {
-    slug: "buying-land-zanzibar",
-    title: "Complete Guide to Buying Land in Zanzibar: L...",
-    date: "December 14, 2025",
-    excerpt:
-      "Buying land in Zanzibar is a great opportunity for both local buyers and foreign investors. Zanzibar offers strong ...",
-    image:
-      "https://images.unsplash.com/photo-1582610116397-edb72c0ff479?w=600&q=80",
-  },
-  {
-    slug: "zipa-approval-foreign-property",
-    title: "How ZIPA Approval Works for Foreign Property...",
-    date: "December 14, 2025",
-    excerpt:
-      "Zanzibar is one of the most attractive destinations for foreign property investors. Its growing tourism industry, s ...",
-    image:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80",
-  },
-  {
-    slug: "best-travel-experiences",
-    title: "Best Travel Experiences and Property Opportu...",
-    date: "March 4, 2016",
-    excerpt:
-      "Zanzibar is a beautiful island destination that offers more than just holidays. It is a place where you can enjoy a ...",
-    image:
-      "https://images.unsplash.com/photo-1540541338537-ad197cffc7f8?w=600&q=80",
-  },
-  {
-    slug: "investing-in-zanzibar",
-    title: "Why Now Is the Best Time to Invest in Zanzibar",
-    date: "January 20, 2025",
-    excerpt:
-      "With new infrastructure projects and a booming tourism sector, Zanzibar presents a once-in-a-generation investment ...",
-    image:
-      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80",
-  },
-  {
-    slug: "zanzibar-property-laws",
-    title: "Understanding Zanzibar Property Laws for Foreigners",
-    date: "February 10, 2025",
-    excerpt:
-      "Foreign investors must navigate specific legal frameworks when purchasing property in Zanzibar. Here is what you need ...",
-    image:
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80",
-  },
-];
+import { useSiteContent } from "../hooks/useSiteContent";
 
 const VISIBLE = 3;
 
 export default function BlogSection() {
   const { ref, inView } = useInView();
+  const content = useSiteContent();
+  const articles = content.articles;
   const [current, setCurrent] = useState(0);
 
-  const maxIndex = articles.length - VISIBLE;
+  const maxIndex = Math.max(articles.length - VISIBLE, 0);
 
   const prev = () => setCurrent((c) => Math.max(0, c - 1));
   const next = () => setCurrent((c) => Math.min(maxIndex, c + 1));
@@ -80,7 +36,7 @@ export default function BlogSection() {
             marginBottom: "12px",
           }}
         >
-          OUR BLOG
+          {content.homePage.blogBadge}
         </p>
         <h2
           style={{
@@ -90,12 +46,10 @@ export default function BlogSection() {
             marginBottom: "12px",
           }}
         >
-          Read From Our Articles
+          {content.homePage.blogTitle}
         </h2>
         <p style={{ color: "#888", fontSize: "14px", maxWidth: "500px", margin: "0 auto", lineHeight: 1.7 }}>
-          <a href="#" style={{ color: "#c49a6c" }}>
-            Learn everything you need to know about property laws, ownership, and investment in Zanzibar
-          </a>
+          {content.homePage.blogDescription}
         </p>
       </div>
 
@@ -244,7 +198,7 @@ export default function BlogSection() {
 
       {/* View More Button */}
       <div style={{ display: "flex", justifyContent: "center", margin: "28px 0 0" }}>
-        <a
+        <Link
           href="/blog"
           style={{
             backgroundColor: "#c49a6c",
@@ -261,7 +215,7 @@ export default function BlogSection() {
           onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#c49a6c")}
         >
           View More
-        </a>
+        </Link>
       </div>
     </section>
   );

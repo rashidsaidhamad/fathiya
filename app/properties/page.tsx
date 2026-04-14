@@ -1,85 +1,85 @@
 "use client";
-import dynamic from "next/dynamic";
-import { useState } from "react";
-import { FaPhone, FaEnvelope, FaWhatsapp, FaThLarge, FaList } from "react-icons/fa";
+import { useMemo, useState } from "react";
+import { FaPhone, FaEnvelope, FaWhatsapp, FaThLarge, FaList, FaMapMarkerAlt } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useSiteContent } from "../hooks/useSiteContent";
+import { toMailtoHref, toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
 
-const PropertyMap = dynamic(() => import("../components/PropertyMap"), { ssr: false });
+const ALL_CATEGORIES = "All Categories";
+const ALL_CITIES = "All Cities";
 
-const properties = [
-  {
-    id: 1,
-    title: "Sample Property in Zanzibar 1",
-    price: "$ 770,000",
-    status: "For Sale",
-    active: "Active",
-    beds: 5, baths: 6, size: 190, year: 1982,
-    description: "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
-    image: "https://images.unsplash.com/photo-1540541338537-ad197cffc7f8?w=600&q=80",
-  },
-  {
-    id: 2,
-    title: "Sample Property in Zanzibar 2",
-    price: "$ 770,000",
-    status: "For Rent",
-    active: "Active",
-    beds: 5, baths: 6, size: 190, year: 1982,
-    description: "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
-    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80",
-  },
-  {
-    id: 3,
-    title: "Sample Property in Zanzibar 3",
-    price: "$ 770,000",
-    status: "For Sale",
-    active: "Active",
-    beds: 5, baths: 5, size: 190, year: 1982,
-    description: "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80",
-  },
-  {
-    id: 4,
-    title: "Sample Property in Zanzibar 4",
-    price: "$ 770,000",
-    status: "For Sale",
-    active: "Active",
-    beds: 4, baths: 3, size: 220, year: 2010,
-    description: "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80",
-  },
-  {
-    id: 5,
-    title: "Sample Property in Zanzibar 5",
-    price: "$ 770,000",
-    status: "For Rent",
-    active: "Active",
-    beds: 3, baths: 2, size: 150, year: 2015,
-    description: "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
-    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600&q=80",
-  },
-  {
-    id: 6,
-    title: "Sample Property in Zanzibar 6",
-    price: "$ 770,000",
-    status: "For Sale",
-    active: "Active",
-    beds: 6, baths: 4, size: 300, year: 2005,
-    description: "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80",
-  },
-];
+type SortOption = "Price High to Low" | "Price Low to High" | "Newest" | "Oldest";
+
+function parseLocationParts(location: string) {
+  const parts = location
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  return {
+    city: parts[0] ?? "Unknown City",
+  };
+}
+
+function parsePrice(price: string) {
+  const numeric = Number(price.replace(/[^\d.]/g, ""));
+  return Number.isFinite(numeric) ? numeric : 0;
+}
 
 export default function PropertiesPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [categoryFilter, setCategoryFilter] = useState(ALL_CATEGORIES);
+  const [cityFilter, setCityFilter] = useState(ALL_CITIES);
+  const [sortBy, setSortBy] = useState<SortOption>("Price High to Low");
+  const content = useSiteContent();
+  const properties = content.properties;
+
+  const enhancedProperties = useMemo(
+    () =>
+      properties.map((property) => {
+        const { city } = parseLocationParts(property.location);
+        return {
+          ...property,
+          city,
+          numericPrice: parsePrice(property.price),
+        };
+      }),
+    [properties],
+  );
+
+  const categoryOptions = useMemo(
+    () => [ALL_CATEGORIES, ...Array.from(new Set(enhancedProperties.map((p) => p.status))).sort()],
+    [enhancedProperties],
+  );
+  const cityOptions = useMemo(
+    () => [ALL_CITIES, ...Array.from(new Set(enhancedProperties.map((p) => p.city))).sort()],
+    [enhancedProperties],
+  );
+  const filteredProperties = useMemo(() => {
+    const matches = enhancedProperties.filter((property) => {
+      if (categoryFilter !== ALL_CATEGORIES && property.status !== categoryFilter) return false;
+      if (cityFilter !== ALL_CITIES && property.city !== cityFilter) return false;
+      return true;
+    });
+
+    matches.sort((a, b) => {
+      if (sortBy === "Price High to Low") return b.numericPrice - a.numericPrice;
+      if (sortBy === "Price Low to High") return a.numericPrice - b.numericPrice;
+      if (sortBy === "Newest") return b.year - a.year;
+      return a.year - b.year;
+    });
+
+    return matches;
+  }, [enhancedProperties, categoryFilter, cityFilter, sortBy]);
+
+  const getMapUrl = (location: string, mapUrl?: string) =>
+    mapUrl?.trim() || `https://maps.google.com/?q=${encodeURIComponent(location)}`;
 
   return (
     <>
       <Navbar forceWhite />
       <div style={{ paddingTop: "70px", backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-      {/* Map */}
-      <PropertyMap />
-
       {/* Page content */}
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 24px" }}>
         {/* Breadcrumb */}
@@ -108,22 +108,62 @@ export default function PropertiesPage() {
             flexWrap: "wrap",
           }}
         >
-          {["Types", "Categories", "States", "Cities", "Areas", "Price High to Low"].map((f) => (
-            <select
-              key={f}
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                padding: "6px 10px",
-                fontSize: "13px",
-                color: "#444",
-                cursor: "pointer",
-                background: "#fff",
-              }}
-            >
-              <option>{f}</option>
-            </select>
-          ))}
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              padding: "6px 10px",
+              fontSize: "13px",
+              color: "#444",
+              cursor: "pointer",
+              background: "#fff",
+            }}
+          >
+            {categoryOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <select
+            value={cityFilter}
+            onChange={(e) => setCityFilter(e.target.value)}
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              padding: "6px 10px",
+              fontSize: "13px",
+              color: "#444",
+              cursor: "pointer",
+              background: "#fff",
+            }}
+          >
+            {cityOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              padding: "6px 10px",
+              fontSize: "13px",
+              color: "#444",
+              cursor: "pointer",
+              background: "#fff",
+            }}
+          >
+            <option value="Price High to Low">Price High to Low</option>
+            <option value="Price Low to High">Price Low to High</option>
+            <option value="Newest">Newest</option>
+            <option value="Oldest">Oldest</option>
+          </select>
           {/* View toggle */}
           <div style={{ marginLeft: "auto", display: "flex", gap: "6px" }}>
             <button
@@ -163,7 +203,10 @@ export default function PropertiesPage() {
             gap: "24px",
           }}
         >
-          {properties.map((p) => (
+          {filteredProperties.map((p) => (
+            (() => {
+              const propertyMapUrl = getMapUrl(p.location, p.mapUrl);
+              return (
             <div
               key={p.id}
               style={{
@@ -194,10 +237,10 @@ export default function PropertiesPage() {
                 />
                 {/* Status tags */}
                 <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", gap: "5px" }}>
-                  <span style={{ background: "#c49a6c", color: "#fff", padding: "3px 8px", borderRadius: "3px", fontSize: "11px", fontWeight: 600 }}>
+                  <span style={{ background: p.statusColor, color: "#fff", padding: "3px 8px", borderRadius: "3px", fontSize: "11px", fontWeight: 600 }}>
                     {p.status}
                   </span>
-                  <span style={{ background: "#c49a6c", color: "#fff", padding: "3px 8px", borderRadius: "3px", fontSize: "11px", fontWeight: 600 }}>
+                  <span style={{ background: p.statusColor, color: "#fff", padding: "3px 8px", borderRadius: "3px", fontSize: "11px", fontWeight: 600 }}>
                     {p.active}
                   </span>
                 </div>
@@ -206,12 +249,31 @@ export default function PropertiesPage() {
                   {[
                     <svg key="s" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
                     <svg key="h" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>,
-                    <span key="p" style={{ fontSize: "14px", color: "#555" }}>+</span>,
                   ].map((icon, i) => (
                     <button key={i} style={{ width: 26, height: 26, borderRadius: "50%", background: "rgba(255,255,255,0.9)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       {icon}
                     </button>
                   ))}
+                  <a
+                    href={propertyMapUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={`Open map for ${p.title}`}
+                    style={{
+                      width: 26,
+                      height: 26,
+                      borderRadius: "50%",
+                      background: "rgba(255,255,255,0.9)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#c49a6c",
+                      textDecoration: "none",
+                    }}
+                  >
+                    <FaMapMarkerAlt size={12} />
+                  </a>
                 </div>
                 {/* Prev/Next arrows */}
                 <button style={{ position: "absolute", left: "8px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.8)", border: "none", borderRadius: "50%", width: 26, height: 26, cursor: "pointer", fontSize: "14px" }}>‹</button>
@@ -223,27 +285,46 @@ export default function PropertiesPage() {
                 <p style={{ color: "#c49a6c", fontSize: "15px", fontWeight: 700, marginBottom: "4px" }}>{p.price}</p>
                 <h3 style={{ fontSize: "15px", fontWeight: 600, color: "#222", marginBottom: "8px" }}>{p.title}</h3>
                 <p style={{ color: "#777", fontSize: "12px", marginBottom: "12px", lineHeight: 1.6 }}>{p.description}</p>
+                <p style={{ color: "#666", fontSize: "12px", marginBottom: "12px" }}>
+                  Location: {p.location}
+                  {propertyMapUrl ? (
+                    <>
+                      {" "}
+                      <a href={propertyMapUrl} target="_blank" rel="noreferrer" style={{ color: "#c49a6c", textDecoration: "none", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                        <FaMapMarkerAlt size={12} />
+                        View Map
+                      </a>
+                    </>
+                  ) : null}
+                </p>
                 <div style={{ display: "flex", gap: "14px", fontSize: "12px", fontWeight: 600, color: "#333", marginBottom: "14px" }}>
                   <span>Beds: {p.beds}</span>
                   <span>Baths: {p.baths}</span>
-                  <span>Size: {p.size} ft²</span>
+                  <span>Size: {p.size} m²</span>
                   <span>Year Built: {p.year}</span>
                 </div>
                 <div style={{ display: "flex", gap: "8px" }}>
-                  <button style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555" }}>
+                  <a href={toTelHref(p.contactPhone)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555", textDecoration: "none" }}>
                     <FaPhone size={11} color="#c49a6c" /> Call
-                  </button>
-                  <button style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555" }}>
+                  </a>
+                  <a href={toMailtoHref(p.contactEmail)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555", textDecoration: "none" }}>
                     <FaEnvelope size={11} color="#c49a6c" /> Email
-                  </button>
-                  <button style={{ padding: "8px 12px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  </a>
+                  <a href={toWhatsAppHref(p.contactWhatsapp, content.contactActions.whatsappMessage)} target="_blank" rel="noreferrer" style={{ padding: "8px 12px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
                     <FaWhatsapp size={14} color="#25D366" />
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
+              );
+            })()
           ))}
         </div>
+        {filteredProperties.length === 0 ? (
+          <p style={{ marginTop: "18px", color: "#666", fontSize: "14px" }}>
+            No properties match the selected filters.
+          </p>
+        ) : null}
       </div>
     </div>
       <Footer />

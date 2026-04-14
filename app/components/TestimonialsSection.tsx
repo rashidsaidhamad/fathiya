@@ -1,29 +1,12 @@
 "use client";
 import { useInView } from "../hooks/useInView";
-
-const testimonials = [
-  {
-    name: "Shamis Aziz",
-    role: "Happy Seller",
-    text: "Great service and very helpful team. They guided me through the whole process and made buying property in Zanzibar easy and stress-free",
-    stars: 5,
-  },
-  {
-    name: "Shamis Aziz",
-    role: "Happy Seller",
-    text: "Great service and very helpful team. They guided me through the whole process and made buying property in Zanzibar easy and stress-free",
-    stars: 5,
-  },
-  {
-    name: "Shamis Aziz",
-    role: "Happy Buyer",
-    text: "Great service and very helpful team. They guided me through the whole process and made buying property in Zanzibar easy and stress-free",
-    stars: 5,
-  },
-];
+import { useSiteContent } from "../hooks/useSiteContent";
 
 export default function TestimonialsSection() {
   const { ref, inView } = useInView();
+  const content = useSiteContent();
+  const testimonials = content.companyTestimonials;
+
   return (
     <section ref={ref} style={{ padding: "80px 80px", backgroundColor: "#fff" }}>
       <div style={{ textAlign: "center", marginBottom: "50px" }}>
@@ -36,7 +19,7 @@ export default function TestimonialsSection() {
             marginBottom: "12px",
           }}
         >
-          TESTIMONIALS
+          {content.homePage.testimonialsBadge}
         </p>
         <h2
           style={{
@@ -46,12 +29,10 @@ export default function TestimonialsSection() {
             marginBottom: "12px",
           }}
         >
-          What Clients Say
+          {content.homePage.testimonialsTitle}
         </h2>
         <p style={{ color: "#888", fontSize: "14px" }}>
-          <a href="#" style={{ color: "#c49a6c" }}>
-            Real feedback from clients who successfully invested with our support
-          </a>
+          {content.homePage.testimonialsDescription}
         </p>
       </div>
 
@@ -64,7 +45,7 @@ export default function TestimonialsSection() {
       >
         {testimonials.map((t, i) => (
           <div
-            key={i}
+            key={t.id}
             style={{
               backgroundColor: "#fff",
               border: "1px solid #eee",
@@ -83,12 +64,17 @@ export default function TestimonialsSection() {
                   height: 48,
                   borderRadius: "50%",
                   backgroundColor: "#e8ddd4",
-                  backgroundImage:
-                    "url('https://ui-avatars.com/api/?name=Shamis+Aziz&background=c49a6c&color=fff&size=48')",
-                  backgroundSize: "cover",
+                  color: "#6b4f33",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "16px",
+                  fontWeight: 700,
                   flexShrink: 0,
                 }}
-              />
+              >
+                {t.name.slice(0, 1).toUpperCase()}
+              </div>
               <div>
                 <p style={{ fontWeight: 600, fontSize: "15px", color: "#222" }}>{t.name}</p>
                 <p style={{ fontSize: "12px", color: "#888" }}>{t.role}</p>

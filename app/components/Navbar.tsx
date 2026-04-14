@@ -1,22 +1,33 @@
 "use client";
 import { useState, useEffect } from "react";
-import { FaFacebookF, FaTwitter, FaYoutube, FaPhone } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaWhatsapp, FaLinkedinIn, FaTiktok, FaSnapchatGhost, FaPhone } from "react-icons/fa";
+import Link from "next/link";
+import { useSiteContent } from "../hooks/useSiteContent";
+import { toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
 
 export default function Navbar({ forceWhite = false }: { forceWhite?: boolean }) {
   const [scrolledState, setScrolledState] = useState(false);
   const scrolled = forceWhite || scrolledState;
+  const content = useSiteContent();
 
   useEffect(() => {
     if (forceWhite) return;
     const handleScroll = () => setScrolledState(window.scrollY > 80);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [forceWhite]);
 
   const socialLinks = [
-    { icon: <FaFacebookF size={14} />, href: "#", color: "#1877f2" },
-    { icon: <FaTwitter size={14} />, href: "#", color: "#1da1f2" },
-    { icon: <FaYoutube size={14} />, href: "#", color: "#ff0000" },
+    { icon: <FaInstagram size={14} />, href: "https://www.instagram.com/archipelago_properties?igsh=dHQ0NnVrbmxqbno0", title: "Instagram" },
+    {
+      icon: <FaWhatsapp size={14} />,
+      href: "https://wa.me/message/DSUFKUBMIL5HN1",
+      title: "WhatsApp",
+    },
+    { icon: <FaLinkedinIn size={14} />, href: "#", title: "LinkedIn" },
+    { icon: <FaTiktok size={14} />, href: "https://www.tiktok.com/@archipelago_properties?_r=1&_t=ZS-95AoJGjwiRR", title: "TikTok" },
+    { icon: <FaSnapchatGhost size={14} />, href: "https://www.snapchat.com/add/archipelago2026?share_id=VqMRxcOy5XA&locale=en-GB", title: "Snapchat" },
+    { icon: <FaFacebookF size={14} />, href: "https://www.facebook.com/share/18dtiBWTnj/", title: "Facebook" },
   ];
 
   return (
@@ -43,11 +54,11 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
         {[
           { label: "Home", href: "/" },
           { label: "Properties", href: "/properties" },
-          { label: "Our company", href: "#" },
+          { label: "Our company", href: "/company" },
           { label: "Blog", href: "/blog" },
           { label: "Contact Us", href: "/contact" },
         ].map((item) => (
-          <a
+          <Link
             key={item.label}
             href={item.href}
             style={{
@@ -69,7 +80,7 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
             }}
           >
             {item.label}
-          </a>
+          </Link>
         ))}
       </nav>
 
@@ -101,12 +112,12 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
       </div>
 
       {/* Right Phone */}
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      <a href={toTelHref(content.contactActions.phone)} style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
         <FaPhone size={16} color={scrolled ? "#c49a6c" : "#fff"} />
         <span style={{ color: scrolled ? "#222" : "#fff", fontSize: "15px", fontWeight: 500 }}>
-          +255 659 740 712
+          {content.contactActions.phone}
         </span>
-      </div>
+      </a>
 
       {/* Floating side social icons — only visible before scroll */}
       {!scrolled && (
@@ -126,7 +137,10 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
           <a
             key={i}
             href={s.href}
+            title={s.title}
             className="social-icon"
+            target="_blank"
+            rel="noreferrer"
             style={{
               width: 36,
               height: 36,

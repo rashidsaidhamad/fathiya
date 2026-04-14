@@ -1,16 +1,36 @@
 "use client";
-import { FaFacebookF, FaWhatsapp, FaTiktok, FaGoogle, FaInstagram, FaTwitter, FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
+import Link from "next/link";
+import { FaFacebookF, FaWhatsapp, FaTiktok, FaInstagram, FaLinkedinIn, FaSnapchatGhost, FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
+import { useSiteContent } from "../hooks/useSiteContent";
+import { toMailtoHref, toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
 
-const socialLinks = [
-  { icon: <FaFacebookF size={15} />, href: "#", title: "Facebook" },
-  { icon: <FaWhatsapp size={15} />, href: "#", title: "WhatsApp" },
-  { icon: <FaTiktok size={15} />, href: "#", title: "TikTok" },
-  { icon: <FaTwitter size={15} />, href: "#", title: "Twitter" },
-  { icon: <FaGoogle size={15} />, href: "#", title: "Google" },
-  { icon: <FaInstagram size={15} />, href: "#", title: "Instagram" },
+const quickLinks = [
+  { label: "About", href: "/company" },
+  { label: "Site Map", href: "/site-map" },
+  { label: "Support Center", href: "/contact" },
+  { label: "Terms Conditions", href: "/terms" },
+];
+
+const policyLinks = [
+  { label: "Terms of Use", href: "/terms" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
 ];
 
 export default function Footer() {
+  const content = useSiteContent();
+  const socialLinks = [
+    { icon: <FaFacebookF size={15} />, href: "https://www.facebook.com/share/18dtiBWTnj/", title: "Facebook" },
+    { icon: <FaInstagram size={15} />, href: "https://www.instagram.com/archipelago_properties?igsh=dHQ0NnVrbmxqbno0", title: "Instagram" },
+    {
+      icon: <FaWhatsapp size={15} />,
+      href: "https://wa.me/message/DSUFKUBMIL5HN1",
+      title: "WhatsApp",
+    },
+    { icon: <FaLinkedinIn size={15} />, href: "#", title: "LinkedIn" },
+    { icon: <FaTiktok size={15} />, href: "https://www.tiktok.com/@archipelago_properties?_r=1&_t=ZS-95AoJGjwiRR", title: "TikTok" },
+    { icon: <FaSnapchatGhost size={15} />, href: "https://www.snapchat.com/add/archipelago2026?share_id=VqMRxcOy5XA&locale=en-GB", title: "Snapchat" },
+  ];
+
   return (
     <footer
       style={{
@@ -47,6 +67,8 @@ export default function Footer() {
                 href={s.href}
                 title={s.title}
                 className="social-icon"
+                target="_blank"
+                rel="noreferrer"
                 style={{
                   width: 36,
                   height: 36,
@@ -77,11 +99,15 @@ export default function Footer() {
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <FaPhone color="#c49a6c" size={14} />
-              <span style={{ fontSize: "13px", color: "#aaa" }}>+255 659 740 712</span>
+              <a href={toTelHref(content.contactActions.phone)} style={{ fontSize: "13px", color: "#aaa", textDecoration: "none" }}>
+                {content.contactActions.phone}
+              </a>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <FaEnvelope color="#c49a6c" size={14} />
-              <span style={{ fontSize: "13px", color: "#aaa" }}>info@archipelagoestates.com</span>
+              <a href={toMailtoHref(content.contactActions.email)} style={{ fontSize: "13px", color: "#aaa", textDecoration: "none" }}>
+                {content.contactActions.email}
+              </a>
             </div>
           </div>
         </div>
@@ -101,21 +127,21 @@ export default function Footer() {
             QUICK LINKS
           </h3>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {["About", "Site Map", "Support Center", "Terms Conditions"].map((link) => (
-              <a
-                key={link}
-                href="#"
+            {quickLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
                 style={{
                   color: "#aaa",
                   textDecoration: "none",
                   fontSize: "14px",
                   transition: "color 0.2s",
                 }}
-                onMouseEnter={(e) => ((e.target as HTMLElement).style.color = "#c49a6c")}
-                onMouseLeave={(e) => ((e.target as HTMLElement).style.color = "#aaa")}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#c49a6c")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#aaa")}
               >
-                {link}
-              </a>
+                {link.label}
+              </Link>
             ))}
           </div>
         </div>
@@ -132,8 +158,17 @@ export default function Footer() {
       >
         <p style={{ fontSize: "12px", color: "#666" }}>Copyright. All Rights Reserved.</p>
         <div style={{ display: "flex", gap: "20px" }}>
-          <a href="#" style={{ fontSize: "12px", color: "#666", textDecoration: "none" }}>Terms of Use</a>
-          <a href="#" style={{ fontSize: "12px", color: "#666", textDecoration: "none" }}>Privacy Policy</a>
+          {policyLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              style={{ fontSize: "12px", color: "#666", textDecoration: "none" }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#c49a6c")}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#666")}
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
       </div>
     </footer>

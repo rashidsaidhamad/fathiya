@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useSiteContent } from "../hooks/useSiteContent";
 
 const stats = [
   {
@@ -60,8 +61,12 @@ function AnimatedNumber({ numeric, suffix, decimal }: { numeric: number; suffix:
 }
 
 export default function VideoStatsSection() {
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const content = useSiteContent();
+  const videoSrc = content.videoSection.videoUrl;
+
   return (
-    <div>
+    <>
       {/* Video Section */}
       <section
         style={{
@@ -78,7 +83,7 @@ export default function VideoStatsSection() {
             position: "absolute",
             inset: 0,
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1560185007-5f0bb1866cab?w=1800&q=80')",
+                `url('${content.videoSection.backgroundImage}')`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             filter: "brightness(0.5)",
@@ -94,7 +99,7 @@ export default function VideoStatsSection() {
               color: "#ddd",
             }}
           >
-            THE BEST REAL ESTATE COMPANY
+              {content.videoSection.badge}
           </p>
           <h2
             style={{
@@ -105,35 +110,48 @@ export default function VideoStatsSection() {
               lineHeight: 1.2,
             }}
           >
-            Watch this video
+            {content.videoSection.headingLine1}
             <br />
-            to know us better
+            {content.videoSection.headingLine2}
           </h2>
           <button
+            type="button"
             style={{
-              width: 60,
-              height: 60,
+              width: 84,
+              height: 84,
               borderRadius: "50%",
-              backgroundColor: "transparent",
-              border: "2px solid #c49a6c",
+              backgroundColor: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.45)",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               margin: "0 auto",
-              transition: "background-color 0.3s",
+              transition: "transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease",
+              boxShadow: "0 12px 30px rgba(0,0,0,0.22)",
             }}
+            onClick={() => setIsVideoOpen(true)}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(196,154,108,0.3)";
+              const target = e.currentTarget as HTMLElement;
+              target.style.backgroundColor = "rgba(196,154,108,0.28)";
+              target.style.borderColor = "rgba(196,154,108,0.9)";
+              target.style.transform = "scale(1.05)";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+              const target = e.currentTarget as HTMLElement;
+              target.style.backgroundColor = "rgba(255,255,255,0.08)";
+              target.style.borderColor = "rgba(255,255,255,0.45)";
+              target.style.transform = "scale(1)";
             }}
+            aria-label="Play company video"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="#c49a6c">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#ffffff">
               <polygon points="5,3 19,12 5,21" />
             </svg>
           </button>
+          <p style={{ margin: "14px 0 0", fontSize: "13px", color: "#ddd" }}>
+            {content.videoSection.helperText}
+          </p>
         </div>
       </section>
 
@@ -166,6 +184,66 @@ export default function VideoStatsSection() {
           </div>
         ))}
       </section>
-    </div>
+
+      {isVideoOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Company video"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 4000,
+            backgroundColor: "rgba(10, 12, 18, 0.78)",
+            display: "grid",
+            placeItems: "center",
+            padding: "24px",
+          }}
+          onClick={() => setIsVideoOpen(false)}
+        >
+          <div
+            style={{
+              position: "relative",
+              width: "min(920px, 100%)",
+              backgroundColor: "#0d1220",
+              borderRadius: "18px",
+              overflow: "hidden",
+              boxShadow: "0 24px 80px rgba(0,0,0,0.4)",
+            }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setIsVideoOpen(false)}
+              aria-label="Close video"
+              style={{
+                position: "absolute",
+                top: "14px",
+                right: "14px",
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                border: "none",
+                backgroundColor: "rgba(255,255,255,0.14)",
+                color: "#fff",
+                cursor: "pointer",
+                fontSize: "20px",
+                zIndex: 1,
+              }}
+            >
+              ×
+            </button>
+            <video
+              src={videoSrc}
+              controls
+              autoPlay
+              playsInline
+              poster={content.videoSection.videoPoster}
+              style={{ width: "100%", display: "block", aspectRatio: "16 / 9", objectFit: "cover" }}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }

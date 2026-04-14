@@ -1,27 +1,48 @@
 "use client";
 import { useState } from "react";
-import { FaFacebookF, FaTwitter, FaYoutube, FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaWhatsapp, FaLinkedinIn, FaTiktok, FaSnapchatGhost, FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
+import { useSiteContent } from "../hooks/useSiteContent";
+import { toMailtoHref, toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
 
 export default function ContactSection() {
-  const [form, setForm] = useState({
-    name: "",
-    lastName: "",
-    city: "",
-    state: "",
-    email: "",
-    mobile: "",
-    message: "",
-    gdpr: false,
-  });
+  const content = useSiteContent();
+  const [formStatus, setFormStatus] = useState("");
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const target = e.target as HTMLInputElement;
-    setForm((prev) => ({
-      ...prev,
-      [target.name]: target.type === "checkbox" ? target.checked : target.value,
-    }));
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    formData.set("source", "home");
+
+    setFormStatus("Sending...");
+
+    try {
+      const response = await fetch("/api/contact-submissions", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit");
+      }
+
+      const payload = (await response.json()) as {
+        emailRouting?: {
+          to?: string;
+          from?: string;
+          sent?: boolean;
+        };
+      };
+      const emailRouting = payload.emailRouting;
+      const deliveryText = emailRouting
+        ? ` Sent to: ${emailRouting.to ?? "-"}. Sent from: ${emailRouting.from ?? "-"}.${emailRouting.sent ? "" : " SMTP is not configured yet."}`
+        : "";
+
+      setFormStatus(`Thanks! Your message was received.${deliveryText}`);
+      form.reset();
+    } catch {
+      setFormStatus("Could not send right now. Please try again.");
+    }
   };
 
   return (
@@ -46,7 +67,7 @@ export default function ContactSection() {
         }}
       />
 
-      <div style={{ position: "relative", zIndex: 5, display: "flex", gap: "60px", width: "100%", alignItems: "center" }}>
+      <div style={{ position: "relative", zIndex: 5, display: "flex", gap: "60px", width: "100%", alignItems: "center", flexWrap: "wrap" }}>
         {/* Contact Form Card */}
         <div
           style={{
@@ -54,6 +75,7 @@ export default function ContactSection() {
             borderRadius: "8px",
             padding: "40px",
             width: "480px",
+            maxWidth: "100%",
             flexShrink: 0,
             boxShadow: "0 8px 40px rgba(0,0,0,0.2)",
           }}
@@ -68,61 +90,100 @@ export default function ContactSection() {
           >
             Contact Form
           </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "14px" }}>
-            {[
-              { name: "name", placeholder: "Name" },
-              { name: "lastName", placeholder: "Last Name" },
-              { name: "city", placeholder: "City" },
-              { name: "state", placeholder: "State" },
-              { name: "email", placeholder: "Email" },
-              { name: "mobile", placeholder: "Mobile" },
-            ].map((f) => (
-              <input
-                key={f.name}
-                name={f.name}
-                placeholder={f.placeholder}
-                value={form[f.name as keyof typeof form] as string}
-                onChange={handleChange}
+          <form onSubmit={handleSubmit}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "14px" }}>
+              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
+                Last name*
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Last name"
+                  required
+                  style={{
+                    padding: "10px 14px",
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                    outline: "none",
+                    color: "#555",
+                  }}
+                />
+              </label>
+              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
+                First name*
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="First name"
+                  required
+                  style={{
+                    padding: "10px 14px",
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                    outline: "none",
+                    color: "#555",
+                  }}
+                />
+              </label>
+              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
+                Email*
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  required
+                  style={{
+                    padding: "10px 14px",
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                    outline: "none",
+                    color: "#555",
+                  }}
+                />
+              </label>
+              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
+                Mobile
+                <input
+                  type="text"
+                  name="phone"
+                  placeholder="+255"
+                  style={{
+                    padding: "10px 14px",
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                    outline: "none",
+                    color: "#555",
+                  }}
+                />
+              </label>
+            </div>
+            <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555", marginBottom: "14px" }}>
+              Message
+              <textarea
+                name="message"
+                placeholder="Message"
+                rows={4}
+                required
                 style={{
+                  width: "100%",
                   padding: "10px 14px",
                   border: "1px solid #ddd",
                   borderRadius: "4px",
                   fontSize: "14px",
                   outline: "none",
+                  resize: "vertical",
                   color: "#555",
                 }}
               />
-            ))}
-          </div>
-          <textarea
-            name="message"
-            placeholder="Message"
-            value={form.message}
-            onChange={handleChange}
-            rows={4}
-            style={{
-              width: "100%",
-              padding: "10px 14px",
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              fontSize: "14px",
-              outline: "none",
-              resize: "vertical",
-              marginBottom: "14px",
-              color: "#555",
-            }}
-          />
-          <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#555", marginBottom: "20px", cursor: "pointer" }}>
-            <input
-              type="checkbox"
-              name="gdpr"
-              checked={form.gdpr}
-              onChange={handleChange}
-              style={{ accentColor: "#c49a6c" }}
-            />
-            I consent to the GDPR Terms
-          </label>
+            </label>
+            <p style={{ margin: "0 0 14px", fontSize: "13px", color: formStatus.includes("Could not") ? "#b42318" : "#276749" }}>
+              {formStatus}
+            </p>
           <button
+            type="submit"
             style={{
               backgroundColor: "#c49a6c",
               color: "#fff",
@@ -137,6 +198,7 @@ export default function ContactSection() {
           >
             Send Email
           </button>
+          </form>
         </div>
 
         {/* Right contact info */}
@@ -161,22 +223,36 @@ export default function ContactSection() {
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <FaEnvelope color="#c49a6c" size={16} />
-              <span style={{ color: "#ddd", fontSize: "15px" }}>info@archipelagoestates.com</span>
+              <a href={toMailtoHref(content.contactActions.email)} style={{ color: "#ddd", fontSize: "15px", textDecoration: "none" }}>
+                {content.contactActions.email}
+              </a>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <FaPhone color="#c49a6c" size={16} />
-              <span style={{ color: "#ddd", fontSize: "15px" }}>+255 659 740 712</span>
+              <a href={toTelHref(content.contactActions.phone)} style={{ color: "#ddd", fontSize: "15px", textDecoration: "none" }}>
+                {content.contactActions.phone}
+              </a>
             </div>
             <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
               {[
-                { icon: <FaFacebookF size={14} />, href: "#" },
-                { icon: <FaTwitter size={14} />, href: "#" },
-                { icon: <FaYoutube size={14} />, href: "#" },
+                  { icon: <FaFacebookF size={14} />, href: "#", title: "Facebook" },
+                  { icon: <FaInstagram size={14} />, href: "#", title: "Instagram" },
+                  {
+                    icon: <FaWhatsapp size={14} />,
+                    href: toWhatsAppHref(content.contactActions.whatsapp, content.contactActions.whatsappMessage),
+                    title: "WhatsApp",
+                  },
+                  { icon: <FaLinkedinIn size={14} />, href: "#", title: "LinkedIn" },
+                  { icon: <FaTiktok size={14} />, href: "#", title: "TikTok" },
+                  { icon: <FaSnapchatGhost size={14} />, href: "#", title: "Snapchat" },
               ].map((s, i) => (
                 <a
                   key={i}
                   href={s.href}
+                    title={s.title}
                   className="social-icon"
+                  target={s.title === "WhatsApp" ? "_blank" : undefined}
+                  rel={s.title === "WhatsApp" ? "noreferrer" : undefined}
                   style={{
                     width: 36,
                     height: 36,
@@ -209,6 +285,7 @@ export default function ContactSection() {
         }}
       >
         <button
+          type="button"
           style={{
             width: 44,
             height: 44,
@@ -222,11 +299,12 @@ export default function ContactSection() {
             justifyContent: "center",
             boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
           }}
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          onClick={() => (window.location.href = toMailtoHref(content.contactActions.email))}
         >
           ✉
         </button>
         <button
+          type="button"
           style={{
             width: 44,
             height: 44,

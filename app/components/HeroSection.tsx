@@ -1,6 +1,31 @@
 ﻿"use client";
 
+import { useSiteContent } from "../hooks/useSiteContent";
+
 export default function HeroSection() {
+  const content = useSiteContent();
+  const heroBackgroundUrl = content.homePage.heroBackgroundImage?.trim() ?? "";
+  const heroBackgroundCss = heroBackgroundUrl
+    ? `url("${heroBackgroundUrl.replace(/"/g, '\\"')}")`
+    : "none";
+  const locationDistrictGroups = [
+    {
+      group: "Zanzibar (Unguja) Districts",
+      districts: [
+        "Urban",
+        "West A",
+        "West B",
+        "North A",
+        "North B",
+        "Central",
+        "South",
+      ],
+    },
+    {
+      group: "Pemba Districts",
+      districts: ["Wete", "Micheweni", "Chake Chake", "Mkoani"],
+    },
+  ];
 
   return (
     <section
@@ -23,7 +48,7 @@ export default function HeroSection() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1800&q=80')",
+          backgroundImage: heroBackgroundCss,
           backgroundSize: "cover",
           backgroundPosition: "center top",
           filter: "brightness(0.55)",
@@ -50,7 +75,7 @@ export default function HeroSection() {
             fontWeight: 400,
           }}
         >
-          MAKE YOUR NEXT MOVE WITH US
+          {content.homePage.heroEyebrow}
         </p>
         <h1
           className="animate-fade-up delay-200"
@@ -62,9 +87,9 @@ export default function HeroSection() {
             textShadow: "2px 2px 8px rgba(0,0,0,0.3)",
           }}
         >
-          Your Future Home
+          {content.homePage.heroTitleLine1}
           <br />
-          Starts Here
+          {content.homePage.heroTitleLine2}
         </h1>
       </div>
 
@@ -88,7 +113,7 @@ export default function HeroSection() {
         }}
       >
         {[
-          { label: "Search by location", options: ["Zanzibar Urban/West", "Mlandege", "Stone Town", "Nungwi"] },
+          { label: "Search by location", options: [] },
           { label: "Property Type", options: ["House", "Villa", "Land", "Apartment"] },
           { label: "Sell or Rent", options: ["For Sale", "For Rent"] },
           { label: "Property Status", options: ["Active", "Sold", "Pending"] },
@@ -107,7 +132,15 @@ export default function HeroSection() {
             }}
           >
             <option>{sel.label}</option>
-            {sel.options.map((o) => <option key={o}>{o}</option>)}
+            {sel.label === "Search by location"
+              ? locationDistrictGroups.map((group) => (
+                  <optgroup key={group.group} label={group.group}>
+                    {group.districts.map((district) => (
+                      <option key={district}>{district}</option>
+                    ))}
+                  </optgroup>
+                ))
+              : sel.options.map((o) => <option key={o}>{o}</option>)}
           </select>
         ))}
         <button

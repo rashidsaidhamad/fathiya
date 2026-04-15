@@ -22,8 +22,9 @@ export default function AdminLoginPage() {
     });
 
     if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
       setBusy(false);
-      setStatus("Invalid username or password");
+      setStatus(payload?.error ?? "Invalid username or password");
       return;
     }
 

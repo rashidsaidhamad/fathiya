@@ -44,6 +44,11 @@ export default function AdminPage() {
   const [submissions, setSubmissions] = useState<ContactSubmission[]>([]);
   const [status, setStatus] = useState("");
   const [homeChecklistJson, setHomeChecklistJson] = useState("[]");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [passwordStatus, setPasswordStatus] = useState("");
+  const [passwordBusy, setPasswordBusy] = useState(false);
 
   useEffect(() => {
     Promise.all([fetch("/api/site-content"), fetch("/api/contact-submissions")])
@@ -140,7 +145,7 @@ export default function AdminPage() {
     }
   }
 
-  async function handleVideoImageUpload(file: File | null, field: "backgroundImage" | "videoPoster") {
+  async function handleVideoImageUpload(file: File | null) {
     if (!file) return;
     setStatus("Uploading image...");
     try {
@@ -149,7 +154,7 @@ export default function AdminPage() {
         ...prev,
         videoSection: {
           ...prev.videoSection,
-          [field]: url,
+          backgroundImage: url,
         },
       }));
       setStatus("Image uploaded. Save all changes to publish.");
@@ -299,6 +304,53 @@ export default function AdminPage() {
     window.alert("Logged out successfully.");
     router.push("/admin/login");
     router.refresh();
+  }
+
+  async function changePassword() {
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      setPasswordStatus("Please fill all password fields.");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setPasswordStatus("New password must be at least 8 characters.");
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setPasswordStatus("New password and confirm password do not match.");
+      return;
+    }
+
+    setPasswordBusy(true);
+    setPasswordStatus("Updating password...");
+
+    try {
+      const response = await fetch("/api/admin/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      if (!response.ok) {
+        setPasswordStatus(payload?.error ?? "Could not change password.");
+        setPasswordBusy(false);
+        return;
+      }
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+      setPasswordStatus("Password updated successfully.");
+      setPasswordBusy(false);
+    } catch {
+      setPasswordStatus("Could not change password.");
+      setPasswordBusy(false);
+    }
   }
 
   function updateProperty(index: number, patch: Partial<PropertyItem>) {
@@ -512,6 +564,53 @@ export default function AdminPage() {
           </div>
         </header>
 
+        <section style={{ backgroundColor: "#fff", borderRadius: "14px", padding: "20px 22px", boxShadow: "0 4px 22px rgba(0,0,0,0.06)", display: "grid", gap: "12px" }}>
+          <h2 style={{ margin: 0, fontSize: "20px", color: "#111827" }}>Admin Security</h2>
+          <p style={{ margin: 0, color: "#6b7280", fontSize: "13px" }}>
+            Change your admin password. Use at least 8 characters.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "10px" }}>
+            <label style={{ display: "grid", gap: "6px" }}>
+              <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Current Password</span>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
+              />
+            </label>
+            <label style={{ display: "grid", gap: "6px" }}>
+              <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>New Password</span>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
+              />
+            </label>
+            <label style={{ display: "grid", gap: "6px" }}>
+              <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Confirm New Password</span>
+              <input
+                type="password"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
+              />
+            </label>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+            <button
+              type="button"
+              onClick={changePassword}
+              disabled={passwordBusy}
+              style={{ border: "none", backgroundColor: "#1f2937", color: "#fff", borderRadius: "8px", padding: "10px 14px", fontWeight: 600, cursor: "pointer" }}
+            >
+              {passwordBusy ? "Updating..." : "Change Password"}
+            </button>
+            <p style={{ margin: 0, minHeight: "18px", fontSize: "12px", color: "#7f1d1d" }}>{passwordStatus}</p>
+          </div>
+        </section>
+
         <div style={{ display: "grid", gridTemplateColumns: "250px 1fr", gap: "20px", alignItems: "start" }}>
           <aside style={{ backgroundColor: "#111827", color: "#fff", borderRadius: "14px", padding: "14px", position: "sticky", top: "12px" }}>
             <p style={{ margin: "8px 8px 12px", fontSize: "12px", letterSpacing: "1.5px", textTransform: "uppercase", color: "#9ca3af" }}>
@@ -660,7 +759,6 @@ export default function AdminPage() {
                       ["Helper Text", "helperText"],
                       ["Background Image URL", "backgroundImage"],
                       ["Video URL", "videoUrl"],
-                      ["Video Poster URL", "videoPoster"],
                     ].map(([label, key]) => (
                       <label key={key} style={{ display: "grid", gap: "6px" }}>
                         <span style={{ fontSize: "13px", color: "#444", fontWeight: 600 }}>{label}</span>
@@ -690,7 +788,7 @@ export default function AdminPage() {
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={(e) => handleVideoImageUpload(e.target.files?.[0] ?? null, "backgroundImage")}
+                          onChange={(e) => handleVideoImageUpload(e.target.files?.[0] ?? null)}
                           style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
                         />
                       </label>
@@ -700,15 +798,6 @@ export default function AdminPage() {
                           type="file"
                           accept="video/*"
                           onChange={(e) => handleVideoUpload(e.target.files?.[0] ?? null)}
-                          style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
-                        />
-                      </label>
-                      <label style={{ display: "grid", gap: "6px" }}>
-                        <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Video Poster Image</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleVideoImageUpload(e.target.files?.[0] ?? null, "videoPoster")}
                           style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
                         />
                       </label>

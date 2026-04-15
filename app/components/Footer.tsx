@@ -18,6 +18,7 @@ const policyLinks = [
 
 export default function Footer() {
   const content = useSiteContent();
+  const currentYear = new Date().getFullYear();
   const socialLinks = [
     { icon: <FaFacebookF size={15} />, href: "https://www.facebook.com/share/18dtiBWTnj/", title: "Facebook" },
     { icon: <FaInstagram size={15} />, href: "https://www.instagram.com/archipelago_properties?igsh=dHQ0NnVrbmxqbno0", title: "Instagram" },
@@ -155,7 +156,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom bar */}
+      {/* Copyright + policies */}
       <div
         className="footer-bottom"
         style={{
@@ -165,7 +166,9 @@ export default function Footer() {
           padding: "18px 0",
         }}
       >
-        <p style={{ fontSize: "12px", color: "#666" }}>Copyright. All Rights Reserved.</p>
+        <p style={{ fontSize: "12px", color: "#666" }}>
+          © {currentYear} Archipelago Property Zanzibar. All rights reserved.
+        </p>
         <div style={{ display: "flex", gap: "20px" }}>
           {policyLinks.map((link) => (
             <Link

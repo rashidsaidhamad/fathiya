@@ -51,7 +51,7 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
         zIndex: 2000,
         height: "70px",
         overflow: "visible",
-        backgroundColor: scrolled ? "#ffffff" : "transparent",
+        backgroundColor: "#1a1e2e",
         boxShadow: scrolled ? "0 2px 10px rgba(0,0,0,0.1)" : "none",
         transition: "background-color 0.4s ease, box-shadow 0.4s ease",
         padding: "0 40px",
@@ -68,7 +68,7 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
             href={item.href}
             style={{
               textDecoration: "none",
-              color: scrolled ? "#222" : "#fff",
+              color: "#fff",
               fontSize: "15px",
               fontWeight: 500,
               transition: "color 0.3s",
@@ -80,7 +80,7 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
               (e.currentTarget as HTMLElement).style.borderBottom = "2px solid #c49a6c";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.color = scrolled ? "#222" : "#fff";
+              (e.currentTarget as HTMLElement).style.color = "#fff";
               (e.currentTarget as HTMLElement).style.borderBottom = "2px solid transparent";
             }}
           >
@@ -98,7 +98,7 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
           display: "none",
           border: "1px solid rgba(255,255,255,0.5)",
           background: "transparent",
-          color: scrolled ? "#222" : "#fff",
+          color: "#fff",
           borderRadius: "8px",
           padding: "8px 10px",
           fontSize: "18px",
@@ -128,10 +128,7 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
           style={{
             height: scrolled ? "54px" : "105px",
             width: "auto",
-            transition: "height 0.4s ease, filter 0.4s ease",
-            filter: scrolled
-              ? "brightness(0) saturate(100%) invert(20%) sepia(10%) saturate(300%) hue-rotate(10deg)"
-              : "none",
+            transition: "height 0.4s ease",
             cursor: "pointer",
           }}
         />
@@ -139,8 +136,8 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
 
       {/* Right Phone */}
       <a className="nav-phone" href={toTelHref(content.contactActions.phone)} style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
-        <FaPhone size={16} color={scrolled ? "#c49a6c" : "#fff"} />
-        <span style={{ color: scrolled ? "#222" : "#fff", fontSize: "15px", fontWeight: 500 }}>
+        <FaPhone size={16} color="#c49a6c" />
+        <span style={{ color: "#fff", fontSize: "15px", fontWeight: 500 }}>
           {content.contactActions.phone}
         </span>
       </a>

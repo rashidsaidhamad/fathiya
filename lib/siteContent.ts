@@ -16,7 +16,6 @@ export type VideoSectionContent = {
   helperText: string;
   backgroundImage: string;
   videoUrl: string;
-  videoPoster: string;
 };
 
 export type HomePageContent = {
@@ -191,8 +190,7 @@ export const defaultSiteContent: SiteContent = {
     headingLine2: "to know us better",
     helperText: "Tap to open the video player",
     backgroundImage: "https://images.unsplash.com/photo-1560185007-5f0bb1866cab?w=1800&q=80",
-    videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-    videoPoster: "https://images.unsplash.com/photo-1560185007-5f0bb1866cab?w=1600&q=80",
+    videoUrl: "https://filesamples.com/samples/video/mp4/sample_960x540.mp4",
   },
   properties: [
     {

@@ -63,6 +63,20 @@ function AnimatedNumber({ numeric, suffix, decimal }: { numeric: number; suffix:
 export default function VideoStatsSection() {
   const content = useSiteContent();
   const videoSrc = content.videoSection.videoUrl;
+  const clipDurationSeconds = 25;
+  const [videoFailed, setVideoFailed] = useState(false);
+
+  useEffect(() => {
+    setVideoFailed(false);
+  }, [videoSrc]);
+
+  function handleVideoTimeUpdate(event: React.SyntheticEvent<HTMLVideoElement>) {
+    const video = event.currentTarget;
+    if (video.currentTime >= clipDurationSeconds) {
+      video.currentTime = 0;
+      void video.play();
+    }
+  }
 
   return (
     <>
@@ -76,15 +90,16 @@ export default function VideoStatsSection() {
           display: "flex",
         }}
       >
-        {videoSrc ? (
+        {videoSrc && !videoFailed ? (
           <video
             src={videoSrc}
             autoPlay
             muted
-            loop
+            loop={false}
             playsInline
             preload="metadata"
-            poster={content.videoSection.videoPoster || content.videoSection.backgroundImage}
+            onError={() => setVideoFailed(true)}
+            onTimeUpdate={handleVideoTimeUpdate}
             style={{
               position: "absolute",
               inset: 0,
@@ -148,10 +163,10 @@ export default function VideoStatsSection() {
               lineHeight: 1.2,
             }}
           >
-            Professional Property Advisory
+            Zanzibar Real Estate Business
           </h2>
           <p style={{ margin: 0, fontSize: "14px", color: "#e5e7eb", lineHeight: 1.7 }}>
-            Trusted support for buying, selling, and investing in Zanzibar real estate.
+            Trusted property advisory for buying, selling, and investment opportunities across Zanzibar.
           </p>
           <a
             href="/contact"

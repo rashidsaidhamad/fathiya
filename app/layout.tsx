@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import LoadingScreen from "./components/LoadingScreen";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -31,7 +32,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, padding: 0 }} suppressHydrationWarning>{children}</body>
+      <body style={{ margin: 0, padding: 0 }} suppressHydrationWarning>
+        <LoadingScreen />
+        {children}
+      </body>
     </html>
   );
 }

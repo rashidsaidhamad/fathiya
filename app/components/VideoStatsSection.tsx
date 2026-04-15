@@ -95,7 +95,7 @@ export default function VideoStatsSection() {
             src={videoSrc}
             autoPlay
             muted
-            loop={false}
+            loop
             playsInline
             preload="metadata"
             onError={() => setVideoFailed(true)}

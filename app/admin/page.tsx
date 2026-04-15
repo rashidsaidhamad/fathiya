@@ -48,6 +48,7 @@ export default function AdminPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [passwordStatus, setPasswordStatus] = useState("");
+  const [passwordStatusType, setPasswordStatusType] = useState<"idle" | "success" | "error">("idle");
   const [passwordBusy, setPasswordBusy] = useState(false);
 
   useEffect(() => {
@@ -309,35 +310,49 @@ export default function AdminPage() {
   async function changePassword() {
     if (!currentPassword || !newPassword || !confirmNewPassword) {
       setPasswordStatus("Please fill all password fields.");
+      setPasswordStatusType("error");
       return;
     }
 
     if (newPassword.length < 8) {
       setPasswordStatus("New password must be at least 8 characters.");
+      setPasswordStatusType("error");
       return;
     }
 
     if (newPassword !== confirmNewPassword) {
       setPasswordStatus("New password and confirm password do not match.");
+      setPasswordStatusType("error");
       return;
     }
 
     setPasswordBusy(true);
     setPasswordStatus("Updating password...");
+    setPasswordStatusType("idle");
 
     try {
       const response = await fetch("/api/admin/change-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           currentPassword,
           newPassword,
         }),
       });
 
-      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      const raw = await response.text();
+      let payload: { error?: string } | null = null;
+      if (raw) {
+        try {
+          payload = JSON.parse(raw) as { error?: string };
+        } catch {
+          payload = null;
+        }
+      }
       if (!response.ok) {
         setPasswordStatus(payload?.error ?? "Could not change password.");
+        setPasswordStatusType("error");
         setPasswordBusy(false);
         return;
       }
@@ -346,9 +361,11 @@ export default function AdminPage() {
       setNewPassword("");
       setConfirmNewPassword("");
       setPasswordStatus("Password updated successfully.");
+      setPasswordStatusType("success");
       setPasswordBusy(false);
     } catch {
       setPasswordStatus("Could not change password.");
+      setPasswordStatusType("error");
       setPasswordBusy(false);
     }
   }
@@ -607,7 +624,7 @@ export default function AdminPage() {
             >
               {passwordBusy ? "Updating..." : "Change Password"}
             </button>
-            <p style={{ margin: 0, minHeight: "18px", fontSize: "12px", color: "#7f1d1d" }}>{passwordStatus}</p>
+            <p style={{ margin: 0, minHeight: "18px", fontSize: "12px", color: passwordStatusType === "success" ? "#166534" : "#7f1d1d" }}>{passwordStatus}</p>
           </div>
         </section>
 

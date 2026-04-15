@@ -2,22 +2,26 @@
 import { useState, useEffect } from "react";
 import { FaFacebookF, FaInstagram, FaWhatsapp, FaLinkedinIn, FaTiktok, FaSnapchatGhost, FaPhone } from "react-icons/fa";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
 
 export default function Navbar({ forceWhite = false }: { forceWhite?: boolean }) {
   const [scrolledState, setScrolledState] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const scrolled = forceWhite || scrolledState;
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+  const scrolled = forceWhite || !isHomePage || scrolledState;
   const content = useSiteContent();
   const companyLogoUrl = content.homePage.companyLogoUrl?.trim() || "/logo.webp";
 
   useEffect(() => {
-    if (forceWhite) return;
+    if (forceWhite || !isHomePage) return;
     const handleScroll = () => setScrolledState(window.scrollY > 80);
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [forceWhite]);
+  }, [forceWhite, isHomePage]);
 
   const socialLinks = [
     { icon: <FaInstagram size={14} />, href: "https://www.instagram.com/archipelago_properties?igsh=dHQ0NnVrbmxqbno0", title: "Instagram" },
@@ -51,7 +55,7 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
         zIndex: 2000,
         height: "70px",
         overflow: "visible",
-        backgroundColor: "#1a1e2e",
+        backgroundColor: scrolled ? "#1a1e2e" : "transparent",
         boxShadow: scrolled ? "0 2px 10px rgba(0,0,0,0.1)" : "none",
         transition: "background-color 0.4s ease, box-shadow 0.4s ease",
         padding: "0 40px",

@@ -1,8 +1,9 @@
 ﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSiteContent } from "../hooks/useSiteContent";
+import type { SiteContent } from "../../lib/siteContent";
 
 export default function HeroSection() {
   const router = useRouter();
@@ -11,7 +12,31 @@ export default function HeroSection() {
   const [selectedType, setSelectedType] = useState("Property Type");
   const [selectedCategory, setSelectedCategory] = useState("Sell or Rent");
   const [selectedActive, setSelectedActive] = useState("Property Status");
-  const heroBackgroundUrl = content.homePage.heroBackgroundImage?.trim() ?? "";
+  const [heroBackgroundUrl, setHeroBackgroundUrl] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    fetch("/api/site-content", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error("Failed to load site content");
+        }
+
+        const payload = (await response.json()) as SiteContent;
+        if (!active) return;
+        setHeroBackgroundUrl(payload.homePage.heroBackgroundImage?.trim() ?? "");
+      })
+      .catch(() => {
+        if (!active) return;
+        setHeroBackgroundUrl(content.homePage.heroBackgroundImage?.trim() ?? "");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const heroBackgroundCss = heroBackgroundUrl
     ? `url("${heroBackgroundUrl.replace(/"/g, '\\"')}")`
     : "none";

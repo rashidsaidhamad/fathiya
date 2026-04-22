@@ -6,6 +6,8 @@ import Footer from "../components/Footer";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
 
+const CALL_NUMBERS = ["+255659740712", "+255659741770"];
+
 const ALL_CATEGORIES = "All Categories";
 const ALL_CITIES = "All Cities";
 
@@ -40,6 +42,7 @@ export default function PropertiesPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [propertyImageIndexes, setPropertyImageIndexes] = useState<Record<number, number>>({});
   const [emailModalPropertyId, setEmailModalPropertyId] = useState<number | null>(null);
+  const [callModalOpen, setCallModalOpen] = useState(false);
   const [leadFullName, setLeadFullName] = useState("");
   const [leadEmail, setLeadEmail] = useState("");
   const [leadPhone, setLeadPhone] = useState("");
@@ -160,6 +163,14 @@ export default function PropertiesPage() {
     if (leadFormBusy) return;
     setEmailModalPropertyId(null);
     setLeadFormStatus("");
+  }
+
+  function openCallModal() {
+    setCallModalOpen(true);
+  }
+
+  function closeCallModal() {
+    setCallModalOpen(false);
   }
 
   async function submitPropertyLead() {
@@ -472,9 +483,9 @@ export default function PropertiesPage() {
                   <span>Year Built: {p.year}</span>
                 </div>
                 <div style={{ display: "flex", gap: "8px" }}>
-                  <a href={toTelHref(p.contactPhone)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555", textDecoration: "none" }}>
+                  <button type="button" onClick={openCallModal} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555" }}>
                     <FaPhone size={11} color="#c49a6c" /> Call
-                  </a>
+                  </button>
                   <button type="button" onClick={() => openEmailModal(p.id)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555" }}>
                     <FaEnvelope size={11} color="#c49a6c" /> Email
                   </button>
@@ -495,6 +506,68 @@ export default function PropertiesPage() {
         ) : null}
       </div>
     </div>
+      {callModalOpen ? (
+        <div
+          onClick={closeCallModal}
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.55)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+            zIndex: 3000,
+          }}
+        >
+          <div
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: "360px",
+              backgroundColor: "#fff",
+              borderRadius: "12px",
+              boxShadow: "0 24px 50px rgba(0,0,0,0.25)",
+              padding: "20px",
+              display: "grid",
+              gap: "10px",
+            }}
+          >
+            <h3 style={{ margin: 0, color: "#111827", fontSize: "20px", fontFamily: "Georgia, serif" }}>Call Archipelago</h3>
+            <p style={{ margin: 0, color: "#4b5563", fontSize: "13px" }}>Choose a number to call:</p>
+            {CALL_NUMBERS.map((phone) => (
+              <a
+                key={phone}
+                href={toTelHref(phone)}
+                style={{
+                  border: "1px solid #d1d5db",
+                  backgroundColor: "#fff",
+                  color: "#374151",
+                  borderRadius: "8px",
+                  padding: "10px 12px",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <FaPhone size={12} color="#c49a6c" />
+                {phone}
+              </a>
+            ))}
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "4px" }}>
+              <button
+                type="button"
+                onClick={closeCallModal}
+                style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "9px 14px", fontWeight: 600, cursor: "pointer" }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       {selectedEmailProperty ? (
         <div
           onClick={closeEmailModal}
@@ -525,6 +598,9 @@ export default function PropertiesPage() {
             <h3 style={{ margin: 0, color: "#111827", fontSize: "22px", fontFamily: "Georgia, serif" }}>Property Enquiry</h3>
             <p style={{ margin: 0, color: "#4b5563", fontSize: "13px" }}>
               {selectedEmailProperty.title}
+            </p>
+            <p style={{ margin: 0, color: "#6b7280", fontSize: "12px" }}>
+              This message will be sent to archipelagoproperties.zanzibar@gmail.com
             </p>
             <label style={{ display: "grid", gap: "6px" }}>
               <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Full Name</span>

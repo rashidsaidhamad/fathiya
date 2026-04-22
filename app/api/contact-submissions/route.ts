@@ -6,7 +6,7 @@ import { isAdminRequest } from "../../../lib/adminAuth";
 import type { NextRequest } from "next/server";
 import nodemailer from "nodemailer";
 
-const COMPANY_EMAIL = "archipelagoproperties.zanzibar@gmail.com";
+const COMPANY_EMAIL = process.env.NOTIFY_EMAIL || process.env.COMPANY_EMAIL || "archipelagoproperties.zanzibar@gmail.com";
 
 type EmailRoutingInfo = {
   to: string;
@@ -17,9 +17,12 @@ type EmailRoutingInfo = {
 
 function getEmailRoutingInfo(submission: ContactSubmission): Omit<EmailRoutingInfo, "sent"> {
   const smtpUser = process.env.SMTP_USER;
-  const fallbackFrom = process.env.SMTP_FROM || smtpUser || "SMTP not configured";
-  const fromAddress = submission.email.includes("@") ? submission.email : fallbackFrom;
-  const replyToAddress = submission.email.includes("@") ? submission.email : undefined;
+  const smtpFromAddress = process.env.SMTP_FROM || process.env.SMTP_FROM_EMAIL || smtpUser || "SMTP not configured";
+  const clientEmail = submission.email.includes("@") ? submission.email : undefined;
+  const fromAddress = clientEmail
+    ? `"${submission.name} via Archipelago Website" <${smtpFromAddress}>`
+    : smtpFromAddress;
+  const replyToAddress = clientEmail;
   return {
     to: COMPANY_EMAIL,
     from: fromAddress,

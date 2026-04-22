@@ -1,28 +1,12 @@
 ﻿"use client";
-import { useState, useEffect } from "react";
 import { useInView } from "../hooks/useInView";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { toMailtoHref, toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
-
-const VISIBLE = 3;
 
 export default function PropertiesSection() {
   const { ref, inView } = useInView();
   const content = useSiteContent();
   const properties = content.properties;
-  const [current, setCurrent] = useState(0);
-
-  const maxIndex = Math.max(properties.length - VISIBLE, 0);
-
-  const prev = () => setCurrent((c) => Math.max(0, c - 1));
-  const next = () => setCurrent((c) => Math.min(maxIndex, c + 1));
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrent((c) => (c >= maxIndex ? 0 : c + 1));
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [maxIndex]);
 
   return (
     <section
@@ -63,73 +47,42 @@ export default function PropertiesSection() {
         </p>
       </div>
 
-      {/* Carousel wrapper */}
-      <div className="properties-carousel" style={{ position: "relative" }}>
-        {/* Prev arrow */}
-        <button
-          onClick={prev}
-          disabled={current === 0}
-          style={{
-            position: "absolute",
-            left: "-22px",
-            top: "40%",
-            transform: "translateY(-50%)",
-            zIndex: 10,
-            width: 44,
-            height: 44,
-            borderRadius: "50%",
-            border: "2px solid #c49a6c",
-            backgroundColor: current === 0 ? "#f0e8de" : "#c49a6c",
-            color: current === 0 ? "#c49a6c" : "#fff",
-            fontSize: "22px",
-            cursor: current === 0 ? "default" : "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "background-color 0.25s, color 0.25s",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.12)",
-          }}
-          aria-label="Previous properties"
-        >
-          &#8249;
-        </button>
+      <div
+        className="properties-grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gap: "22px",
+          alignItems: "stretch",
+        }}
+      >
+        {properties.map((p, idx) => {
+          const propertyImages = Array.isArray(p.images) && p.images.length > 0 ? p.images : [p.image];
+          const primaryImage = propertyImages[0] ?? p.image;
 
-        {/* Track */}
-        <div className="properties-viewport" style={{ overflow: "hidden" }}>
-          <div
-            className="properties-track"
-            style={{
-              display: "flex",
-              gap: "28px",
-              transform: `translateX(calc(-${current} * (100% / ${VISIBLE} + ${28 / VISIBLE}px)))`,
-              transition: "transform 0.45s cubic-bezier(0.4,0,0.2,1)",
-            }}
-          >
-            {properties.map((p, idx) => (
-              (() => {
-                const propertyImages = Array.isArray(p.images) && p.images.length > 0 ? p.images : [p.image];
-                const primaryImage = propertyImages[0] ?? p.image;
-                return (
-              <div
-                key={p.id}
-                style={{
-                  flex: `0 0 calc((100% - ${(VISIBLE - 1) * 28}px) / ${VISIBLE})`,
-                  backgroundColor: "#fff",
-                  borderRadius: "8px",
-                  overflow: "hidden",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-                  opacity: inView ? 1 : 0,
-                  transform: inView ? "translateY(0)" : "translateY(30px)",
-                  transition: `opacity 0.7s ease ${idx * 0.1}s, transform 0.7s ease ${idx * 0.1}s, box-shadow 0.3s`,
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 30px rgba(0,0,0,0.15)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
-                }}
-              >
+          return (
+            <div
+              key={p.id}
+              style={{
+                backgroundColor: "#fff",
+                borderRadius: "8px",
+                overflow: "hidden",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                opacity: inView ? 1 : 0,
+                transform: inView ? "translateY(0)" : "translateY(30px)",
+                transition: `opacity 0.7s ease ${idx * 0.1}s, transform 0.7s ease ${idx * 0.1}s, box-shadow 0.3s`,
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 30px rgba(0,0,0,0.15)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
+              }}
+            >
                 {/* Image */}
                 <div style={{ position: "relative", height: "200px" }}>
                   <div
@@ -204,7 +157,7 @@ export default function PropertiesSection() {
                 </div>
 
                 {/* Info */}
-                <div style={{ padding: "16px" }}>
+                <div style={{ padding: "16px", display: "flex", flexDirection: "column", height: "100%" }}>
                   <p style={{ color: "#c49a6c", fontSize: "15px", fontWeight: 700, marginBottom: "6px" }}>
                     {p.price}
                   </p>
@@ -250,7 +203,7 @@ export default function PropertiesSection() {
                     </span>
                     <span>Year Built: {p.year}</span>
                   </div>
-                  <div style={{ display: "flex", gap: "8px" }}>
+                  <div style={{ display: "flex", gap: "8px", marginTop: "auto" }}>
                     <a href={toTelHref(p.contactPhone)} style={{ flex: 1, padding: "8px 10px", border: "1px solid #e0e0e0", borderRadius: "4px", backgroundColor: "#fff", fontSize: "12px", cursor: "pointer", color: "#555", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", textDecoration: "none" }}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.5 12 19.79 19.79 0 011.5 3.18 2 2 0 013.5 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
                       Call
@@ -265,61 +218,8 @@ export default function PropertiesSection() {
                   </div>
                 </div>
               </div>
-                );
-              })()
-            ))}
-          </div>
-        </div>
-
-        {/* Next arrow */}
-        <button
-          onClick={next}
-          disabled={current === maxIndex}
-          style={{
-            position: "absolute",
-            right: "-22px",
-            top: "40%",
-            transform: "translateY(-50%)",
-            zIndex: 10,
-            width: 44,
-            height: 44,
-            borderRadius: "50%",
-            border: "2px solid #c49a6c",
-            backgroundColor: current === maxIndex ? "#f0e8de" : "#c49a6c",
-            color: current === maxIndex ? "#c49a6c" : "#fff",
-            fontSize: "22px",
-            cursor: current === maxIndex ? "default" : "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "background-color 0.25s, color 0.25s",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.12)",
-          }}
-          aria-label="Next properties"
-        >
-          &#8250;
-        </button>
-      </div>
-
-      {/* Dot indicators */}
-      <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "28px" }}>
-        {Array.from({ length: maxIndex + 1 }).map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            style={{
-              width: current === i ? 28 : 10,
-              height: 10,
-              borderRadius: "5px",
-              backgroundColor: current === i ? "#c49a6c" : "#ddd",
-              border: "none",
-              cursor: "pointer",
-              padding: 0,
-              transition: "width 0.3s, background-color 0.3s",
-            }}
-            aria-label={`Go to slide ${i + 1}`}
-          />
-        ))}
+          );
+        })}
       </div>
 
       {/* View More Button */}

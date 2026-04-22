@@ -4,7 +4,7 @@ import { FaPhone, FaEnvelope, FaWhatsapp, FaThLarge, FaList, FaMapMarkerAlt } fr
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useSiteContent } from "../hooks/useSiteContent";
-import { toMailtoHref, toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
+import { toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
 
 const ALL_CATEGORIES = "All Categories";
 const ALL_CITIES = "All Cities";
@@ -39,6 +39,13 @@ function inferPropertyType(title: string, description: string) {
 export default function PropertiesPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [propertyImageIndexes, setPropertyImageIndexes] = useState<Record<number, number>>({});
+  const [emailModalPropertyId, setEmailModalPropertyId] = useState<number | null>(null);
+  const [leadFullName, setLeadFullName] = useState("");
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadPhone, setLeadPhone] = useState("");
+  const [leadMessage, setLeadMessage] = useState("");
+  const [leadFormBusy, setLeadFormBusy] = useState(false);
+  const [leadFormStatus, setLeadFormStatus] = useState("");
   const [categoryFilter, setCategoryFilter] = useState(ALL_CATEGORIES);
   const [cityFilter, setCityFilter] = useState(ALL_CITIES);
   const [sortBy, setSortBy] = useState<SortOption>("Price High to Low");
@@ -134,6 +141,89 @@ export default function PropertiesPage() {
       [propertyId]: ((prev[propertyId] ?? 0) - 1 + totalImages) % totalImages,
     }));
   };
+
+  const selectedEmailProperty = useMemo(
+    () => properties.find((property) => property.id === emailModalPropertyId) ?? null,
+    [properties, emailModalPropertyId],
+  );
+
+  function openEmailModal(propertyId: number) {
+    setEmailModalPropertyId(propertyId);
+    setLeadFullName("");
+    setLeadEmail("");
+    setLeadPhone("");
+    setLeadMessage("");
+    setLeadFormStatus("");
+  }
+
+  function closeEmailModal() {
+    if (leadFormBusy) return;
+    setEmailModalPropertyId(null);
+    setLeadFormStatus("");
+  }
+
+  async function submitPropertyLead() {
+    if (!selectedEmailProperty) return;
+
+    const emailValue = leadEmail.trim();
+    const emailLooksValid = /^\S+@\S+\.\S+$/.test(emailValue);
+
+    if (!leadFullName.trim() || !leadPhone.trim() || !emailValue || !leadMessage.trim()) {
+      setLeadFormStatus("Please enter full name, email, phone number, and message.");
+      return;
+    }
+
+    if (!emailLooksValid) {
+      setLeadFormStatus("Please enter a valid email address.");
+      return;
+    }
+
+    setLeadFormBusy(true);
+    setLeadFormStatus("Sending...");
+
+    try {
+      const response = await fetch("/api/contact-submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: "contact",
+          name: leadFullName.trim(),
+          email: emailValue,
+          phone: leadPhone.trim(),
+          message: `Property enquiry for: ${selectedEmailProperty.title} (${selectedEmailProperty.location})\n\n${leadMessage.trim()}`,
+          hearAboutUs: [],
+        }),
+      });
+
+      const payload = (await response.json().catch(() => null)) as
+        | {
+            error?: string;
+            emailRouting?: {
+              sent?: boolean;
+            };
+          }
+        | null;
+      if (!response.ok) {
+        setLeadFormStatus(payload?.error ?? "Could not send enquiry.");
+        setLeadFormBusy(false);
+        return;
+      }
+
+      if (payload?.emailRouting?.sent) {
+        setLeadFormStatus("Email sent successfully.");
+      } else {
+        setLeadFormStatus("Enquiry saved, but SMTP is not configured yet.");
+      }
+      setLeadFormBusy(false);
+      setTimeout(() => {
+        setEmailModalPropertyId(null);
+        setLeadFormStatus("");
+      }, 900);
+    } catch {
+      setLeadFormStatus("Could not send enquiry.");
+      setLeadFormBusy(false);
+    }
+  }
 
   return (
     <>
@@ -385,9 +475,9 @@ export default function PropertiesPage() {
                   <a href={toTelHref(p.contactPhone)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555", textDecoration: "none" }}>
                     <FaPhone size={11} color="#c49a6c" /> Call
                   </a>
-                  <a href={toMailtoHref(p.contactEmail)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555", textDecoration: "none" }}>
+                  <button type="button" onClick={() => openEmailModal(p.id)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555" }}>
                     <FaEnvelope size={11} color="#c49a6c" /> Email
-                  </a>
+                  </button>
                   <a href={toWhatsAppHref(p.contactWhatsapp, content.contactActions.whatsappMessage)} target="_blank" rel="noreferrer" style={{ padding: "8px 12px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
                     <FaWhatsapp size={14} color="#25D366" />
                   </a>
@@ -405,6 +495,100 @@ export default function PropertiesPage() {
         ) : null}
       </div>
     </div>
+      {selectedEmailProperty ? (
+        <div
+          onClick={closeEmailModal}
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.55)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+            zIndex: 3000,
+          }}
+        >
+          <div
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: "460px",
+              backgroundColor: "#fff",
+              borderRadius: "12px",
+              boxShadow: "0 24px 50px rgba(0,0,0,0.25)",
+              padding: "22px",
+              display: "grid",
+              gap: "12px",
+            }}
+          >
+            <h3 style={{ margin: 0, color: "#111827", fontSize: "22px", fontFamily: "Georgia, serif" }}>Property Enquiry</h3>
+            <p style={{ margin: 0, color: "#4b5563", fontSize: "13px" }}>
+              {selectedEmailProperty.title}
+            </p>
+            <label style={{ display: "grid", gap: "6px" }}>
+              <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Full Name</span>
+              <input
+                value={leadFullName}
+                onChange={(event) => setLeadFullName(event.target.value)}
+                placeholder="Enter full name"
+                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
+              />
+            </label>
+            <label style={{ display: "grid", gap: "6px" }}>
+              <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Email Address</span>
+              <input
+                type="email"
+                value={leadEmail}
+                onChange={(event) => setLeadEmail(event.target.value)}
+                placeholder="Enter email address"
+                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
+              />
+            </label>
+            <label style={{ display: "grid", gap: "6px" }}>
+              <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Phone Number</span>
+              <input
+                value={leadPhone}
+                onChange={(event) => setLeadPhone(event.target.value)}
+                placeholder="Enter phone number"
+                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
+              />
+            </label>
+            <label style={{ display: "grid", gap: "6px" }}>
+              <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Message</span>
+              <textarea
+                value={leadMessage}
+                onChange={(event) => setLeadMessage(event.target.value)}
+                placeholder="Write your message"
+                rows={4}
+                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px", resize: "vertical" }}
+              />
+            </label>
+
+            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "4px" }}>
+              <button
+                type="button"
+                onClick={closeEmailModal}
+                disabled={leadFormBusy}
+                style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "10px 14px", fontWeight: 600, cursor: leadFormBusy ? "default" : "pointer" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={submitPropertyLead}
+                disabled={leadFormBusy}
+                style={{ border: "none", backgroundColor: "#c49a6c", color: "#fff", borderRadius: "8px", padding: "10px 14px", fontWeight: 700, cursor: leadFormBusy ? "default" : "pointer" }}
+              >
+                {leadFormBusy ? "Sending..." : "Send Email"}
+              </button>
+            </div>
+            <p style={{ margin: 0, minHeight: "18px", fontSize: "12px", color: leadFormStatus.includes("sent") ? "#166534" : "#7f1d1d" }}>
+              {leadFormStatus}
+            </p>
+          </div>
+        </div>
+      ) : null}
       <Footer />
     </>
   );

@@ -63,6 +63,7 @@ function AnimatedNumber({ numeric, suffix, decimal }: { numeric: number; suffix:
 export default function VideoStatsSection() {
   const content = useSiteContent();
   const videoSrc = content.videoSection.videoUrl;
+  const posterImage = content.videoSection.backgroundImage;
   const clipDurationSeconds = 25;
   const [videoFailed, setVideoFailed] = useState(false);
 
@@ -97,9 +98,16 @@ export default function VideoStatsSection() {
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="auto"
+            poster={posterImage}
             onError={() => setVideoFailed(true)}
             onTimeUpdate={handleVideoTimeUpdate}
+            onLoadedMetadata={(e) => {
+              const video = e.currentTarget;
+              video.play().catch(() => {
+                console.log("Video autoplay blocked on this device");
+              });
+            }}
             style={{
               position: "absolute",
               inset: 0,
@@ -107,7 +115,8 @@ export default function VideoStatsSection() {
               height: "100%",
               objectFit: "cover",
               filter: "brightness(0.5)",
-            }}
+            } as React.CSSProperties & { WebkitPlaysinline?: string }}
+            data-webkit-playsinline="true"
           />
         ) : (
           <div

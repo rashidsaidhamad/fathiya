@@ -23,6 +23,17 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
     return () => window.removeEventListener("scroll", handleScroll);
   }, [forceWhite, isHomePage]);
 
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
   const socialLinks = [
     { icon: <FaInstagram size={14} />, href: "https://www.instagram.com/archipelago_properties?igsh=dHQ0NnVrbmxqbno0", title: "Instagram" },
     {
@@ -98,6 +109,8 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
         className="nav-menu-btn"
         onClick={() => setMenuOpen((prev) => !prev)}
         aria-label="Toggle menu"
+        aria-expanded={menuOpen}
+        aria-controls="mobile-sidebar"
         style={{
           display: "none",
           border: "1px solid rgba(255,255,255,0.5)",
@@ -193,31 +206,44 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
           className="nav-mobile-panel"
           style={{
             position: "fixed",
-            top: "70px",
-            left: 0,
-            right: 0,
-            backgroundColor: "#111827",
-            borderTop: "1px solid rgba(255,255,255,0.1)",
-            padding: "14px 20px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "12px",
+            inset: 0,
+            backgroundColor: "rgba(7,10,20,0.35)",
             zIndex: 2500,
           }}
+          onClick={() => setMenuOpen(false)}
         >
-          {navItems.map((item) => (
-            <Link
-              key={`mobile-${item.label}`}
-              href={item.href}
-              onClick={() => setMenuOpen(false)}
-              style={{ color: "#fff", textDecoration: "none", fontSize: "15px", fontWeight: 500 }}
-            >
-              {item.label}
-            </Link>
-          ))}
-          <a href={toTelHref(content.contactActions.phone)} style={{ color: "#d1d5db", textDecoration: "none", fontSize: "14px" }}>
-            {content.contactActions.phone}
-          </a>
+          <div
+            id="mobile-sidebar"
+            style={{
+              position: "absolute",
+              top: "70px",
+              right: 0,
+              bottom: 0,
+              width: "min(82vw, 320px)",
+              backgroundColor: "#111827",
+              borderLeft: "1px solid rgba(255,255,255,0.1)",
+              padding: "18px 20px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              boxShadow: "-10px 0 28px rgba(0,0,0,0.28)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {navItems.map((item) => (
+              <Link
+                key={`mobile-${item.label}`}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                style={{ color: "#fff", textDecoration: "none", fontSize: "15px", fontWeight: 500 }}
+              >
+                {item.label}
+              </Link>
+            ))}
+            <a href={toTelHref(content.contactActions.phone)} style={{ color: "#d1d5db", textDecoration: "none", fontSize: "14px", marginTop: "10px" }}>
+              {content.contactActions.phone}
+            </a>
+          </div>
         </div>
       )}
     </header>

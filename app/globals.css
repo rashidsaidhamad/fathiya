@@ -367,7 +367,7 @@ body {
   margin-top: 4px;
 }
 
-.company-page button {
+.company-page .contact-form-wrap button {
   margin-top: 10px;
   width: 100%;
   border: none;

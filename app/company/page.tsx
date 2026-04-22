@@ -91,7 +91,7 @@ export default function CompanyPage() {
 
   return (
     <main className="company-page" style={{ backgroundColor: "#efefef" }}>
-      <Navbar />
+      <Navbar forceWhite />
 
       <section className="company-hero">
         <div className="company-hero-overlay" />

@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
+import ExpandableDescription from "../components/ExpandableDescription";
 
 const CALL_NUMBERS = ["+255659740712", "+255659741770"];
 
@@ -463,7 +464,13 @@ export default function PropertiesPage() {
               <div style={{ padding: "16px" }}>
                 <p style={{ color: "#c49a6c", fontSize: "15px", fontWeight: 700, marginBottom: "4px" }}>{p.price}</p>
                 <h3 style={{ fontSize: "15px", fontWeight: 600, color: "#222", marginBottom: "8px" }}>{p.title}</h3>
-                <p style={{ color: "#777", fontSize: "12px", marginBottom: "12px", lineHeight: 1.6 }}>{p.description}</p>
+                <ExpandableDescription
+                  description={p.description}
+                  maxLength={150}
+                  color="#777"
+                  fontSize="12px"
+                  marginBottom="12px"
+                />
                 <p style={{ color: "#666", fontSize: "12px", marginBottom: "12px" }}>
                   Location: {p.location}
                   {propertyMapUrl ? (

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useInView } from "../hooks/useInView";
 import { useSiteContent } from "../hooks/useSiteContent";
+import ExpandableDescription from "./ExpandableDescription";
 
 export default function TestimonialsSection() {
   const { ref, inView } = useInView();
@@ -66,7 +67,7 @@ export default function TestimonialsSection() {
           gap: "28px",
         }}
       >
-        {testimonials.map((t, i) => (
+        {testimonials.slice(0, 3).map((t, i) => (
           <div
             key={t.id}
             style={{
@@ -103,9 +104,14 @@ export default function TestimonialsSection() {
                 <p style={{ fontSize: "12px", color: "#888" }}>{t.role}</p>
               </div>
             </div>
-            <p style={{ color: "#555", fontSize: "14px", lineHeight: 1.7, marginBottom: "16px" }}>
-              {t.text}
-            </p>
+            <ExpandableDescription
+              description={t.text}
+              maxLength={200}
+              color="#555"
+              fontSize="14px"
+              marginBottom="16px"
+              lineHeight={1.7}
+            />
             <div style={{ display: "flex", gap: "4px" }}>
               {Array.from({ length: t.stars }).map((_, j) => (
                 <span key={j} style={{ color: "#f5a623", fontSize: "18px" }}>

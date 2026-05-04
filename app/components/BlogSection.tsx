@@ -46,7 +46,7 @@ export default function BlogSection() {
           alignItems: "stretch",
         }}
       >
-        {articles.map((a, i) => (
+        {articles.slice(0, 3).map((a, i) => (
           <article
             key={i}
             style={{

@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { useInView } from "../hooks/useInView";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
+import ExpandableDescription from "./ExpandableDescription";
 
 const CALL_NUMBERS = ["+255659740712", "+255659741770"];
 
@@ -158,7 +159,7 @@ export default function PropertiesSection() {
           alignItems: "stretch",
         }}
       >
-        {properties.map((p, idx) => {
+        {properties.slice(0, 3).map((p, idx) => {
           const propertyImages = Array.isArray(p.images) && p.images.length > 0 ? p.images : [p.image];
           const primaryImage = propertyImages[0] ?? p.image;
 
@@ -273,9 +274,13 @@ export default function PropertiesSection() {
                   >
                     {p.title}
                   </h3>
-                  <p style={{ color: "#555", fontSize: "13px", marginBottom: "14px", lineHeight: 1.6 }}>
-                    {p.description}
-                  </p>
+                  <ExpandableDescription
+                    description={p.description}
+                    maxLength={150}
+                    color="#555"
+                    fontSize="13px"
+                    marginBottom="14px"
+                  />
                   <p style={{ color: "#666", fontSize: "12px", marginBottom: "12px" }}>
                     Location: {p.location}
                     {p.mapUrl ? (

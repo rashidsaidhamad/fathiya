@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import { useState } from "react";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { toMailtoHref, toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
+import ExpandableDescription from "../components/ExpandableDescription";
 
 const companyPillars = [
   {
@@ -156,7 +157,13 @@ export default function CompanyPage() {
               </div>
               <h3>{member.name}</h3>
               <p>{member.role}</p>
-              <p>{member.description}</p>
+              <ExpandableDescription
+                description={member.description}
+                maxLength={150}
+                color="#5f5f5f"
+                fontSize="13px"
+                marginBottom="12px"
+              />
               <p>
                 <a href={toMailtoHref(member.email)} style={{ color: "#5f5f5f", textDecoration: "none" }}>{member.email}</a>
               </p>
@@ -184,7 +191,13 @@ export default function CompanyPage() {
             <article key={item.id}>
               <h3>{item.name}</h3>
               <p className="role">{item.role}</p>
-              <p>{item.text}</p>
+              <ExpandableDescription
+                description={item.text}
+                maxLength={200}
+                color="#555"
+                fontSize="14px"
+                marginBottom="16px"
+              />
               <div className="stars">{"★".repeat(Math.max(1, item.stars))}</div>
             </article>
           ))}

@@ -44,6 +44,8 @@ export default function PropertiesPage() {
   const [propertyImageIndexes, setPropertyImageIndexes] = useState<Record<number, number>>({});
   const [emailModalPropertyId, setEmailModalPropertyId] = useState<number | null>(null);
   const [callModalOpen, setCallModalOpen] = useState(false);
+  const [galleryModalPropertyId, setGalleryModalPropertyId] = useState<number | null>(null);
+  const [galleryImageIndex, setGalleryImageIndex] = useState(0);
   const [leadFullName, setLeadFullName] = useState("");
   const [leadEmail, setLeadEmail] = useState("");
   const [leadPhone, setLeadPhone] = useState("");
@@ -161,6 +163,11 @@ export default function PropertiesPage() {
     [properties, emailModalPropertyId],
   );
 
+  const selectedGalleryProperty = useMemo(
+    () => properties.find((property) => property.id === galleryModalPropertyId) ?? null,
+    [properties, galleryModalPropertyId],
+  );
+
   function openEmailModal(propertyId: number) {
     setEmailModalPropertyId(propertyId);
     setLeadFullName("");
@@ -182,6 +189,15 @@ export default function PropertiesPage() {
 
   function closeCallModal() {
     setCallModalOpen(false);
+  }
+
+  function openGalleryModal(propertyId: number) {
+    setGalleryModalPropertyId(propertyId);
+    setGalleryImageIndex(0);
+  }
+
+  function closeGalleryModal() {
+    setGalleryModalPropertyId(null);
   }
 
   async function submitPropertyLead() {
@@ -431,6 +447,7 @@ export default function PropertiesPage() {
                 <div style={{ position: "absolute", bottom: "10px", left: "10px", display: "flex", gap: "6px" }}>
                   <a
                     href={propertyMapUrl}
+                    onClick={(e) => e.stopPropagation()}
                     target="_blank"
                     rel="noreferrer"
                     title={`Open map for ${p.title}`}
@@ -449,6 +466,27 @@ export default function PropertiesPage() {
                   >
                     <FaMapMarkerAlt size={12} />
                   </a>
+                  <button
+                    type="button"
+                    onClick={() => openGalleryModal(p.id)}
+                    style={{
+                      padding: "5px 10px",
+                      borderRadius: "999px",
+                      border: "none",
+                      background: "rgba(255,255,255,0.9)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#c49a6c",
+                      textDecoration: "none",
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    Gallery
+                  </button>
                 </div>
                 {/* Prev/Next arrows */}
                 <button
@@ -682,6 +720,87 @@ export default function PropertiesPage() {
             <p style={{ margin: 0, minHeight: "18px", fontSize: "12px", color: leadFormStatus.includes("sent") ? "#166534" : "#7f1d1d" }}>
               {leadFormStatus}
             </p>
+          </div>
+        </div>
+      ) : null}
+      {selectedGalleryProperty ? (
+        <div
+          onClick={closeGalleryModal}
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.55)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+            zIndex: 3000,
+          }}
+        >
+          <div
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: "880px",
+              backgroundColor: "#fff",
+              borderRadius: "12px",
+              boxShadow: "0 24px 50px rgba(0,0,0,0.25)",
+              padding: "18px",
+              display: "grid",
+              gap: "12px",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
+              <div>
+                <h3 style={{ margin: 0, color: "#111827", fontSize: "22px", fontFamily: "Georgia, serif" }}>{selectedGalleryProperty.title}</h3>
+                <p style={{ margin: "4px 0 0", color: "#6b7280", fontSize: "13px" }}>{selectedGalleryProperty.location}</p>
+              </div>
+              <button type="button" onClick={closeGalleryModal} style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}>
+                Close
+              </button>
+            </div>
+
+            {(() => {
+              const galleryImages = getPropertyImages(selectedGalleryProperty.images, selectedGalleryProperty.image);
+              const currentGalleryImage = galleryImages[galleryImageIndex] ?? galleryImages[0] ?? selectedGalleryProperty.image;
+              return (
+                <div style={{ display: "grid", gap: "10px" }}>
+                  <div style={{ position: "relative", height: "420px", borderRadius: "10px", overflow: "hidden", backgroundColor: "#f3f4f6" }}>
+                    <div style={{ width: "100%", height: "100%", backgroundImage: `url('${currentGalleryImage}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
+                    <button type="button" onClick={() => setGalleryImageIndex((index) => Math.max(0, index - 1))} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.85)", cursor: "pointer" }}>‹</button>
+                    <button type="button" onClick={() => setGalleryImageIndex((index) => Math.min(galleryImages.length - 1, index + 1))} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.85)", cursor: "pointer" }}>›</button>
+                  </div>
+
+                  <div style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "4px" }}>
+                    {galleryImages.map((imageUrl, index) => (
+                      <button
+                        key={`${selectedGalleryProperty.id}-${index}`}
+                        type="button"
+                        onClick={() => setGalleryImageIndex(index)}
+                        style={{
+                          flex: "0 0 auto",
+                          width: "88px",
+                          height: "64px",
+                          borderRadius: "8px",
+                          border: galleryImageIndex === index ? "2px solid #c49a6c" : "1px solid #e5e7eb",
+                          backgroundImage: `url('${imageUrl}')`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          cursor: "pointer",
+                        }}
+                        aria-label={`Show gallery image ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+
+                  <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                    <button type="button" onClick={() => openPropertyVideo(selectedGalleryProperty.videoUrl ?? "", selectedGalleryProperty.title)} style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}>
+                      Watch Video
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       ) : null}

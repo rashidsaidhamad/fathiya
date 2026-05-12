@@ -1446,30 +1446,31 @@ export default function AdminPage() {
                           />
                         </label>
                         {propertyImages.length > 0 ? (
-                          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "8px" }}>
+                          <div style={{ display: "grid", gap: "8px" }}>
+                            <div style={{ display: "grid", gridTemplateColumns: "40px 80px 1fr 160px", gap: "8px", alignItems: "center", fontSize: "12px", color: "#374151", fontWeight: 700 }}>
+                              <div>#</div>
+                              <div>Preview</div>
+                              <div>URL</div>
+                              <div style={{ textAlign: "right" }}>Actions</div>
+                            </div>
+
                             {propertyImages.map((imageUrl, imageIndex) => (
-                              <div key={`${item.id}-${imageIndex}`} style={{ borderRadius: "8px", overflow: "hidden", border: "1px solid #e5e7eb", backgroundColor: "#fff", display: "grid", gap: "8px", padding: "8px" }}>
-                                <div
-                                  style={{
-                                    height: "80px",
-                                    borderRadius: "6px",
-                                    backgroundImage: `url('${imageUrl}')`,
-                                    backgroundSize: "cover",
-                                    backgroundPosition: "center",
-                                  }}
-                                />
-                                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                              <div key={`${item.id}-${imageIndex}`} style={{ display: "grid", gridTemplateColumns: "40px 80px 1fr 160px", gap: "8px", alignItems: "center", padding: "8px", border: "1px solid #e5e7eb", borderRadius: "8px", backgroundColor: "#fff" }}>
+                                <div style={{ fontSize: "13px", color: "#6b7280" }}>{imageIndex + 1}</div>
+                                <div style={{ width: "72px", height: "54px", borderRadius: "6px", backgroundImage: `url('${imageUrl}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
+                                <div style={{ fontSize: "12px", color: "#374151", wordBreak: "break-all" }}>{imageUrl}</div>
+                                <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
                                   <button
                                     type="button"
                                     onClick={() => openMediaPreview(imageUrl, "image", `Property ${item.id} gallery image ${imageIndex + 1}`)}
-                                    style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "6px 10px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                                    style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
                                   >
                                     Preview
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => removePropertyGalleryImage(index, imageUrl)}
-                                    style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "6px 10px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                                    style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
                                   >
                                     Delete
                                   </button>

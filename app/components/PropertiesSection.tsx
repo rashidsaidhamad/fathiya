@@ -45,6 +45,15 @@ export default function PropertiesSection() {
     setVisibleStartIndex((current) => (current >= properties.length - visiblePropertyCount ? 0 : current + 1));
   }
 
+  function openPropertyVideo(videoUrl: string, title: string) {
+    if (videoUrl.trim()) {
+      window.open(videoUrl, "_blank", "noreferrer");
+      return;
+    }
+
+    window.alert(`No video available for ${title}.`);
+  }
+
   function openEmailModal(propertyId: number) {
     setEmailModalPropertyId(propertyId);
     setLeadFullName("");
@@ -325,29 +334,27 @@ export default function PropertiesSection() {
                     >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>
                     </a>
-                    {(p.videoUrl?.trim() || content.videoSection.videoUrl?.trim()) ? (
-                      <a
-                        href={p.videoUrl?.trim() || content.videoSection.videoUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          padding: "5px 10px",
-                          borderRadius: "999px",
-                          background: "rgba(255,255,255,0.9)",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "#c49a6c",
-                          textDecoration: "none",
-                          fontSize: "11px",
-                          fontWeight: 700,
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        Watch Video
-                      </a>
-                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => openPropertyVideo(p.videoUrl ?? "", p.title)}
+                      style={{
+                        padding: "5px 10px",
+                        borderRadius: "999px",
+                        border: "none",
+                        background: "rgba(255,255,255,0.9)",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#c49a6c",
+                        textDecoration: "none",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Watch Video
+                    </button>
                   </div>
                 </div>
 

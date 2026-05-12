@@ -130,6 +130,16 @@ export default function PropertiesPage() {
     return image ? [image] : [];
   };
 
+  const openPropertyVideo = (videoUrl?: string, title?: string) => {
+    const trimmedUrl = videoUrl?.trim();
+    if (trimmedUrl) {
+      window.open(trimmedUrl, "_blank", "noreferrer");
+      return;
+    }
+
+    window.alert(`No video available for ${title || "this property"}.`);
+  };
+
   const goToNextPropertyImage = (propertyId: number, totalImages: number) => {
     if (totalImages <= 1) return;
     setPropertyImageIndexes((prev) => ({
@@ -373,7 +383,7 @@ export default function PropertiesPage() {
               const propertyImages = getPropertyImages(p.images, p.image);
               const currentImageIndex = propertyImages.length > 0 ? (propertyImageIndexes[p.id] ?? 0) % propertyImages.length : 0;
               const currentImage = propertyImages[currentImageIndex] ?? p.image;
-              const videoHref = p.videoUrl?.trim() || content.videoSection.videoUrl?.trim() || "";
+              const hasVideo = Boolean(p.videoUrl?.trim());
               return (
             <div
               key={p.id}
@@ -496,11 +506,9 @@ export default function PropertiesPage() {
                   <button type="button" onClick={() => openEmailModal(p.id)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555" }}>
                     <FaEnvelope size={11} color="#c49a6c" /> Email
                   </button>
-                  {videoHref ? (
-                    <a href={videoHref} target="_blank" rel="noreferrer" style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", fontSize: "12px", color: "#c49a6c", fontWeight: 600 }}>
+                  <button type="button" onClick={() => openPropertyVideo(p.videoUrl, p.title)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", fontSize: "12px", color: hasVideo ? "#c49a6c" : "#777", fontWeight: 600 }}>
                       Watch Video
-                    </a>
-                  ) : null}
+                  </button>
                   <a href={toWhatsAppHref(p.contactWhatsapp, content.contactActions.whatsappMessage)} target="_blank" rel="noreferrer" style={{ padding: "8px 12px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
                     <FaWhatsapp size={14} color="#25D366" />
                   </a>

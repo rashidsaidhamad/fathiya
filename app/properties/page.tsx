@@ -361,9 +361,10 @@ export default function PropertiesPage() {
         <div
           className="properties-page-grid"
           style={{
-            display: "grid",
-            gridTemplateColumns: viewMode === "grid" ? "repeat(3, 1fr)" : "1fr",
+            display: "flex",
+            flexWrap: "wrap",
             gap: "24px",
+            alignItems: "flex-start",
           }}
         >
           {filteredProperties.map((p) => (
@@ -372,6 +373,7 @@ export default function PropertiesPage() {
               const propertyImages = getPropertyImages(p.images, p.image);
               const currentImageIndex = propertyImages.length > 0 ? (propertyImageIndexes[p.id] ?? 0) % propertyImages.length : 0;
               const currentImage = propertyImages[currentImageIndex] ?? p.image;
+              const videoHref = p.videoUrl?.trim() || content.videoSection.videoUrl?.trim() || "";
               return (
             <div
               key={p.id}
@@ -381,6 +383,11 @@ export default function PropertiesPage() {
                 overflow: "hidden",
                 boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
                 transition: "transform 0.3s, box-shadow 0.3s",
+                display: "flex",
+                flexDirection: "column",
+                minHeight: "560px",
+                flex: viewMode === "grid" ? "1 1 280px" : "1 1 100%",
+                maxWidth: viewMode === "grid" ? "calc((100% - 48px) / 3)" : "100%",
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)";
@@ -392,7 +399,7 @@ export default function PropertiesPage() {
               }}
             >
               {/* Image */}
-              <div style={{ position: "relative", height: "200px" }}>
+              <div style={{ position: "relative", height: "230px" }}>
                 <div
                   style={{
                     width: "100%", height: "100%",
@@ -412,14 +419,6 @@ export default function PropertiesPage() {
                 </div>
                 {/* Bottom action icons */}
                 <div style={{ position: "absolute", bottom: "10px", left: "10px", display: "flex", gap: "6px" }}>
-                  {[
-                    <svg key="s" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
-                    <svg key="h" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>,
-                  ].map((icon, i) => (
-                    <button key={i} style={{ width: 26, height: 26, borderRadius: "50%", background: "rgba(255,255,255,0.9)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      {icon}
-                    </button>
-                  ))}
                   <a
                     href={propertyMapUrl}
                     target="_blank"
@@ -461,7 +460,7 @@ export default function PropertiesPage() {
               </div>
 
               {/* Info */}
-              <div style={{ padding: "16px" }}>
+              <div style={{ padding: "16px", display: "flex", flexDirection: "column", flex: 1 }}>
                 <p style={{ color: "#c49a6c", fontSize: "15px", fontWeight: 700, marginBottom: "4px" }}>{p.price}</p>
                 <h3 style={{ fontSize: "15px", fontWeight: 600, color: "#222", marginBottom: "8px" }}>{p.title}</h3>
                 <ExpandableDescription
@@ -470,6 +469,7 @@ export default function PropertiesPage() {
                   color="#777"
                   fontSize="12px"
                   marginBottom="12px"
+                  lineHeight={1.8}
                 />
                 <p style={{ color: "#666", fontSize: "12px", marginBottom: "12px" }}>
                   Location: {p.location}
@@ -489,13 +489,18 @@ export default function PropertiesPage() {
                   <span>Size: {p.size} m²</span>
                   <span>Year Built: {p.year}</span>
                 </div>
-                <div style={{ display: "flex", gap: "8px" }}>
+                <div style={{ display: "flex", gap: "8px", marginTop: "auto" }}>
                   <button type="button" onClick={openCallModal} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555" }}>
                     <FaPhone size={11} color="#c49a6c" /> Call
                   </button>
                   <button type="button" onClick={() => openEmailModal(p.id)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555" }}>
                     <FaEnvelope size={11} color="#c49a6c" /> Email
                   </button>
+                  {videoHref ? (
+                    <a href={videoHref} target="_blank" rel="noreferrer" style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", fontSize: "12px", color: "#c49a6c", fontWeight: 600 }}>
+                      Watch Video
+                    </a>
+                  ) : null}
                   <a href={toWhatsAppHref(p.contactWhatsapp, content.contactActions.whatsappMessage)} target="_blank" rel="noreferrer" style={{ padding: "8px 12px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
                     <FaWhatsapp size={14} color="#25D366" />
                   </a>

@@ -203,6 +203,7 @@ body {
   padding: 14px;
   box-shadow: 0 10px 22px rgba(33, 58, 79, 0.08);
   text-align: left;
+  align-self: start;
 }
 
 .company-page .team-logo-wrap {
@@ -228,6 +229,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+  align-items: start;
 }
 
 .company-page .testimonial-grid article {

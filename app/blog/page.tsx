@@ -130,6 +130,9 @@ export default function BlogPage() {
                     </a>
                     <p style={{ fontSize: "12px", color: "#aaa", marginBottom: "10px" }}>{a.date}</p>
                     <p style={{ fontSize: "13px", color: "#666", lineHeight: 1.6, marginBottom: "14px" }}>
+                      
+                    </p>
+                    <p style={{ fontSize: "13px", color: "#666", lineHeight: 1.6, marginBottom: "14px", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
                       {a.excerpt}
                     </p>
                     <a

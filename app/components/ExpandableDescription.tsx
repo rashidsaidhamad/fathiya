@@ -8,6 +8,7 @@ interface ExpandableDescriptionProps {
   fontSize?: string;
   marginBottom?: string;
   lineHeight?: number | string;
+  collapsedLines?: number;
 }
 
 export default function ExpandableDescription({
@@ -17,15 +18,18 @@ export default function ExpandableDescription({
   fontSize = "13px",
   marginBottom = "14px",
   lineHeight = 1.6,
+  collapsedLines = 4,
 }: ExpandableDescriptionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const isLongDescription = description.length > maxLength;
   const displayText = isExpanded ? description : description.slice(0, maxLength);
+  const numericFontSize = Number.parseFloat(fontSize) || 13;
+  const collapsedMinHeight = Math.round(numericFontSize * Number(lineHeight) * collapsedLines);
 
   return (
-    <div>
-      <p style={{ color, fontSize, marginBottom, lineHeight }}>
+    <div style={{ display: "grid", alignContent: "start", minHeight: isExpanded ? undefined : `${collapsedMinHeight}px` }}>
+      <p style={{ color, fontSize, marginBottom, lineHeight, whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 0 }}>
         {displayText}
         {isLongDescription && !isExpanded && "..."}
       </p>
@@ -44,6 +48,7 @@ export default function ExpandableDescription({
             marginTop: "-8px",
             marginBottom: marginBottom,
             textDecoration: "none",
+            justifySelf: "start",
           }}
         >
           {isExpanded ? "Show Less" : "Show More"}

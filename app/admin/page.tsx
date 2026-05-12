@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ArticleItem, BlogSidebarItem, CompanyTeamMember, CompanyTestimonialItem, ContactSubmission, PropertyItem, SiteContent } from "../../lib/siteContent";
 import { defaultSiteContent } from "../../lib/siteContent";
-
 type AdminSection = "home" | "properties" | "company" | "blog" | "contact";
 
 function JsonEditor({
@@ -50,6 +49,24 @@ export default function AdminPage() {
   const [passwordStatus, setPasswordStatus] = useState("");
   const [passwordStatusType, setPasswordStatusType] = useState<"idle" | "success" | "error">("idle");
   const [passwordBusy, setPasswordBusy] = useState(false);
+  const [imageUploadMode, setImageUploadMode] = useState<"resize" | "crop">("resize");
+  const [imageCropRatio, setImageCropRatio] = useState<"square" | "landscape" | "portrait">("square");
+  const [mediaPreview, setMediaPreview] = useState<{
+    url: string;
+    kind: "image" | "video";
+    title: string;
+  } | null>(null);
+  const [pendingUploadFile, setPendingUploadFile] = useState<{
+    file: File;
+    callback: (file: File) => Promise<void>;
+  } | null>(null);
+  const [uploadDialogMode, setUploadDialogMode] = useState<"resize" | "crop">("resize");
+  const [uploadDialogRatio, setUploadDialogRatio] = useState<"square" | "landscape" | "portrait">("square");
+  const [cropImagePreview, setCropImagePreview] = useState<string>("");
+  const [cropImageDimensions, setCropImageDimensions] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+  const [cropBox, setCropBox] = useState<{ x: number; y: number; width: number; height: number }>({ x: 0, y: 0, width: 0, height: 0 });
+  const [cropDragging, setCropDragging] = useState<{ start: { x: number; y: number }; initial: typeof cropBox } | null>(null);
+  const [cropResizeHandle, setCropResizeHandle] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([fetch("/api/site-content"), fetch("/api/contact-submissions")])
@@ -110,58 +127,211 @@ export default function AdminPage() {
     return payload.url;
   }
 
+  async function prepareImageForUpload(file: File, mode: "resize" | "crop" = "resize", ratio: "square" | "landscape" | "portrait" = "square") {
+    if (!file.type.startsWith("image/")) {
+      return file;
+    }
+
+    const imageUrl = URL.createObjectURL(file);
+    try {
+      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const element = new Image();
+        element.onload = () => resolve(element);
+        element.onerror = () => reject(new Error("Could not read image"));
+        element.src = imageUrl;
+      });
+
+      const sourceWidth = image.naturalWidth || image.width;
+      const sourceHeight = image.naturalHeight || image.height;
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+
+      if (!context || sourceWidth === 0 || sourceHeight === 0) {
+        return file;
+      }
+
+      if (mode === "crop") {
+        const cropRatios = {
+          square: 1,
+          landscape: 16 / 9,
+          portrait: 4 / 5,
+        } as const;
+        const cropRatio = cropRatios[ratio];
+        const sourceAspect = sourceWidth / sourceHeight;
+
+        let sourceCropWidth = sourceWidth;
+        let sourceCropHeight = sourceHeight;
+
+        if (sourceAspect > cropRatio) {
+          sourceCropWidth = Math.floor(sourceHeight * cropRatio);
+        } else {
+          sourceCropHeight = Math.floor(sourceWidth / cropRatio);
+        }
+
+        const sourceX = Math.floor((sourceWidth - sourceCropWidth) / 2);
+        const sourceY = Math.floor((sourceHeight - sourceCropHeight) / 2);
+        const targetWidth = 1600;
+        const targetHeight = Math.round(targetWidth / cropRatio);
+
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        context.drawImage(image, sourceX, sourceY, sourceCropWidth, sourceCropHeight, 0, 0, targetWidth, targetHeight);
+      } else {
+        const maxSide = 1600;
+        const scale = Math.min(1, maxSide / Math.max(sourceWidth, sourceHeight));
+        canvas.width = Math.max(1, Math.round(sourceWidth * scale));
+        canvas.height = Math.max(1, Math.round(sourceHeight * scale));
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      }
+
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob((nextBlob) => resolve(nextBlob), file.type || "image/jpeg", 0.92));
+      if (!blob) {
+        return file;
+      }
+
+      return new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
+        type: blob.type || "image/jpeg",
+        lastModified: Date.now(),
+      });
+    } finally {
+      URL.revokeObjectURL(imageUrl);
+    }
+  }
+
+  function showUploadDialog(file: File, callback: (preparedFile: File) => Promise<void>) {
+    setPendingUploadFile({ file, callback });
+    setUploadDialogMode("resize");
+    setUploadDialogRatio("square");
+  }
+
+  async function confirmUploadDialog() {
+    if (!pendingUploadFile) return;
+    try {
+      const preparedFile = await prepareImageForUpload(pendingUploadFile.file, uploadDialogMode, uploadDialogRatio);
+      await pendingUploadFile.callback(preparedFile);
+      setPendingUploadFile(null);
+      setStatus("Image uploaded successfully!");
+    } catch (error) {
+      setStatus(`Upload error: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  }
+
+  function closeUploadDialog() {
+    setPendingUploadFile(null);
+    setCropImagePreview("");
+    setCropImageDimensions({ width: 0, height: 0 });
+    setCropBox({ x: 0, y: 0, width: 0, height: 0 });
+    setCropDragging(null);
+    setCropResizeHandle(null);
+  }
+
+  function openMediaPreview(url: string, kind: "image" | "video", title: string) {
+    if (!url.trim()) return;
+    setMediaPreview({ url, kind, title });
+  }
+
+  function closeMediaPreview() {
+    setMediaPreview(null);
+  }
+
+  function removeHomeHeroImage() {
+    setContent((prev) => ({
+      ...prev,
+      homePage: {
+        ...prev.homePage,
+        heroBackgroundImage: "",
+      },
+    }));
+  }
+
+  function removeCompanyLogo() {
+    setContent((prev) => ({
+      ...prev,
+      homePage: {
+        ...prev.homePage,
+        companyLogoUrl: "",
+      },
+    }));
+  }
+
+  function removeVideoBackgroundImage() {
+    setContent((prev) => ({
+      ...prev,
+      videoSection: {
+        ...prev.videoSection,
+        backgroundImage: "",
+      },
+    }));
+  }
+
+  function removeVideoFile() {
+    setContent((prev) => ({
+      ...prev,
+      videoSection: {
+        ...prev.videoSection,
+        videoUrl: "",
+      },
+    }));
+  }
+
   async function handleHomeImageUpload(file: File | null) {
     if (!file) return;
-    setStatus("Uploading hero image...");
-    try {
-      const url = await uploadAsset(file);
-      setContent((prev) => ({
-        ...prev,
-        homePage: {
-          ...prev.homePage,
-          heroBackgroundImage: url,
-        },
-      }));
-      setStatus("Hero image uploaded. Save all changes to publish.");
-    } catch (error) {
-      setStatus((error as Error).message || "Hero image upload failed");
-    }
+    setStatus("Preparing image...");
+    showUploadDialog(file, async (preparedFile) => {
+      try {
+        const url = await uploadAsset(preparedFile);
+        setContent((prev) => ({
+          ...prev,
+          homePage: {
+            ...prev.homePage,
+            heroBackgroundImage: url,
+          },
+        }));
+        setStatus("Hero image uploaded. Save all changes to publish.");
+      } catch (error) {
+        setStatus(`Upload error: ${error instanceof Error ? error.message : "Unknown error"}`);
+      }
+    });
   }
 
   async function handleCompanyLogoUpload(file: File | null) {
     if (!file) return;
-    setStatus("Uploading company logo...");
-    try {
-      const url = await uploadAsset(file);
-      setContent((prev) => ({
-        ...prev,
-        homePage: {
-          ...prev.homePage,
-          companyLogoUrl: url,
-        },
-      }));
-      setStatus("Company logo uploaded. Save all changes to publish.");
-    } catch (error) {
-      setStatus((error as Error).message || "Company logo upload failed");
-    }
+    setStatus("Preparing image...");
+    showUploadDialog(file, async (preparedFile) => {
+      try {
+        const url = await uploadAsset(preparedFile);
+        setContent((prev) => ({
+          ...prev,
+          homePage: {
+            ...prev.homePage,
+            companyLogoUrl: url,
+          },
+        }));
+        setStatus("Company logo uploaded. Save all changes to publish.");
+      } catch (error) {
+        setStatus((error as Error).message || "Company logo upload failed");
+      }
+    });
   }
 
   async function handleVideoImageUpload(file: File | null) {
     if (!file) return;
-    setStatus("Uploading image...");
-    try {
-      const url = await uploadAsset(file);
-      setContent((prev) => ({
-        ...prev,
-        videoSection: {
-          ...prev.videoSection,
-          backgroundImage: url,
-        },
-      }));
-      setStatus("Image uploaded. Save all changes to publish.");
-    } catch (error) {
-      setStatus((error as Error).message || "Image upload failed");
-    }
+    setStatus("Preparing image...");
+    showUploadDialog(file, async (preparedFile) => {
+      try {
+        const url = await uploadAsset(preparedFile);
+        setContent((prev) => ({
+          ...prev,
+          videoSection: {
+            ...prev.videoSection,
+            backgroundImage: url,
+          },
+        }));
+        setStatus("Image uploaded. Save all changes to publish.");
+      } catch (error) {
+        setStatus((error as Error).message || "Image upload failed");
+      }
+    });
   }
 
   async function handleVideoUpload(file: File | null) {
@@ -184,70 +354,102 @@ export default function AdminPage() {
 
   async function handlePropertyMainImageUpload(index: number, file: File | null) {
     if (!file) return;
-    setStatus("Uploading property image...");
+    setStatus("Preparing image...");
+    showUploadDialog(file, async (preparedFile) => {
+      try {
+        const url = await uploadAsset(preparedFile);
+        updateProperty(index, {
+          image: url,
+          images: [url, ...((content.properties[index].images ?? []).filter((item) => item !== url))],
+        });
+        setStatus("Property main image uploaded. Save all changes to publish.");
+      } catch (error) {
+        setStatus((error as Error).message || "Property image upload failed");
+      }
+    });
+  }
+
+  async function handlePropertyVideoUpload(index: number, file: File | null) {
+    if (!file) return;
+    setStatus("Uploading property video...");
     try {
       const url = await uploadAsset(file);
-      updateProperty(index, {
-        image: url,
-        images: [url, ...((content.properties[index].images ?? []).filter((item) => item !== url))],
-      });
-      setStatus("Property main image uploaded. Save all changes to publish.");
+      updateProperty(index, { videoUrl: url });
+      setStatus("Property video uploaded. Save all changes to publish.");
     } catch (error) {
-      setStatus((error as Error).message || "Property image upload failed");
+      setStatus((error as Error).message || "Property video upload failed");
     }
   }
 
   async function handlePropertyGalleryUpload(index: number, files: FileList | null) {
     if (!files || files.length === 0) return;
-    setStatus("Uploading property gallery images...");
-    try {
-      const uploadedUrls = await Promise.all(Array.from(files).map((file) => uploadAsset(file)));
-      const previous = content.properties[index];
-      const mergedGallery = Array.from(new Set([...(previous.images ?? [previous.image]), ...uploadedUrls]));
-      updateProperty(index, {
-        images: mergedGallery,
-        image: mergedGallery[0] ?? previous.image,
-      });
-      setStatus("Property gallery uploaded. Save all changes to publish.");
-    } catch (error) {
-      setStatus((error as Error).message || "Property gallery upload failed");
-    }
+    setStatus("Preparing images...");
+    // For gallery with multiple files, show dialog for first file and use those settings for all
+    const firstFile = Array.from(files)[0];
+    showUploadDialog(firstFile, async (preparedFirstFile) => {
+      try {
+        // Prepare and upload all files with the same settings
+        const mode = uploadDialogMode;
+        const ratio = uploadDialogRatio;
+        const uploadedUrls = await Promise.all(
+          Array.from(files).map(async (f) => {
+            const prepared = await prepareImageForUpload(f, mode, ratio);
+            return uploadAsset(prepared);
+          })
+        );
+        const previous = content.properties[index];
+        const mergedGallery = Array.from(new Set([...(previous.images ?? [previous.image]), ...uploadedUrls]));
+        updateProperty(index, {
+          images: mergedGallery,
+          image: mergedGallery[0] ?? previous.image,
+        });
+        setStatus("Property gallery uploaded. Save all changes to publish.");
+      } catch (error) {
+        setStatus((error as Error).message || "Property gallery upload failed");
+      }
+    });
   }
 
   async function handleTeamImageUpload(index: number, file: File | null) {
     if (!file) return;
-    setStatus("Uploading team image...");
-    try {
-      const url = await uploadAsset(file);
-      updateTeamMember(index, { image: url });
-      setStatus("Team image uploaded. Save all changes to publish.");
-    } catch (error) {
-      setStatus((error as Error).message || "Team image upload failed");
-    }
+    setStatus("Preparing image...");
+    showUploadDialog(file, async (preparedFile) => {
+      try {
+        const url = await uploadAsset(preparedFile);
+        updateTeamMember(index, { image: url });
+        setStatus("Team image uploaded. Save all changes to publish.");
+      } catch (error) {
+        setStatus((error as Error).message || "Team image upload failed");
+      }
+    });
   }
 
   async function handleBlogSidebarImageUpload(index: number, file: File | null) {
     if (!file) return;
-    setStatus("Uploading blog sidebar image...");
-    try {
-      const url = await uploadAsset(file);
-      updateBlogSidebarItem(index, { image: url });
-      setStatus("Blog sidebar image uploaded. Save all changes to publish.");
-    } catch (error) {
-      setStatus((error as Error).message || "Blog sidebar image upload failed");
-    }
+    setStatus("Preparing image...");
+    showUploadDialog(file, async (preparedFile) => {
+      try {
+        const url = await uploadAsset(preparedFile);
+        updateBlogSidebarItem(index, { image: url });
+        setStatus("Blog sidebar image uploaded. Save all changes to publish.");
+      } catch (error) {
+        setStatus((error as Error).message || "Blog sidebar image upload failed");
+      }
+    });
   }
 
   async function handleArticleImageUpload(index: number, file: File | null) {
     if (!file) return;
-    setStatus("Uploading article image...");
-    try {
-      const url = await uploadAsset(file);
-      updateArticle(index, { image: url });
-      setStatus("Article image uploaded. Save all changes to publish.");
-    } catch (error) {
-      setStatus((error as Error).message || "Article image upload failed");
-    }
+    setStatus("Preparing image...");
+    showUploadDialog(file, async (preparedFile) => {
+      try {
+        const url = await uploadAsset(preparedFile);
+        updateArticle(index, { image: url });
+        setStatus("Article image uploaded. Save all changes to publish.");
+      } catch (error) {
+        setStatus((error as Error).message || "Article image upload failed");
+      }
+    });
   }
 
   async function saveAll() {
@@ -399,6 +601,7 @@ export default function AdminPage() {
           description: "Property description",
           image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80",
           images: ["https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80"],
+          videoUrl: "",
           contactEmail: prev.contactActions.email,
           contactPhone: prev.contactActions.phone,
           otherMobilePhone: prev.contactActions.phone,
@@ -547,6 +750,52 @@ export default function AdminPage() {
     }));
   }
 
+  function removePropertyMainImage(index: number) {
+    setContent((prev) => {
+      const nextProperties = [...prev.properties];
+      const current = nextProperties[index];
+      if (!current) return prev;
+      const nextImages = (current.images ?? []).filter((item) => item !== current.image);
+      nextProperties[index] = {
+        ...current,
+        image: nextImages[0] ?? "",
+        images: nextImages,
+      };
+      return { ...prev, properties: nextProperties };
+    });
+  }
+
+  function removePropertyVideo(index: number) {
+    updateProperty(index, { videoUrl: "" });
+  }
+
+  function removePropertyGalleryImage(index: number, imageUrl: string) {
+    setContent((prev) => {
+      const nextProperties = [...prev.properties];
+      const current = nextProperties[index];
+      if (!current) return prev;
+      const nextImages = (current.images ?? []).filter((item) => item !== imageUrl);
+      nextProperties[index] = {
+        ...current,
+        images: nextImages,
+        image: current.image === imageUrl ? nextImages[0] ?? "" : current.image,
+      };
+      return { ...prev, properties: nextProperties };
+    });
+  }
+
+  function removeTeamImage(index: number) {
+    updateTeamMember(index, { image: "" });
+  }
+
+  function removeBlogSidebarImage(index: number) {
+    updateBlogSidebarItem(index, { image: "" });
+  }
+
+  function removeArticleImage(index: number) {
+    updateArticle(index, { image: "" });
+  }
+
   return (
     <main style={{ backgroundColor: "#f3f4f7", minHeight: "100vh", padding: "30px 18px 50px" }}>
       <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gap: "20px" }}>
@@ -628,6 +877,45 @@ export default function AdminPage() {
           </div>
         </section>
 
+        <section style={{ backgroundColor: "#fff", borderRadius: "14px", padding: "18px 22px", boxShadow: "0 4px 22px rgba(0,0,0,0.06)", display: "grid", gap: "10px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: "20px", color: "#111827" }}>Image Upload Processing</h2>
+              <p style={{ margin: "6px 0 0", color: "#6b7280", fontSize: "13px" }}>
+                Choose how uploaded images should be prepared before saving.
+              </p>
+            </div>
+            <label style={{ display: "grid", gap: "6px", minWidth: "220px" }}>
+              <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Default mode</span>
+              <select
+                value={imageUploadMode}
+                onChange={(e) => setImageUploadMode(e.target.value as "resize" | "crop")}
+                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px 12px", fontSize: "13px", backgroundColor: "#fff" }}
+              >
+                <option value="resize">Resize to fit</option>
+                <option value="crop">Crop to square</option>
+              </select>
+            </label>
+            {imageUploadMode === "crop" ? (
+              <label style={{ display: "grid", gap: "6px", minWidth: "220px" }}>
+                <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Crop ratio</span>
+                <select
+                  value={imageCropRatio}
+                  onChange={(e) => setImageCropRatio(e.target.value as "square" | "landscape" | "portrait")}
+                  style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px 12px", fontSize: "13px", backgroundColor: "#fff" }}
+                >
+                  <option value="square">Square 1:1</option>
+                  <option value="landscape">Landscape 16:9</option>
+                  <option value="portrait">Portrait 4:5</option>
+                </select>
+              </label>
+            ) : null}
+          </div>
+          <p style={{ margin: 0, color: "#6b7280", fontSize: "12px", lineHeight: 1.6 }}>
+            Resize keeps the original aspect ratio and reduces large files. Crop centers the image into a uniform frame using the selected ratio.
+          </p>
+        </section>
+
         <div style={{ display: "grid", gridTemplateColumns: "250px 1fr", gap: "20px", alignItems: "start" }}>
           <aside style={{ backgroundColor: "#111827", color: "#fff", borderRadius: "14px", padding: "14px", position: "sticky", top: "12px" }}>
             <p style={{ margin: "8px 8px 12px", fontSize: "12px", letterSpacing: "1.5px", textTransform: "uppercase", color: "#9ca3af" }}>
@@ -681,6 +969,22 @@ export default function AdminPage() {
                       <div style={{ display: "grid", gap: "4px" }}>
                         <span style={{ fontSize: "12px", color: "#6b7280" }}>Current logo URL</span>
                         <span style={{ fontSize: "12px", color: "#374151", wordBreak: "break-all" }}>{companyLogoUrl}</span>
+                      </div>
+                      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                        <button
+                          type="button"
+                          onClick={() => openMediaPreview(companyLogoUrl, "image", "Company Logo")}
+                          style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                        >
+                          Preview
+                        </button>
+                        <button
+                          type="button"
+                          onClick={removeCompanyLogo}
+                          style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -761,6 +1065,24 @@ export default function AdminPage() {
                         Add a Hero Background Image URL to preview it here.
                       </p>
                     )}
+                    {heroPreviewUrl ? (
+                      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                        <button
+                          type="button"
+                          onClick={() => openMediaPreview(heroPreviewUrl, "image", "Hero Background Image")}
+                          style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                        >
+                          Preview
+                        </button>
+                        <button
+                          type="button"
+                          onClick={removeHomeHeroImage}
+                          style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
 
                   <JsonEditor label="About checklist items (JSON array of strings)" value={homeChecklistJson} onChange={setHomeChecklistJson} />
@@ -818,6 +1140,67 @@ export default function AdminPage() {
                           style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
                         />
                       </label>
+                    </div>
+                    <div style={{ display: "grid", gap: "10px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                        <div
+                          style={{
+                            width: "180px",
+                            height: "100px",
+                            borderRadius: "8px",
+                            border: "1px solid #e5e7eb",
+                            backgroundColor: "#fff",
+                            backgroundImage: content.videoSection.backgroundImage ? `url('${content.videoSection.backgroundImage}')` : "none",
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                          }}
+                        />
+                        <div style={{ display: "grid", gap: "4px" }}>
+                          <span style={{ fontSize: "12px", color: "#6b7280" }}>Current background image URL</span>
+                          <span style={{ fontSize: "12px", color: "#374151", wordBreak: "break-all" }}>{content.videoSection.backgroundImage || "No image uploaded"}</span>
+                        </div>
+                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                          <button
+                            type="button"
+                            onClick={() => openMediaPreview(content.videoSection.backgroundImage, "image", "Home Video Background")}
+                            style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                          >
+                            Preview
+                          </button>
+                          <button
+                            type="button"
+                            onClick={removeVideoBackgroundImage}
+                            style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                        <div style={{ width: "180px", height: "100px", borderRadius: "8px", border: "1px solid #e5e7eb", backgroundColor: "#0f172a", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "12px" }}>
+                          Video File
+                        </div>
+                        <div style={{ display: "grid", gap: "4px" }}>
+                          <span style={{ fontSize: "12px", color: "#6b7280" }}>Current video URL</span>
+                          <span style={{ fontSize: "12px", color: "#374151", wordBreak: "break-all" }}>{content.videoSection.videoUrl || "No video uploaded"}</span>
+                        </div>
+                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                          <button
+                            type="button"
+                            onClick={() => openMediaPreview(content.videoSection.videoUrl, "video", "Home Video File")}
+                            style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                          >
+                            Preview
+                          </button>
+                          <button
+                            type="button"
+                            onClick={removeVideoFile}
+                            style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
                     </div>
                     <p style={{ margin: 0, fontSize: "12px", color: "#6b7280" }}>
                       Uploaded files are saved to /public/uploads and their URLs are filled automatically.
@@ -926,6 +1309,28 @@ export default function AdminPage() {
                       </label>
 
                       <div style={{ border: "1px solid #e5e7eb", borderRadius: "10px", padding: "12px", backgroundColor: "#f9fafb", display: "grid", gap: "10px" }}>
+                        <p style={{ margin: 0, fontSize: "13px", color: "#374151", fontWeight: 700 }}>Property Video</p>
+                        <label style={{ display: "grid", gap: "6px" }}>
+                          <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Video URL</span>
+                          <input
+                            value={item.videoUrl ?? ""}
+                            onChange={(e) => updateProperty(index, { videoUrl: e.target.value })}
+                            placeholder="Paste a video URL or upload one below"
+                            style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "9px 10px", fontSize: "13px" }}
+                          />
+                        </label>
+                        <label style={{ display: "grid", gap: "6px" }}>
+                          <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Upload Video File</span>
+                          <input
+                            type="file"
+                            accept="video/*"
+                            onChange={(e) => handlePropertyVideoUpload(index, e.target.files?.[0] ?? null)}
+                            style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
+                          />
+                        </label>
+                      </div>
+
+                      <div style={{ border: "1px solid #e5e7eb", borderRadius: "10px", padding: "12px", backgroundColor: "#f9fafb", display: "grid", gap: "10px" }}>
                         <p style={{ margin: 0, fontSize: "13px", color: "#374151", fontWeight: 700 }}>Property Photos (Multiple)</p>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "10px" }}>
                           <label style={{ display: "grid", gap: "6px" }}>
@@ -948,6 +1353,80 @@ export default function AdminPage() {
                             />
                           </label>
                         </div>
+                        <div style={{ display: "grid", gap: "10px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                            <div
+                              style={{
+                                width: "160px",
+                                height: "90px",
+                                borderRadius: "8px",
+                                border: "1px solid #e5e7eb",
+                                backgroundColor: "#fff",
+                                backgroundImage: item.image ? `url('${item.image}')` : "none",
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                              }}
+                            />
+                            <div style={{ display: "grid", gap: "4px" }}>
+                              <span style={{ fontSize: "12px", color: "#6b7280" }}>Current main image</span>
+                              <span style={{ fontSize: "12px", color: "#374151", wordBreak: "break-all" }}>{item.image || "No image uploaded"}</span>
+                            </div>
+                            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                              <button
+                                type="button"
+                                onClick={() => openMediaPreview(item.image, "image", `Property ${item.id} main image`)}
+                                style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                              >
+                                Preview
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => removePropertyMainImage(index)}
+                                style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                            <div
+                              style={{
+                                width: "160px",
+                                height: "90px",
+                                borderRadius: "8px",
+                                border: "1px solid #e5e7eb",
+                                backgroundColor: "#0f172a",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "#fff",
+                                fontSize: "12px",
+                              }}
+                            >
+                              Video
+                            </div>
+                            <div style={{ display: "grid", gap: "4px" }}>
+                              <span style={{ fontSize: "12px", color: "#6b7280" }}>Current property video</span>
+                              <span style={{ fontSize: "12px", color: "#374151", wordBreak: "break-all" }}>{item.videoUrl || "No video uploaded"}</span>
+                            </div>
+                            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                              <button
+                                type="button"
+                                onClick={() => openMediaPreview(item.videoUrl ?? "", "video", `Property ${item.id} video`)}
+                                style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                              >
+                                Preview
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => removePropertyVideo(index)}
+                                style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                         <label style={{ display: "grid", gap: "6px" }}>
                           <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Gallery URLs (one URL per line)</span>
                           <textarea
@@ -969,15 +1448,32 @@ export default function AdminPage() {
                         {propertyImages.length > 0 ? (
                           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "8px" }}>
                             {propertyImages.map((imageUrl, imageIndex) => (
-                              <div key={`${item.id}-${imageIndex}`} style={{ borderRadius: "8px", overflow: "hidden", border: "1px solid #e5e7eb", backgroundColor: "#fff" }}>
+                              <div key={`${item.id}-${imageIndex}`} style={{ borderRadius: "8px", overflow: "hidden", border: "1px solid #e5e7eb", backgroundColor: "#fff", display: "grid", gap: "8px", padding: "8px" }}>
                                 <div
                                   style={{
                                     height: "80px",
+                                    borderRadius: "6px",
                                     backgroundImage: `url('${imageUrl}')`,
                                     backgroundSize: "cover",
                                     backgroundPosition: "center",
                                   }}
                                 />
+                                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                                  <button
+                                    type="button"
+                                    onClick={() => openMediaPreview(imageUrl, "image", `Property ${item.id} gallery image ${imageIndex + 1}`)}
+                                    style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "6px 10px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                                  >
+                                    Preview
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => removePropertyGalleryImage(index, imageUrl)}
+                                    style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "6px 10px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -1044,6 +1540,40 @@ export default function AdminPage() {
                             style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
                           />
                         </label>
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                          <div
+                            style={{
+                              width: "120px",
+                              height: "160px",
+                              borderRadius: "8px",
+                              border: "1px solid #e5e7eb",
+                              backgroundColor: "#fff",
+                              backgroundImage: member.image ? `url('${member.image}')` : "none",
+                              backgroundSize: "cover",
+                              backgroundPosition: "top center",
+                            }}
+                          />
+                          <div style={{ display: "grid", gap: "4px" }}>
+                            <span style={{ fontSize: "12px", color: "#6b7280" }}>Current staff image</span>
+                            <span style={{ fontSize: "12px", color: "#374151", wordBreak: "break-all" }}>{member.image || "No image uploaded"}</span>
+                          </div>
+                          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                            <button
+                              type="button"
+                              onClick={() => openMediaPreview(member.image, "image", `Staff ${member.id} image`)}
+                              style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                            >
+                              Preview
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removeTeamImage(index)}
+                              style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
 
                         <label style={{ display: "grid", gap: "6px" }}>
                           <span style={{ fontSize: "12px", color: "#555", fontWeight: 600 }}>Description</span>
@@ -1253,6 +1783,40 @@ export default function AdminPage() {
                             style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
                           />
                         </label>
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                          <div
+                            style={{
+                              width: "150px",
+                              height: "90px",
+                              borderRadius: "8px",
+                              border: "1px solid #e5e7eb",
+                              backgroundColor: "#fff",
+                              backgroundImage: item.image ? `url('${item.image}')` : "none",
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                            }}
+                          />
+                          <div style={{ display: "grid", gap: "4px" }}>
+                            <span style={{ fontSize: "12px", color: "#6b7280" }}>Current sidebar image</span>
+                            <span style={{ fontSize: "12px", color: "#374151", wordBreak: "break-all" }}>{item.image || "No image uploaded"}</span>
+                          </div>
+                          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                            <button
+                              type="button"
+                              onClick={() => openMediaPreview(item.image, "image", `Sidebar item ${item.id} image`)}
+                              style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                            >
+                              Preview
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removeBlogSidebarImage(index)}
+                              style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
                       </article>
                     ))}
                   </div>
@@ -1395,6 +1959,151 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
+
+      {pendingUploadFile ? (
+        <div
+          onClick={closeUploadDialog}
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.65)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+            zIndex: 4001,
+          }}
+        >
+          <div
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: uploadDialogMode === "crop" ? "700px" : "520px",
+              backgroundColor: "#fff",
+              borderRadius: "14px",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.35)",
+              padding: "24px",
+              display: "grid",
+              gap: "18px",
+            }}
+          >
+            <div>
+              <h3 style={{ margin: "0 0 8px", fontSize: "20px", color: "#111827", fontWeight: 700 }}>Process Image</h3>
+              <p style={{ margin: 0, fontSize: "13px", color: "#6b7280" }}>Choose how to prepare {pendingUploadFile.file.name} before uploading.</p>
+            </div>
+
+            <div style={{ display: "grid", gap: "14px" }}>
+              <label style={{ display: "grid", gap: "6px" }}>
+                <span style={{ fontSize: "13px", color: "#374151", fontWeight: 600 }}>Processing Mode</span>
+                <select
+                  value={uploadDialogMode}
+                  onChange={(e) => setUploadDialogMode(e.target.value as "resize" | "crop")}
+                  style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px 12px", fontSize: "13px", backgroundColor: "#fff" }}
+                >
+                  <option value="resize">Resize to fit</option>
+                  <option value="crop">Crop to ratio</option>
+                </select>
+              </label>
+
+              {uploadDialogMode === "crop" ? (
+                <label style={{ display: "grid", gap: "6px" }}>
+                  <span style={{ fontSize: "13px", color: "#374151", fontWeight: 600 }}>Crop Ratio</span>
+                  <select
+                    value={uploadDialogRatio}
+                    onChange={(e) => setUploadDialogRatio(e.target.value as "square" | "landscape" | "portrait")}
+                    style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px 12px", fontSize: "13px", backgroundColor: "#fff" }}
+                  >
+                    <option value="square">Square 1:1</option>
+                    <option value="landscape">Landscape 16:9</option>
+                    <option value="portrait">Portrait 4:5</option>
+                  </select>
+                </label>
+              ) : null}
+
+              <p style={{ margin: 0, padding: "10px 12px", backgroundColor: "#f0fdf4", borderRadius: "8px", fontSize: "12px", color: "#166534", lineHeight: 1.5 }}>
+                {uploadDialogMode === "resize"
+                  ? "The image will be scaled down to max 1600px while preserving its original proportions."
+                  : `The image will be cropped using the selected ratio: ${uploadDialogRatio === "square" ? "1:1" : uploadDialogRatio === "landscape" ? "16:9" : "4:5"}.`}
+              </p>
+            </div>
+
+            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                onClick={closeUploadDialog}
+                style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "10px 18px", fontWeight: 600, cursor: "pointer" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmUploadDialog}
+                style={{ border: "none", backgroundColor: "#111827", color: "#fff", borderRadius: "8px", padding: "10px 18px", fontWeight: 600, cursor: "pointer" }}
+              >
+                Upload
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {mediaPreview ? (
+        <div
+          onClick={closeMediaPreview}
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.65)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+            zIndex: 4000,
+          }}
+        >
+          <div
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: "900px",
+              backgroundColor: "#fff",
+              borderRadius: "14px",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.35)",
+              padding: "18px",
+              display: "grid",
+              gap: "12px",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: "20px", color: "#111827" }}>{mediaPreview.title}</h3>
+                <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#6b7280", wordBreak: "break-all" }}>{mediaPreview.url}</p>
+              </div>
+              <button
+                type="button"
+                onClick={closeMediaPreview}
+                style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+              >
+                Close
+              </button>
+            </div>
+            {mediaPreview.kind === "image" ? (
+              <img
+                src={mediaPreview.url}
+                alt={mediaPreview.title}
+                style={{ width: "100%", maxHeight: "70vh", objectFit: "contain", borderRadius: "12px", backgroundColor: "#f3f4f6" }}
+              />
+            ) : (
+              <video
+                src={mediaPreview.url}
+                controls
+                autoPlay
+                style={{ width: "100%", maxHeight: "70vh", borderRadius: "12px", backgroundColor: "#0f172a" }}
+              />
+            )}
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

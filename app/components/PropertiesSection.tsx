@@ -11,6 +11,7 @@ export default function PropertiesSection() {
   const { ref, inView } = useInView();
   const content = useSiteContent();
   const properties = content.properties;
+  const [visibleStartIndex, setVisibleStartIndex] = useState(0);
   const [emailModalPropertyId, setEmailModalPropertyId] = useState<number | null>(null);
   const [callModalOpen, setCallModalOpen] = useState(false);
   const [leadFullName, setLeadFullName] = useState("");
@@ -24,6 +25,25 @@ export default function PropertiesSection() {
     () => properties.find((property) => property.id === emailModalPropertyId) ?? null,
     [properties, emailModalPropertyId],
   );
+
+  const visiblePropertyCount = Math.min(3, properties.length);
+  const visibleProperties = useMemo(() => {
+    if (properties.length <= visiblePropertyCount) {
+      return properties;
+    }
+
+    return Array.from({ length: visiblePropertyCount }, (_, index) => properties[(visibleStartIndex + index) % properties.length]);
+  }, [properties, visiblePropertyCount, visibleStartIndex]);
+
+  function showPreviousProperties() {
+    if (properties.length <= visiblePropertyCount) return;
+    setVisibleStartIndex((current) => (current === 0 ? properties.length - visiblePropertyCount : current - 1));
+  }
+
+  function showNextProperties() {
+    if (properties.length <= visiblePropertyCount) return;
+    setVisibleStartIndex((current) => (current >= properties.length - visiblePropertyCount ? 0 : current + 1));
+  }
 
   function openEmailModal(propertyId: number) {
     setEmailModalPropertyId(propertyId);
@@ -150,18 +170,67 @@ export default function PropertiesSection() {
         </p>
       </div>
 
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", marginBottom: "18px" }}>
+        <button
+          type="button"
+          onClick={showPreviousProperties}
+          disabled={properties.length <= visiblePropertyCount}
+          aria-label="Show previous properties"
+          style={{
+            width: "44px",
+            height: "44px",
+            borderRadius: "50%",
+            border: "1px solid #e0d4c2",
+            backgroundColor: "#fff",
+            color: "#7c5a37",
+            cursor: properties.length <= visiblePropertyCount ? "default" : "pointer",
+            opacity: properties.length <= visiblePropertyCount ? 0.45 : 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 6px 18px rgba(0,0,0,0.06)",
+          }}
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          onClick={showNextProperties}
+          disabled={properties.length <= visiblePropertyCount}
+          aria-label="Show next properties"
+          style={{
+            width: "44px",
+            height: "44px",
+            borderRadius: "50%",
+            border: "1px solid #e0d4c2",
+            backgroundColor: "#fff",
+            color: "#7c5a37",
+            cursor: properties.length <= visiblePropertyCount ? "default" : "pointer",
+            opacity: properties.length <= visiblePropertyCount ? 0.45 : 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 6px 18px rgba(0,0,0,0.06)",
+          }}
+        >
+          ›
+        </button>
+      </div>
+
       <div
         className="properties-grid"
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          display: "flex",
+          flexWrap: "wrap",
           gap: "22px",
-          alignItems: "stretch",
+          alignItems: "flex-start",
+          justifyContent: properties.length <= 1 ? "center" : "stretch",
         }}
       >
-        {properties.slice(0, 3).map((p, idx) => {
+        {visibleProperties.map((p, idx) => {
           const propertyImages = Array.isArray(p.images) && p.images.length > 0 ? p.images : [p.image];
           const primaryImage = propertyImages[0] ?? p.image;
+          const videoHref = p.videoUrl?.trim() || content.videoSection.videoUrl?.trim() || "";
 
           return (
             <div
@@ -175,9 +244,11 @@ export default function PropertiesSection() {
                 transform: inView ? "translateY(0)" : "translateY(30px)",
                 transition: `opacity 0.7s ease ${idx * 0.1}s, transform 0.7s ease ${idx * 0.1}s, box-shadow 0.3s`,
                 cursor: "pointer",
+                flex: properties.length <= 1 ? "1 1 380px" : "1 1 260px",
+                maxWidth: properties.length <= 1 ? "380px" : `calc((100% - ${22 * (visiblePropertyCount - 1)}px) / ${visiblePropertyCount})`,
+                minHeight: "560px",
                 display: "flex",
                 flexDirection: "column",
-                height: "100%",
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 30px rgba(0,0,0,0.15)";
@@ -187,7 +258,7 @@ export default function PropertiesSection() {
               }}
             >
                 {/* Image */}
-                <div style={{ position: "relative", height: "200px" }}>
+                <div style={{ position: "relative", height: "230px" }}>
                   <div
                     style={{
                       width: "100%",
@@ -224,49 +295,70 @@ export default function PropertiesSection() {
                       {p.active}
                     </span>
                   </div>
-                  {/* Action icons - bottom left */}
+                  {/* Bottom action icons */}
                   <div
                     style={{
                       position: "absolute",
-                      bottom: "12px",
-                      left: "12px",
+                      bottom: "10px",
+                      left: "10px",
                       display: "flex",
                       gap: "6px",
                     }}
                   >
-                    {[
-                      <svg key="share" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
-                      <svg key="heart" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>,
-                      <span key="plus" style={{ fontSize: "16px", color: "#555", lineHeight: 1 }}>+</span>,
-                    ].map((icon, i) => (
-                      <button
-                        key={i}
+                    <a
+                      href={p.mapUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={`Open map for ${p.title}`}
+                      style={{
+                        width: 26,
+                        height: 26,
+                        borderRadius: "50%",
+                        background: "rgba(255,255,255,0.9)",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#c49a6c",
+                        textDecoration: "none",
+                      }}
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </a>
+                    {(p.videoUrl?.trim() || content.videoSection.videoUrl?.trim()) ? (
+                      <a
+                        href={p.videoUrl?.trim() || content.videoSection.videoUrl}
+                        target="_blank"
+                        rel="noreferrer"
                         style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: "50%",
-                          backgroundColor: "rgba(255,255,255,0.92)",
-                          border: "none",
+                          padding: "5px 10px",
+                          borderRadius: "999px",
+                          background: "rgba(255,255,255,0.9)",
                           cursor: "pointer",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
+                          color: "#c49a6c",
+                          textDecoration: "none",
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          whiteSpace: "nowrap",
                         }}
                       >
-                        {icon}
-                      </button>
-                    ))}
+                        Watch Video
+                      </a>
+                    ) : null}
                   </div>
                 </div>
 
                 {/* Info */}
-                <div style={{ padding: "16px", display: "flex", flexDirection: "column", height: "100%" }}>
-                  <p style={{ color: "#c49a6c", fontSize: "15px", fontWeight: 700, marginBottom: "6px" }}>
+                <div style={{ padding: "16px", display: "flex", flexDirection: "column", flex: 1 }}>
+                  <p style={{ color: "#c49a6c", fontSize: "15px", fontWeight: 700, marginBottom: "4px" }}>
                     {p.price}
                   </p>
                   <h3
                     style={{
-                      fontSize: "16px",
+                      fontSize: "15px",
                       fontWeight: 600,
                       color: "#222",
                       marginBottom: "8px",
@@ -277,9 +369,10 @@ export default function PropertiesSection() {
                   <ExpandableDescription
                     description={p.description}
                     maxLength={150}
-                    color="#555"
+                    color="#777"
                     fontSize="13px"
-                    marginBottom="14px"
+                    marginBottom="12px"
+                    lineHeight={1.8}
                   />
                   <p style={{ color: "#666", fontSize: "12px", marginBottom: "12px" }}>
                     Location: {p.location}
@@ -295,11 +388,12 @@ export default function PropertiesSection() {
                   <div
                     style={{
                       display: "flex",
-                      gap: "16px",
+                      gap: "14px",
                       fontSize: "13px",
                       color: "#333",
-                      fontWeight: 500,
-                      marginBottom: "16px",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      marginBottom: "10px",
                       flexWrap: "wrap",
                     }}
                   >
@@ -311,15 +405,15 @@ export default function PropertiesSection() {
                     <span>Year Built: {p.year}</span>
                   </div>
                   <div style={{ display: "flex", gap: "8px", marginTop: "auto" }}>
-                    <button type="button" onClick={openCallModal} style={{ flex: 1, padding: "8px 10px", border: "1px solid #e0e0e0", borderRadius: "4px", backgroundColor: "#fff", fontSize: "12px", cursor: "pointer", color: "#555", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
+                    <button type="button" onClick={openCallModal} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555" }}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.5 12 19.79 19.79 0 011.5 3.18 2 2 0 013.5 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
                       Call
                     </button>
-                    <button type="button" onClick={() => openEmailModal(p.id)} style={{ flex: 1, padding: "8px 10px", border: "1px solid #e0e0e0", borderRadius: "4px", backgroundColor: "#fff", fontSize: "12px", cursor: "pointer", color: "#555", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
+                    <button type="button" onClick={() => openEmailModal(p.id)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555" }}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                       Email
                     </button>
-                    <a href={toWhatsAppHref(p.contactWhatsapp, content.contactActions.whatsappMessage)} target="_blank" rel="noreferrer" style={{ padding: "8px 12px", border: "1px solid #e0e0e0", borderRadius: "4px", backgroundColor: "#fff", fontSize: "16px", cursor: "pointer", color: "#25d366", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
+                    <a href={toWhatsAppHref(p.contactWhatsapp, content.contactActions.whatsappMessage)} target="_blank" rel="noreferrer" style={{ padding: "8px 12px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                     </a>
                   </div>

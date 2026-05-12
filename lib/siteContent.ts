@@ -58,6 +58,7 @@ export type PropertyItem = {
   description: string;
   image: string;
   images?: string[];
+  videoUrl?: string;
   contactEmail: string;
   contactPhone: string;
   otherMobilePhone: string;
@@ -208,6 +209,7 @@ export const defaultSiteContent: SiteContent = {
       mapUrl: "https://maps.google.com/?q=Mlandege,+Zanzibar",
       description: "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
       image: "https://images.unsplash.com/photo-1540541338537-ad197cffc7f8?w=600&q=80",
+      videoUrl: "",
       contactEmail: "info@archipelagoestates.com",
       contactPhone: "+255659740712",
       otherMobilePhone: "+255659740712",
@@ -228,6 +230,7 @@ export const defaultSiteContent: SiteContent = {
       mapUrl: "https://maps.google.com/?q=Nungwi,+Zanzibar",
       description: "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
       image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80",
+      videoUrl: "",
       contactEmail: "info@archipelagoestates.com",
       contactPhone: "+255659740712",
       otherMobilePhone: "+255659740712",
@@ -248,6 +251,7 @@ export const defaultSiteContent: SiteContent = {
       mapUrl: "https://maps.google.com/?q=Stone+Town,+Zanzibar",
       description: "This property is mostly wooded and sits high on a hilltop overlooking the Mohawk River Val ...",
       image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80",
+      videoUrl: "",
       contactEmail: "info@archipelagoestates.com",
       contactPhone: "+255659740712",
       otherMobilePhone: "+255659740712",

@@ -62,9 +62,10 @@ export default function TestimonialsSection() {
       <div
         className="testimonials-grid"
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
+          display: "flex",
+          flexWrap: "wrap",
           gap: "28px",
+          alignItems: "flex-start",
         }}
       >
         {testimonials.slice(0, 3).map((t, i) => (
@@ -79,6 +80,10 @@ export default function TestimonialsSection() {
               opacity: inView ? 1 : 0,
               transform: inView ? "translateY(0)" : "translateY(30px)",
               transition: `opacity 0.7s ease ${i * 0.15}s, transform 0.7s ease ${i * 0.15}s`,
+              display: "flex",
+              flexDirection: "column",
+              minHeight: "340px",
+              flex: "1 1 300px",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px" }}>

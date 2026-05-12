@@ -139,19 +139,19 @@ export default function CompanyPage() {
           <span>If you want the best care possible for your real estate needs, our certified professionals are here to help.</span>
         </div>
 
-        <div style={{ width: "min(1040px, 100%)", margin: "0 auto", display: "grid", gap: "18px", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}>
+        <div style={{ width: "min(1040px, 100%)", margin: "0 auto", display: "flex", flexWrap: "wrap", gap: "18px", alignItems: "flex-start" }}>
           {content.companyTeam.map((member) => (
-            <article key={member.id} className="team-card" style={{ maxWidth: "unset" }}>
+            <article key={member.id} className="team-card" style={{ maxWidth: "unset", width: "250px", display: "flex", flexDirection: "column", minHeight: "440px", flex: "0 0 250px" }}>
               <div className="team-logo-wrap">
                 <div
                   role="img"
                   aria-label={member.name}
                   style={{
                     width: "100%",
-                    height: "180px",
+                    height: "240px",
                     backgroundImage: `url('${member.image}')`,
                     backgroundSize: "cover",
-                    backgroundPosition: "center",
+                    backgroundPosition: "top center",
                   }}
                 />
               </div>
@@ -186,9 +186,9 @@ export default function CompanyPage() {
           <h2>Testimonials</h2>
           <span>Publish the best of your client testimonials and let the world know what a great real estate agency you are.</span>
         </div>
-        <div className="testimonial-grid">
+        <div className="testimonial-grid" style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "flex-start" }}>
           {content.companyTestimonials.map((item) => (
-            <article key={item.id}>
+            <article key={item.id} style={{ display: "flex", flexDirection: "column", minHeight: "320px", flex: "1 1 280px" }}>
               <h3>{item.name}</h3>
               <p className="role">{item.role}</p>
               <ExpandableDescription

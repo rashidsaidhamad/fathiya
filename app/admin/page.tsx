@@ -784,6 +784,26 @@ export default function AdminPage() {
     });
   }
 
+  function movePropertyGalleryImage(propertyIndex: number, imageIndex: number, direction: "up" | "down") {
+    setContent((prev) => {
+      const nextProperties = [...prev.properties];
+      const current = nextProperties[propertyIndex];
+      if (!current) return prev;
+      const nextImages = [...(current.images ?? [])];
+      if (direction === "up" && imageIndex > 0) {
+        [nextImages[imageIndex - 1], nextImages[imageIndex]] = [nextImages[imageIndex], nextImages[imageIndex - 1]];
+      } else if (direction === "down" && imageIndex < nextImages.length - 1) {
+        [nextImages[imageIndex], nextImages[imageIndex + 1]] = [nextImages[imageIndex + 1], nextImages[imageIndex]];
+      }
+      nextProperties[propertyIndex] = {
+        ...current,
+        images: nextImages,
+        image: nextImages[0] ?? current.image,
+      };
+      return { ...prev, properties: nextProperties };
+    });
+  }
+
   function removeTeamImage(index: number) {
     updateTeamMember(index, { image: "" });
   }
@@ -1449,36 +1469,57 @@ export default function AdminPage() {
                         </label>
                         {propertyImages.length > 0 ? (
                           <div style={{ display: "grid", gap: "8px" }}>
-                            <div style={{ display: "grid", gridTemplateColumns: "40px 80px 1fr 160px", gap: "8px", alignItems: "center", fontSize: "12px", color: "#374151", fontWeight: 700 }}>
-                              <div>#</div>
+                            <div style={{ display: "grid", gridTemplateColumns: "60px 80px 1fr 220px", gap: "8px", alignItems: "center", fontSize: "12px", color: "#374151", fontWeight: 700 }}>
+                              <div>Position</div>
                               <div>Preview</div>
                               <div>URL</div>
                               <div style={{ textAlign: "right" }}>Actions</div>
                             </div>
 
-                            {propertyImages.map((imageUrl, imageIndex) => (
-                              <div key={`${item.id}-${imageIndex}`} style={{ display: "grid", gridTemplateColumns: "40px 80px 1fr 160px", gap: "8px", alignItems: "center", padding: "8px", border: "1px solid #e5e7eb", borderRadius: "8px", backgroundColor: "#fff" }}>
-                                <div style={{ fontSize: "13px", color: "#6b7280" }}>{imageIndex + 1}</div>
+                            {propertyImages.map((imageUrl, imageIndex) => {
+                              const positionLabel = imageIndex === 0 ? "1st" : imageIndex === 1 ? "2nd" : imageIndex === 2 ? "3rd" : `${imageIndex + 1}th`;
+                              return (
+                              <div key={`${item.id}-${imageIndex}`} style={{ display: "grid", gridTemplateColumns: "60px 80px 1fr 220px", gap: "8px", alignItems: "center", padding: "8px", border: "1px solid #e5e7eb", borderRadius: "8px", backgroundColor: "#fff" }}>
+                                <div style={{ fontSize: "13px", color: "#6b7280", fontWeight: 600 }}>{positionLabel}</div>
                                 <div style={{ width: "72px", height: "54px", borderRadius: "6px", backgroundImage: `url('${imageUrl}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
                                 <div style={{ fontSize: "12px", color: "#374151", wordBreak: "break-all" }}>{imageUrl}</div>
-                                <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                                <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end", flexWrap: "wrap" }}>
+                                  <button
+                                    type="button"
+                                    onClick={() => movePropertyGalleryImage(index, imageIndex, "up")}
+                                    disabled={imageIndex === 0}
+                                    style={{ border: "1px solid #d1d5db", backgroundColor: imageIndex === 0 ? "#f3f4f6" : "#fff", color: imageIndex === 0 ? "#9ca3af" : "#374151", borderRadius: "6px", padding: "6px 8px", fontWeight: 600, cursor: imageIndex === 0 ? "not-allowed" : "pointer", fontSize: "12px" }}
+                                    title="Move up"
+                                  >
+                                    ↑
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => movePropertyGalleryImage(index, imageIndex, "down")}
+                                    disabled={imageIndex === propertyImages.length - 1}
+                                    style={{ border: "1px solid #d1d5db", backgroundColor: imageIndex === propertyImages.length - 1 ? "#f3f4f6" : "#fff", color: imageIndex === propertyImages.length - 1 ? "#9ca3af" : "#374151", borderRadius: "6px", padding: "6px 8px", fontWeight: 600, cursor: imageIndex === propertyImages.length - 1 ? "not-allowed" : "pointer", fontSize: "12px" }}
+                                    title="Move down"
+                                  >
+                                    ↓
+                                  </button>
                                   <button
                                     type="button"
                                     onClick={() => openMediaPreview(imageUrl, "image", `Property ${item.id} gallery image ${imageIndex + 1}`)}
-                                    style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                                    style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "6px", padding: "6px 8px", fontWeight: 600, cursor: "pointer" }}
                                   >
                                     Preview
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => removePropertyGalleryImage(index, imageUrl)}
-                                    style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                                    style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "6px", padding: "6px 8px", fontWeight: 600, cursor: "pointer" }}
                                   >
                                     Delete
                                   </button>
                                 </div>
                               </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         ) : null}
                       </div>

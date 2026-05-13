@@ -128,6 +128,30 @@
       "images": [
         "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80"
       ]
+    },
+    {
+      "id": 7,
+      "title": "New Property",
+      "price": "$ 0",
+      "status": "For Sale",
+      "active": "Active",
+      "statusColor": "#c49a6c",
+      "beds": 1,
+      "baths": 1,
+      "size": 100,
+      "year": 2026,
+      "location": "Zanzibar",
+      "mapUrl": "https://maps.google.com/?q=Zanzibar",
+      "description": "Property description",
+      "image": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80"
+      ],
+      "videoUrl": "",
+      "contactEmail": "archipelagoproperties.zanzibar@gmail.com",
+      "contactPhone": "+255659740712",
+      "otherMobilePhone": "+255659740712",
+      "contactWhatsapp": "+255659740712"
     }
   ],
   "companyTeam": [

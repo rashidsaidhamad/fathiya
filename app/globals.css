@@ -624,6 +624,29 @@ body {
   .properties-page-grid {
     gap: 10px !important;
   }
+
+  /* Horizontal card layout for mobile */
+  .properties-grid > div,
+  .properties-page-grid > div {
+    flex-direction: row !important;
+    min-height: auto !important;
+    max-width: 100% !important;
+  }
+
+  .properties-grid > div > div:first-child,
+  .properties-page-grid > div > div:first-child {
+    flex-shrink: 0;
+    width: 35% !important;
+    height: 100% !important;
+    min-height: 140px !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  .properties-grid > div > div:nth-child(2),
+  .properties-page-grid > div > div:nth-child(2) {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 /* Extra small phones - up to 480px */
@@ -689,6 +712,31 @@ body {
     font-size: 11px !important;
     min-width: auto !important;
   }
+
+  /* Horizontal card layout for mobile */
+  .properties-grid > div,
+  .properties-page-grid > div {
+    flex-direction: row !important;
+    min-height: auto !important;
+    max-width: 100% !important;
+    max-height: 180px !important;
+  }
+
+  .properties-grid > div > div:first-child,
+  .properties-page-grid > div > div:first-child {
+    flex-shrink: 0;
+    width: 35% !important;
+    height: 100% !important;
+    min-height: 160px !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  .properties-grid > div > div:nth-child(2),
+  .properties-page-grid > div > div:nth-child(2) {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
 }
 
 /* Small phones - 481px to 640px */
@@ -707,6 +755,48 @@ body {
 
   .properties-page-grid {
     gap: 14px !important;
+  }
+
+  /* Horizontal card layout for mobile */
+  .properties-grid > div,
+  .properties-page-grid > div {
+    flex-direction: row !important;
+    min-height: auto !important;
+    max-width: 100% !important;
+    max-height: 200px !important;
+  }
+
+  .properties-grid > div > div:first-child,
+  .properties-page-grid > div > div:first-child {
+    flex-shrink: 0;
+    width: 40% !important;
+    height: 100% !important;
+    min-height: 180px !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  .properties-grid > div > div:nth-child(2),
+  .properties-page-grid > div > div:nth-child(2) {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+}
+
+/* Mobile horizontal card layout - all phones up to 640px */
+@media (max-width: 640px) {
+  .properties-grid > div > div:nth-child(2),
+  .properties-page-grid > div > div:nth-child(2) {
+    padding: 8px 10px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Hide overlay buttons on mobile */
+  .properties-grid > div > div:first-child > div:nth-child(3),
+  .properties-page-grid > div > div:first-child > div:nth-child(3) {
+    display: none !important;
   }
 }
 

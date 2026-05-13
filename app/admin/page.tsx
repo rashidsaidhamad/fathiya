@@ -1277,6 +1277,7 @@ export default function AdminPage() {
                           >
                             <option>For Sale</option>
                             <option>For Rent</option>
+                            <option>For Rent & Sale</option>
                           </select>
                         </label>
 
@@ -1289,10 +1290,11 @@ export default function AdminPage() {
                           <label key={key as string} style={{ display: "grid", gap: "6px" }}>
                             <span style={{ fontSize: "12px", color: "#555", fontWeight: 600 }}>{label}</span>
                             <input
-                              type="number"
-                              value={value as number}
-                              onChange={(e) => updateProperty(index, { [key as keyof PropertyItem]: Number(e.target.value) } as Partial<PropertyItem>)}
+                              type={key === "size" ? "text" : "number"}
+                              value={key === "size" ? (value as number).toLocaleString() : (value as number)}
+                              onChange={(e) => updateProperty(index, { [key as keyof PropertyItem]: Number(e.target.value.replace(/,/g, "")) } as Partial<PropertyItem>)}
                               style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "9px 10px", fontSize: "13px" }}
+                              placeholder={key === "size" ? "e.g., 1,000" : undefined}
                             />
                           </label>
                         ))}

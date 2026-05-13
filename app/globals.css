@@ -600,6 +600,116 @@ body {
   }
 }
 
+/* Ultra small phones - up to 360px */
+@media (max-width: 360px) {
+  .properties-root {
+    padding: 32px 10px !important;
+  }
+
+  .properties-root > div:first-child h2 {
+    font-size: 20px !important;
+  }
+
+  .properties-grid {
+    gap: 10px !important;
+  }
+
+  .properties-root button[aria-label*="previous"],
+  .properties-root button[aria-label*="next"] {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 16px !important;
+  }
+
+  .properties-page-grid {
+    gap: 10px !important;
+  }
+}
+
+/* Extra small phones - up to 480px */
+@media (max-width: 480px) {
+  .properties-root {
+    padding: 40px 12px !important;
+  }
+
+  .properties-root > div:first-child {
+    margin-bottom: 24px !important;
+  }
+
+  .properties-root > div:first-child h2 {
+    font-size: 24px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .properties-root > div:first-child p {
+    font-size: 12px !important;
+    max-width: 100% !important;
+  }
+
+  .properties-grid {
+    gap: 12px !important;
+  }
+
+  .properties-root > div:nth-of-type(2) {
+    margin-bottom: 12px !important;
+    flex-wrap: wrap;
+  }
+
+  .properties-root button[aria-label*="previous"],
+  .properties-root button[aria-label*="next"] {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 18px !important;
+  }
+
+  .properties-page-grid {
+    gap: 12px !important;
+  }
+
+  .properties-page-filter-bar {
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+
+  .properties-page-filter-bar select {
+    font-size: 12px !important;
+    padding: 8px 6px !important;
+    width: 100% !important;
+  }
+
+  .properties-page-filter-bar > div:last-child {
+    width: 100% !important;
+    margin-left: 0 !important;
+    gap: 6px !important;
+  }
+
+  .properties-page-filter-bar button {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    min-width: auto !important;
+  }
+}
+
+/* Small phones - 481px to 640px */
+@media (max-width: 640px) and (min-width: 481px) {
+  .properties-root {
+    padding: 48px 14px !important;
+  }
+
+  .properties-root > div:first-child h2 {
+    font-size: 28px !important;
+  }
+
+  .properties-grid {
+    gap: 14px !important;
+  }
+
+  .properties-page-grid {
+    gap: 14px !important;
+  }
+}
+
 @media (min-width: 981px) {
   .nav-mobile-panel,
   .nav-menu-btn {

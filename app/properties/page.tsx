@@ -268,16 +268,16 @@ export default function PropertiesPage() {
       <Navbar forceWhite />
       <div style={{ paddingTop: "70px", backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
       {/* Page content */}
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 24px" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "clamp(20px, 4vw, 32px) clamp(14px, 3vw, 24px)" }}>
         {/* Breadcrumb */}
-        <div style={{ fontSize: "13px", color: "#888", marginBottom: "16px" }}>
+        <div style={{ fontSize: "clamp(11px, 2vw, 13px)", color: "#888", marginBottom: "16px" }}>
           <a href="/" style={{ color: "#333", textDecoration: "none" }}>Home</a>
           <span style={{ margin: "0 6px", color: "#aaa" }}>›</span>
           <span style={{ color: "#c49a6c", fontWeight: 600 }}>Properties</span>
         </div>
 
         {/* Title */}
-        <h1 style={{ fontSize: "32px", fontWeight: 700, color: "#1a1a2e", marginBottom: "24px", fontFamily: "Georgia, serif" }}>
+        <h1 style={{ fontSize: "clamp(24px, 6vw, 32px)", fontWeight: 700, color: "#1a1a2e", marginBottom: "24px", fontFamily: "Georgia, serif" }}>
           Properties
         </h1>
 
@@ -288,10 +288,10 @@ export default function PropertiesPage() {
             background: "#fff",
             border: "1px solid #e5e5e5",
             borderRadius: "6px",
-            padding: "12px 20px",
+            padding: "clamp(10px, 2vw, 12px) clamp(14px, 3vw, 20px)",
             display: "flex",
             alignItems: "center",
-            gap: "8px",
+            gap: "clamp(6px, 1.5vw, 8px)",
             marginBottom: "28px",
             flexWrap: "wrap",
           }}
@@ -302,11 +302,13 @@ export default function PropertiesPage() {
             style={{
               border: "1px solid #ddd",
               borderRadius: "4px",
-              padding: "6px 10px",
-              fontSize: "13px",
+              padding: "clamp(5px, 1vw, 6px) clamp(7px, 1.5vw, 10px)",
+              fontSize: "clamp(11px, 2vw, 13px)",
               color: "#444",
               cursor: "pointer",
               background: "#fff",
+              flex: "1 1 calc(50% - 4px)",
+              minWidth: "120px",
             }}
           >
             {categoryOptions.map((option) => (
@@ -321,11 +323,13 @@ export default function PropertiesPage() {
             style={{
               border: "1px solid #ddd",
               borderRadius: "4px",
-              padding: "6px 10px",
-              fontSize: "13px",
+              padding: "clamp(5px, 1vw, 6px) clamp(7px, 1.5vw, 10px)",
+              fontSize: "clamp(11px, 2vw, 13px)",
               color: "#444",
               cursor: "pointer",
               background: "#fff",
+              flex: "1 1 calc(50% - 4px)",
+              minWidth: "120px",
             }}
           >
             {cityOptions.map((option) => (
@@ -340,11 +344,13 @@ export default function PropertiesPage() {
             style={{
               border: "1px solid #ddd",
               borderRadius: "4px",
-              padding: "6px 10px",
-              fontSize: "13px",
+              padding: "clamp(5px, 1vw, 6px) clamp(7px, 1.5vw, 10px)",
+              fontSize: "clamp(11px, 2vw, 13px)",
               color: "#444",
               cursor: "pointer",
               background: "#fff",
+              flex: "1 1 calc(50% - 4px)",
+              minWidth: "120px",
             }}
           >
             <option value="Price High to Low">Price High to Low</option>
@@ -353,16 +359,17 @@ export default function PropertiesPage() {
             <option value="Oldest">Oldest</option>
           </select>
           {/* View toggle */}
-          <div style={{ marginLeft: "auto", display: "flex", gap: "6px" }}>
+          <div style={{ marginLeft: "auto", display: "flex", gap: "clamp(4px, 1vw, 6px)", flex: "0 1 auto" }}>
             <button
               onClick={() => setViewMode("grid")}
               style={{
-                padding: "6px 10px",
+                padding: "clamp(5px, 1vw, 6px) clamp(7px, 1.5vw, 10px)",
                 border: "1px solid #ddd",
                 borderRadius: "4px",
                 cursor: "pointer",
                 backgroundColor: viewMode === "grid" ? "#c49a6c" : "#fff",
                 color: viewMode === "grid" ? "#fff" : "#555",
+                fontSize: "clamp(11px, 2vw, 13px)",
               }}
             >
               <FaThLarge size={14} />
@@ -370,12 +377,13 @@ export default function PropertiesPage() {
             <button
               onClick={() => setViewMode("list")}
               style={{
-                padding: "6px 10px",
+                padding: "clamp(5px, 1vw, 6px) clamp(7px, 1.5vw, 10px)",
                 border: "1px solid #ddd",
                 borderRadius: "4px",
                 cursor: "pointer",
                 backgroundColor: viewMode === "list" ? "#c49a6c" : "#fff",
                 color: viewMode === "list" ? "#fff" : "#555",
+                fontSize: "clamp(11px, 2vw, 13px)",
               }}
             >
               <FaList size={14} />
@@ -411,8 +419,8 @@ export default function PropertiesPage() {
                 transition: "transform 0.3s, box-shadow 0.3s",
                 display: "flex",
                 flexDirection: "column",
-                minHeight: "560px",
-                flex: viewMode === "grid" ? "1 1 280px" : "1 1 100%",
+                minHeight: viewMode === "grid" ? "clamp(420px, 100vh, 560px)" : "auto",
+                flex: viewMode === "grid" ? "1 1 clamp(240px, 100%, 280px)" : "1 1 100%",
                 maxWidth: viewMode === "grid" ? "calc((100% - 48px) / 3)" : "100%",
               }}
               onMouseEnter={(e) => {
@@ -425,7 +433,7 @@ export default function PropertiesPage() {
               }}
             >
               {/* Image */}
-              <div style={{ position: "relative", height: "230px" }}>
+              <div style={{ position: "relative", height: viewMode === "grid" ? "clamp(160px, 50vw, 230px)" : "200px" }}>
                 <div
                   style={{
                     width: "100%", height: "100%",
@@ -508,18 +516,18 @@ export default function PropertiesPage() {
               </div>
 
               {/* Info */}
-              <div style={{ padding: "16px", display: "flex", flexDirection: "column", flex: 1 }}>
-                <p style={{ color: "#c49a6c", fontSize: "15px", fontWeight: 700, marginBottom: "4px" }}>{p.price}</p>
-                <h3 style={{ fontSize: "15px", fontWeight: 600, color: "#222", marginBottom: "8px" }}>{p.title}</h3>
+              <div style={{ padding: "clamp(12px, 3vw, 16px)", display: "flex", flexDirection: "column", flex: 1 }}>
+                <p style={{ color: "#c49a6c", fontSize: "clamp(13px, 3vw, 15px)", fontWeight: 700, marginBottom: "4px" }}>{p.price}</p>
+                <h3 style={{ fontSize: "clamp(13px, 3vw, 15px)", fontWeight: 600, color: "#222", marginBottom: "8px" }}>{p.title}</h3>
                 <ExpandableDescription
                   description={p.description}
                   maxLength={150}
                   color="#777"
-                  fontSize="12px"
+                  fontSize="clamp(11px, 2vw, 12px)"
                   marginBottom="12px"
                   lineHeight={1.8}
                 />
-                <p style={{ color: "#666", fontSize: "12px", marginBottom: "12px" }}>
+                <p style={{ color: "#666", fontSize: "clamp(11px, 2vw, 12px)", marginBottom: "12px" }}>
                   Location: {p.location}
                   {propertyMapUrl ? (
                     <>
@@ -531,23 +539,23 @@ export default function PropertiesPage() {
                     </>
                   ) : null}
                 </p>
-                <div style={{ display: "flex", gap: "14px", fontSize: "12px", fontWeight: 600, color: "#333", marginBottom: "14px" }}>
+                <div style={{ display: "flex", gap: "clamp(8px, 2vw, 14px)", fontSize: "clamp(10px, 2vw, 12px)", fontWeight: 600, color: "#333", marginBottom: "14px", flexWrap: "wrap" }}>
                   <span>Beds: {p.beds}</span>
                   <span>Baths: {p.baths}</span>
                   <span>Size: {p.size} m²</span>
                   <span>Year Built: {p.year}</span>
                 </div>
-                <div style={{ display: "flex", gap: "8px", marginTop: "auto" }}>
-                  <button type="button" onClick={openCallModal} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555" }}>
+                <div style={{ display: "flex", gap: "clamp(6px, 1.5vw, 8px)", marginTop: "auto", flexWrap: "wrap" }}>
+                  <button type="button" onClick={openCallModal} style={{ flex: "1 1 calc(50% - 4px)", minWidth: "80px", padding: "clamp(6px, 2vw, 8px)", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", fontSize: "clamp(10px, 2vw, 12px)", color: "#555" }}>
                     <FaPhone size={11} color="#c49a6c" /> Call
                   </button>
-                  <button type="button" onClick={() => openEmailModal(p.id)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "#555" }}>
+                  <button type="button" onClick={() => openEmailModal(p.id)} style={{ flex: "1 1 calc(50% - 4px)", minWidth: "80px", padding: "clamp(6px, 2vw, 8px)", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", fontSize: "clamp(10px, 2vw, 12px)", color: "#555" }}>
                     <FaEnvelope size={11} color="#c49a6c" /> Email
                   </button>
-                  <button type="button" onClick={() => openPropertyVideo(p.videoUrl, p.title)} style={{ flex: 1, padding: "8px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", fontSize: "12px", color: hasVideo ? "#c49a6c" : "#777", fontWeight: 600 }}>
+                  <button type="button" onClick={() => openPropertyVideo(p.videoUrl, p.title)} style={{ flex: "1 1 calc(50% - 4px)", minWidth: "80px", padding: "clamp(6px, 2vw, 8px)", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", fontSize: "clamp(10px, 2vw, 12px)", color: hasVideo ? "#c49a6c" : "#777", fontWeight: 600 }}>
                       Watch Video
                   </button>
-                  <a href={toWhatsAppHref(p.contactWhatsapp, content.contactActions.whatsappMessage)} target="_blank" rel="noreferrer" style={{ padding: "8px 12px", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
+                  <a href={toWhatsAppHref(p.contactWhatsapp, content.contactActions.whatsappMessage)} target="_blank" rel="noreferrer" style={{ padding: "clamp(6px, 2vw, 8px) clamp(8px, 2vw, 12px)", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", minWidth: "44px" }}>
                     <FaWhatsapp size={14} color="#25D366" />
                   </a>
                 </div>

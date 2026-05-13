@@ -32,10 +32,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Only image or video files are allowed" }, { status: 400 });
     }
 
-    const maxBytes = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+    const maxBytes = isVideo ? 700 * 1024 * 1024 : 10 * 1024 * 1024;
     if (fileEntry.size > maxBytes) {
       return NextResponse.json(
-        { error: isVideo ? "Video too large (max 50MB)" : "Image too large (max 10MB)" },
+        { error: isVideo ? "Video too large (max 700MB)" : "Image too large (max 10MB)" },
         { status: 400 },
       );
     }

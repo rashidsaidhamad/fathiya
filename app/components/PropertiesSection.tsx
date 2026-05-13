@@ -451,7 +451,7 @@ export default function PropertiesSection() {
                     <span>Beds: {p.beds}</span>
                     <span>Baths: {p.baths}</span>
                     <span>
-                      Size: {p.size} m<sup>2</sup>
+                      Size: {p.size.toLocaleString()} m<sup>2</sup>
                     </span>
                     <span>Year Built: {p.year}</span>
                   </div>

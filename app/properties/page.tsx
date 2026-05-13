@@ -542,7 +542,7 @@ export default function PropertiesPage() {
                 <div style={{ display: "flex", gap: "clamp(8px, 2vw, 14px)", fontSize: "clamp(10px, 2vw, 12px)", fontWeight: 600, color: "#333", marginBottom: "14px", flexWrap: "wrap" }}>
                   <span>Beds: {p.beds}</span>
                   <span>Baths: {p.baths}</span>
-                  <span>Size: {p.size} m²</span>
+                  <span>Size: {p.size.toLocaleString()} m²</span>
                   <span>Year Built: {p.year}</span>
                 </div>
                 <div style={{ display: "flex", gap: "clamp(6px, 1.5vw, 8px)", marginTop: "auto", flexWrap: "wrap" }}>

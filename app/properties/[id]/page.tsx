@@ -78,19 +78,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   <div style={{ background: "#f9fafb", borderRadius: 14, padding: 14 }}><strong>Year</strong><div style={{ marginTop: 4 }}>{property.year}</div></div>
                 </div>
 
-                {Array.isArray(property.features) && property.features.length > 0 && (
-                  <div style={{ marginTop: 20 }}>
-                    <p style={{ margin: "0 0 12px 0", color: "#c49a6c", fontWeight: 800, letterSpacing: 1.2, textTransform: "uppercase", fontSize: 12 }}>Features</p>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
-                      {property.features.map((feature, index) => (
-                        <div key={index} style={{ background: "#f9fafb", borderRadius: 12, padding: 12, display: "flex", alignItems: "center", gap: 10 }}>
-                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c49a6c", flexShrink: 0 }} />
-                          <span style={{ fontSize: 14, color: "#333" }}>{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                {/* Features section removed as requested */}
 
                 <div style={{ marginTop: 18, paddingTop: 18, borderTop: "1px solid #eee", display: "grid", gap: 10 }}>
                   <div style={{ color: "#444" }}><strong>Location:</strong> {property.location}</div>

@@ -1,13 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { FaThLarge, FaList } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { defaultSiteContent, type ArticleItem } from "../../lib/siteContent";
 
 export default function BlogPage() {
   const [allArticles, setAllArticles] = useState<ArticleItem[]>(defaultSiteContent.articles);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [expandedSummaries, setExpandedSummaries] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetch("/api/site-content")
@@ -19,6 +18,23 @@ export default function BlogPage() {
         // Keep defaults.
       });
   }, []);
+
+  function toggleSummary(slug: string) {
+    setExpandedSummaries((current) => ({
+      ...current,
+      [slug]: !current[slug],
+    }));
+  }
+
+  function getSummaryText(excerpt: string, slug: string) {
+    const isExpanded = expandedSummaries[slug] ?? false;
+    if (isExpanded) return excerpt;
+
+    const words = excerpt.trim().split(/\s+/);
+    if (words.length <= 28) return excerpt;
+
+    return `${words.slice(0, 28).join(" ")}...`;
+  }
 
   return (
     <>
@@ -52,103 +68,100 @@ export default function BlogPage() {
       </div>
 
       <div style={{ backgroundColor: "#f5f5f5", minHeight: "60vh" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 24px" }}>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "18px" }}>
-            <div style={{ display: "flex", gap: "6px" }}>
-              <button
-                onClick={() => setViewMode("grid")}
+        <div className="blog-page-wrap" style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 24px" }}>
+          <div className="blog-landscape-list" style={{ display: "grid", gap: "24px" }}>
+            {allArticles.map((a, i) => (
+              <article
+                key={i}
+                className="blog-landscape-card"
                 style={{
-                  padding: "6px 10px",
-                  border: "1px solid #ddd",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  backgroundColor: viewMode === "grid" ? "#c49a6c" : "#fff",
-                  color: viewMode === "grid" ? "#fff" : "#555",
+                  backgroundColor: "#fff",
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                  display: "flex",
+                  alignItems: "stretch",
+                  minHeight: "220px",
                 }}
-                aria-label="Grid view"
-              >
-                <FaThLarge size={14} />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                style={{
-                  padding: "6px 10px",
-                  border: "1px solid #ddd",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  backgroundColor: viewMode === "list" ? "#c49a6c" : "#fff",
-                  color: viewMode === "list" ? "#fff" : "#555",
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px rgba(0,0,0,0.12)";
                 }}
-                aria-label="List view"
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 12px rgba(0,0,0,0.07)";
+                }}
               >
-                <FaList size={14} />
-              </button>
-            </div>
-          </div>
+                <a href={`/blog/${a.slug}`} className="blog-landscape-image-link" style={{ textDecoration: "none", flex: "0 0 38%", minWidth: "280px" }}>
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      minHeight: "220px",
+                      backgroundImage: `url('${a.image}')`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                  />
+                </a>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: viewMode === "grid" ? "1fr 1fr" : "1fr",
-              gap: "24px",
-            }}
-          >
-              {allArticles.map((a, i) => (
-                <div
-                  key={i}
-                  style={{
-                    backgroundColor: "#fff",
-                    borderRadius: "8px",
-                    overflow: "hidden",
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
-                    transition: "transform 0.3s, box-shadow 0.3s",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)";
-                    (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px rgba(0,0,0,0.12)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                    (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 12px rgba(0,0,0,0.07)";
-                  }}
-                >
+                <div className="blog-landscape-content" style={{ padding: "22px", display: "flex", flexDirection: "column", flex: 1 }}>
                   <a href={`/blog/${a.slug}`} style={{ textDecoration: "none" }}>
-                    <div
-                      style={{
-                        height: "200px",
-                        backgroundImage: `url('${a.image}')`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }}
-                    />
+                    <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#222", marginBottom: "6px", lineHeight: 1.35 }}>
+                      {a.title}
+                    </h3>
                   </a>
-                  <div style={{ padding: "20px" }}>
-                    <a href={`/blog/${a.slug}`} style={{ textDecoration: "none" }}>
-                      <h3 style={{ fontSize: "15px", fontWeight: 600, color: "#222", marginBottom: "6px", lineHeight: 1.4 }}>
-                        {a.title}
-                      </h3>
-                    </a>
-                    <p style={{ fontSize: "12px", color: "#aaa", marginBottom: "10px" }}>{a.date}</p>
-                    <p style={{ fontSize: "13px", color: "#666", lineHeight: 1.6, marginBottom: "14px" }}>
-                      
-                    </p>
-                    <p style={{ fontSize: "13px", color: "#666", lineHeight: 1.6, marginBottom: "14px", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-                      {a.excerpt}
-                    </p>
-                    <a
-                      href={`/blog/${a.slug}`}
-                      style={{ fontSize: "13px", color: "#333", fontWeight: 600, textDecoration: "none", display: "flex", alignItems: "center", gap: "4px" }}
-                      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#c49a6c")}
-                      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#333")}
-                    >
-                      Continue reading <span style={{ fontSize: "16px" }}>›</span>
-                    </a>
-                  </div>
+                  <p style={{ fontSize: "12px", color: "#aaa", marginBottom: "12px" }}>{a.date}</p>
+                  <p style={{ fontSize: "14px", color: "#666", lineHeight: 1.7, marginBottom: "10px", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                    {getSummaryText(a.excerpt, a.slug)}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => toggleSummary(a.slug)}
+                    style={{
+                      alignSelf: "flex-start",
+                      border: "none",
+                      background: "transparent",
+                      color: "#c49a6c",
+                      padding: 0,
+                      marginBottom: "14px",
+                      fontSize: "13px",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {expandedSummaries[a.slug] ? "Show less" : "Show more"}
+                  </button>
+                  <a
+                    href={`/blog/${a.slug}`}
+                    style={{ fontSize: "13px", color: "#333", fontWeight: 700, textDecoration: "none", display: "flex", alignItems: "center", gap: "4px", marginTop: "auto" }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#c49a6c")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#333")}
+                  >
+                    Continue reading <span style={{ fontSize: "16px" }}>›</span>
+                  </a>
                 </div>
-              ))}
+              </article>
+            ))}
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @media (max-width: 900px) {
+          .blog-page-wrap { padding: 24px 16px !important; }
+          .blog-landscape-card { flex-direction: column; min-height: auto !important; }
+          .blog-landscape-image-link { flex: 1 1 auto !important; min-width: 0 !important; }
+          .blog-landscape-image-link > div { min-height: 220px !important; height: 220px !important; }
+          .blog-landscape-content { padding: 18px !important; }
+        }
+
+        @media (max-width: 600px) {
+          .blog-landscape-image-link > div { min-height: 190px !important; height: 190px !important; }
+          .blog-landscape-content h3 { font-size: 16px !important; }
+        }
+      `}</style>
       <Footer />
     </>
   );

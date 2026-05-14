@@ -1,14 +1,16 @@
 ﻿"use client";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FaMapMarkerAlt } from "react-icons/fa";
 import { useInView } from "../hooks/useInView";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
-import ExpandableDescription from "./ExpandableDescription";
 
 const CALL_NUMBERS = ["+255659740712", "+255659741770"];
 
 export default function PropertiesSection() {
   const { ref, inView } = useInView();
+  const router = useRouter();
   const content = useSiteContent();
   const properties = content.properties;
   const [visibleStartIndex, setVisibleStartIndex] = useState(0);
@@ -257,219 +259,85 @@ export default function PropertiesSection() {
         {visibleProperties.map((p, idx) => {
           const propertyImages = Array.isArray(p.images) && p.images.length > 0 ? p.images : [p.image];
           const primaryImage = propertyImages[0] ?? p.image;
-          const videoHref = p.videoUrl?.trim() || content.videoSection.videoUrl?.trim() || "";
 
           return (
             <div
               key={p.id}
+              role="link"
+              tabIndex={0}
+              onClick={() => router.push(`/properties/${p.id}`)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  router.push(`/properties/${p.id}`);
+                }
+              }}
               style={{
                 backgroundColor: "#fff",
-                borderRadius: "8px",
+                borderRadius: "12px",
                 overflow: "hidden",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
                 opacity: inView ? 1 : 0,
                 transform: inView ? "translateY(0)" : "translateY(30px)",
                 transition: `opacity 0.7s ease ${idx * 0.1}s, transform 0.7s ease ${idx * 0.1}s, box-shadow 0.3s`,
-                flex: properties.length <= 1 ? "1 1 380px" : "1 1 clamp(240px, 100%, 260px)",
+                flex: properties.length <= 1 ? "1 1 380px" : "1 1 clamp(280px, 100%, 320px)",
                 maxWidth: properties.length <= 1 ? "380px" : `calc((100% - ${22 * (visiblePropertyCount - 1)}px) / ${visiblePropertyCount})`,
-                minHeight: "clamp(420px, 100vh, 560px)",
+                minHeight: "420px",
                 display: "flex",
                 flexDirection: "column",
+                cursor: "pointer",
+                outline: "none",
               }}
-                onMouseEnter={(e) => {
+              onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 30px rgba(0,0,0,0.15)";
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px rgba(0,0,0,0.08)";
               }}
             >
-                {/* Image */}
-                <div style={{ position: "relative", height: "clamp(160px, 50vw, 230px)" }}>
-                  <div
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      backgroundImage: `url('${primaryImage}')`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  />
-                  {/* Tags - top right */}
-                  <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", gap: "6px" }}>
-                    <span
-                      style={{
-                        backgroundColor: p.statusColor,
-                        color: "#fff",
-                        padding: "4px 10px",
-                        borderRadius: "3px",
-                        fontSize: "11px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {p.status}
-                    </span>
-                    <span
-                      style={{
-                        backgroundColor: p.statusColor,
-                        color: "#fff",
-                        padding: "4px 10px",
-                        borderRadius: "3px",
-                        fontSize: "11px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {p.active}
-                    </span>
-                  </div>
-                  {/* Bottom action icons */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "10px",
-                      left: "10px",
-                      display: "flex",
-                      gap: "6px",
-                      alignItems: "center",
-                    }}
-                  >
-                    <a
-                      href={p.mapUrl}
-                      onClick={(e) => e.stopPropagation()}
-                      target="_blank"
-                      rel="noreferrer"
-                      title={`Open map for ${p.title}`}
-                      style={{
-                        width: 26,
-                        height: 26,
-                        borderRadius: "50%",
-                        background: "rgba(255,255,255,0.9)",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "#c49a6c",
-                        textDecoration: "none",
-                      }}
-                    >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    </a>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openGalleryModal(p.id);
-                      }}
-                      style={{
-                        padding: "5px 10px",
-                        borderRadius: "999px",
-                        border: "none",
-                        background: "rgba(255,255,255,0.9)",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "#c49a6c",
-                        fontSize: "11px",
-                        fontWeight: 700,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      Gallery
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openPropertyVideo(p.videoUrl ?? "", p.title);
-                      }}
-                      style={{
-                        padding: "5px 10px",
-                        borderRadius: "999px",
-                        border: "none",
-                        background: "rgba(255,255,255,0.9)",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "#c49a6c",
-                        textDecoration: "none",
-                        fontSize: "11px",
-                        fontWeight: 700,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      Watch Video
-                    </button>
-                  </div>
-                </div>
-
-                {/* Info */}
-                <div style={{ padding: "clamp(12px, 3vw, 16px)", display: "flex", flexDirection: "column", flex: 1 }}>
-                  <p style={{ color: "#c49a6c", fontSize: "clamp(13px, 3vw, 15px)", fontWeight: 700, marginBottom: "4px" }}>
-                    {p.price}
-                  </p>
-                  <h3
-                    style={{
-                      fontSize: "clamp(13px, 3vw, 15px)",
-                      fontWeight: 600,
-                      color: "#222",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    {p.title}
-                  </h3>
-                  <ExpandableDescription
-                    description={p.description}
-                    maxLength={150}
-                    color="#777"
-                    fontSize="clamp(11px, 2vw, 13px)"
-                    marginBottom="12px"
-                    lineHeight={1.8}
-                  />
-                  <p style={{ color: "#666", fontSize: "clamp(11px, 2vw, 12px)", marginBottom: "12px" }}>
-                    Location: {p.location}
-                    {p.mapUrl ? (
-                      <>
-                        {" "}
-                        <a href={p.mapUrl} target="_blank" rel="noreferrer" style={{ color: "#c49a6c", textDecoration: "none", fontWeight: 600 }}>
-                          View Map
-                        </a>
-                      </>
-                    ) : null}
-                  </p>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "clamp(8px, 2vw, 14px)",
-                      color: "#333",
-                      fontSize: "clamp(10px, 2vw, 12px)",
-                      fontWeight: 600,
-                      marginBottom: "10px",
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <span>Beds: {p.beds}</span>
-                    <span>Baths: {p.baths}</span>
-                    <span>
-                      Size: {p.size.toLocaleString()} m<sup>2</sup>
-                    </span>
-                    <span>Year Built: {p.year}</span>
-                  </div>
-                  <div style={{ display: "flex", gap: "clamp(6px, 1.5vw, 8px)", marginTop: "auto", flexWrap: "wrap" }}>
-                    <button type="button" onClick={(e) => { e.stopPropagation(); openCallModal(); }} style={{ flex: "1 1 calc(50% - 4px)", minWidth: "90px", padding: "clamp(6px, 2vw, 8px)", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", fontSize: "clamp(10px, 2vw, 12px)", color: "#555" }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.5 12 19.79 19.79 0 011.5 3.18 2 2 0 013.5 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
-                      Call
-                    </button>
-                    <button type="button" onClick={(e) => { e.stopPropagation(); openEmailModal(p.id); }} style={{ flex: "1 1 calc(50% - 4px)", minWidth: "90px", padding: "clamp(6px, 2vw, 8px)", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", fontSize: "clamp(10px, 2vw, 12px)", color: "#555" }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                      Email
-                    </button>
-                    <a href={toWhatsAppHref(p.contactWhatsapp, content.contactActions.whatsappMessage)} onClick={(e) => e.stopPropagation()} target="_blank" rel="noreferrer" style={{ padding: "clamp(6px, 2vw, 8px) clamp(8px, 2vw, 12px)", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", minWidth: "44px" }}>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                    </a>
-                  </div>
+              <div style={{ position: "relative", height: "220px" }}>
+                <div style={{ width: "100%", height: "100%", backgroundImage: `url('${primaryImage}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
+                {/* Best Deal badge removed */}
+                <div style={{ position: "absolute", bottom: 10, left: 10, display: "flex", gap: 6, alignItems: "center" }}>
+                  <button type="button" onClick={(e) => { e.stopPropagation(); openPropertyVideo(p.videoUrl ?? "", p.title); }} style={{ padding: "5px 10px", borderRadius: "999px", border: "none", background: "rgba(255,255,255,0.9)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#c49a6c", textDecoration: "none", fontSize: "11px", fontWeight: 700, whiteSpace: "nowrap" }}>
+                    Watch Video
+                  </button>
                 </div>
               </div>
+              <div style={{ padding: "clamp(12px, 3vw, 16px)", display: "flex", flexDirection: "column", flex: 1 }}>
+                <p style={{ color: "#c49a6c", fontSize: "clamp(13px, 3vw, 15px)", fontWeight: 700, marginBottom: "4px" }}>{p.price}</p>
+                <h3 style={{ fontSize: "clamp(13px, 3vw, 15px)", fontWeight: 700, color: "#222", marginBottom: "8px", lineHeight: 1.35 }}>{p.title}</h3>
+                <div style={{ display: "flex", gap: "12px", color: "#333", fontSize: "clamp(11px, 2vw, 12px)", fontWeight: 600, marginBottom: "12px", flexWrap: "wrap" }}>
+                  <span>Bed: {p.beds}</span>
+                  <span>Bath: {p.baths}</span>
+                  <span>Size: {p.size.toLocaleString()} m<sup>2</sup></span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#555", fontSize: "13px", marginBottom: 12 }}>
+                  <FaMapMarkerAlt color="#c49a6c" size={13} />
+                  <span style={{ lineHeight: 1.5 }}>{p.location}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/properties/${p.id}`);
+                  }}
+                  style={{
+                    marginTop: "auto",
+                    border: "none",
+                    borderRadius: "999px",
+                    padding: "10px 16px",
+                    background: "#c49a6c",
+                    color: "#fff",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  Show More
+                </button>
+              </div>
+            </div>
           );
         })}
       </div>
@@ -588,7 +456,7 @@ export default function PropertiesSection() {
           >
             <h3 style={{ margin: 0, color: "#111827", fontSize: "22px", fontFamily: "Georgia, serif" }}>Property Enquiry</h3>
             <p style={{ margin: 0, color: "#4b5563", fontSize: "13px" }}>
-              {selectedEmailProperty.title}
+              {selectedEmailProperty!.title}
             </p>
             <p style={{ margin: 0, color: "#6b7280", fontSize: "12px" }}>
               This message will be sent to archipelagoproperties.zanzibar@gmail.com
@@ -685,8 +553,8 @@ export default function PropertiesSection() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
               <div>
-                <h3 style={{ margin: 0, color: "#111827", fontSize: "22px", fontFamily: "Georgia, serif" }}>{selectedGalleryProperty.title}</h3>
-                <p style={{ margin: "4px 0 0", color: "#6b7280", fontSize: "13px" }}>{selectedGalleryProperty.location}</p>
+                <h3 style={{ margin: 0, color: "#111827", fontSize: "22px", fontFamily: "Georgia, serif" }}>{selectedGalleryProperty!.title}</h3>
+                <p style={{ margin: "4px 0 0", color: "#6b7280", fontSize: "13px" }}>{selectedGalleryProperty!.location}</p>
               </div>
               <button type="button" onClick={closeGalleryModal} style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}>
                 Close
@@ -694,8 +562,9 @@ export default function PropertiesSection() {
             </div>
 
             {(() => {
-              const galleryImages = Array.isArray(selectedGalleryProperty.images) && selectedGalleryProperty.images.length > 0 ? selectedGalleryProperty.images : [selectedGalleryProperty.image];
-              const currentGalleryImage = galleryImages[galleryImageIndex] ?? galleryImages[0] ?? selectedGalleryProperty.image;
+              const gallerySource = selectedGalleryProperty!;
+              const galleryImages = Array.isArray(gallerySource.images) && gallerySource.images.length > 0 ? gallerySource.images : [gallerySource.image];
+              const currentGalleryImage = galleryImages[galleryImageIndex] ?? galleryImages[0] ?? gallerySource.image;
               return (
                 <div style={{ display: "grid", gap: "10px" }}>
                   <div style={{ position: "relative", height: "420px", borderRadius: "10px", overflow: "hidden", backgroundColor: "#f3f4f6" }}>
@@ -707,7 +576,7 @@ export default function PropertiesSection() {
                   <div style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "4px" }}>
                     {galleryImages.map((imageUrl, index) => (
                       <button
-                        key={`${selectedGalleryProperty.id}-${index}`}
+                        key={`${gallerySource.id}-${index}`}
                         type="button"
                         onClick={() => setGalleryImageIndex(index)}
                         style={{
@@ -727,7 +596,7 @@ export default function PropertiesSection() {
                   </div>
 
                   <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                    <button type="button" onClick={() => openPropertyVideo(selectedGalleryProperty.videoUrl ?? "", selectedGalleryProperty.title)} style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}>
+                    <button type="button" onClick={() => openPropertyVideo(gallerySource.videoUrl ?? "", gallerySource.title)} style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}>
                       Watch Video
                     </button>
                   </div>

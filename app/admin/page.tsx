@@ -604,7 +604,7 @@ export default function AdminPage() {
           videoUrl: "",
           contactEmail: prev.contactActions.email,
           contactPhone: prev.contactActions.phone,
-          otherMobilePhone: prev.contactActions.phone,
+          otherMobilePhone: "+255659741770",
           contactWhatsapp: prev.contactActions.whatsapp,
         },
       ],
@@ -1276,6 +1276,7 @@ export default function AdminPage() {
                           ["Image URL", item.image, "image"],
                           ["Contact Email", item.contactEmail, "contactEmail"],
                           ["Contact Phone", item.contactPhone, "contactPhone"],
+                          ["Other Mobile Phone", item.otherMobilePhone ?? "", "otherMobilePhone"],
                           ["Contact WhatsApp", item.contactWhatsapp, "contactWhatsapp"],
                         ].map(([label, value, key]) => (
                           <label key={key as string} style={{ display: "grid", gap: "6px" }}>

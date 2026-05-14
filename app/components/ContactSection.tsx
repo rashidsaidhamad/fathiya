@@ -204,7 +204,7 @@ export default function ContactSection() {
         </div>
 
         {/* Right contact info */}
-        <div style={{ color: "#fff", flex: 1 }}>
+        <div className="contact-home-info" style={{ color: "#fff", flex: 1 }}>
           <h2
             style={{
               fontSize: "36px",
@@ -325,6 +325,59 @@ export default function ContactSection() {
           ↑
         </button>
       </div>
+
+      <style jsx>{`
+        @media (max-width: 900px) {
+          .contact-home-inner {
+            gap: 32px !important;
+          }
+
+          .contact-home-form-card {
+            width: 100% !important;
+            padding: 28px !important;
+          }
+
+          .contact-home-info h2 {
+            font-size: 30px !important;
+            margin-bottom: 24px !important;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .contact-home-root {
+            min-height: auto !important;
+            padding: 48px 16px !important;
+          }
+
+          .contact-home-inner {
+            gap: 24px !important;
+          }
+
+          .contact-home-form-card {
+            padding: 20px !important;
+            border-radius: 14px !important;
+          }
+
+          .contact-home-form-grid {
+            grid-template-columns: 1fr !important;
+          }
+
+          .contact-home-form-card h2 {
+            font-size: 20px !important;
+            margin-bottom: 18px !important;
+          }
+
+          .contact-home-info h2 {
+            font-size: 24px !important;
+            margin-bottom: 18px !important;
+          }
+
+          .contact-home-info a,
+          .contact-home-info span {
+            font-size: 14px !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

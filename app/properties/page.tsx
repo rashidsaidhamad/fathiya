@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { FaPhone, FaEnvelope, FaWhatsapp, FaThLarge, FaList, FaMapMarkerAlt } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
-import ExpandableDescription from "../components/ExpandableDescription";
 
 const CALL_NUMBERS = ["+255659740712", "+255659741770"];
 
@@ -40,6 +40,7 @@ function inferPropertyType(title: string, description: string) {
 }
 
 export default function PropertiesPage() {
+  const router = useRouter();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [propertyImageIndexes, setPropertyImageIndexes] = useState<Record<number, number>>({});
   const [emailModalPropertyId, setEmailModalPropertyId] = useState<number | null>(null);
@@ -401,169 +402,80 @@ export default function PropertiesPage() {
             alignItems: "flex-start",
           }}
         >
-          {filteredProperties.map((p) => (
-            (() => {
-              const propertyMapUrl = getMapUrl(p.location, p.mapUrl);
-              const propertyImages = getPropertyImages(p.images, p.image);
-              const currentImageIndex = propertyImages.length > 0 ? (propertyImageIndexes[p.id] ?? 0) % propertyImages.length : 0;
-              const currentImage = propertyImages[currentImageIndex] ?? p.image;
-              const hasVideo = Boolean(p.videoUrl?.trim());
-              return (
-            <div
-              key={p.id}
-              style={{
-                backgroundColor: "#fff",
-                borderRadius: "8px",
-                overflow: "hidden",
-                boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-                transition: "transform 0.3s, box-shadow 0.3s",
-                display: "flex",
-                flexDirection: "column",
-                minHeight: viewMode === "grid" ? "clamp(420px, 100vh, 560px)" : "auto",
-                flex: viewMode === "grid" ? "1 1 clamp(240px, 100%, 280px)" : "1 1 100%",
-                maxWidth: viewMode === "grid" ? "calc((100% - 48px) / 3)" : "100%",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)";
-                (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 28px rgba(0,0,0,0.14)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 12px rgba(0,0,0,0.08)";
-              }}
-            >
-              {/* Image */}
-              <div style={{ position: "relative", height: viewMode === "grid" ? "clamp(160px, 50vw, 230px)" : "200px" }}>
-                <div
-                  style={{
-                    width: "100%", height: "100%",
-                    backgroundImage: `url('${currentImage}')`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
-                />
-                {/* Status tags */}
-                <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", gap: "5px" }}>
-                  <span style={{ background: p.statusColor, color: "#fff", padding: "3px 8px", borderRadius: "3px", fontSize: "11px", fontWeight: 600 }}>
-                    {p.status}
-                  </span>
-                  <span style={{ background: p.statusColor, color: "#fff", padding: "3px 8px", borderRadius: "3px", fontSize: "11px", fontWeight: 600 }}>
-                    {p.active}
-                  </span>
+          {filteredProperties.map((p) => {
+            const propertyMapUrl = getMapUrl(p.location, p.mapUrl);
+            const propertyImages = getPropertyImages(p.images, p.image);
+            const currentImageIndex = propertyImages.length > 0 ? (propertyImageIndexes[p.id] ?? 0) % propertyImages.length : 0;
+            const currentImage = propertyImages[currentImageIndex] ?? p.image;
+
+            return (
+              <div
+                key={p.id}
+                role="link"
+                tabIndex={0}
+                onClick={() => router.push(`/properties/${p.id}`)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    router.push(`/properties/${p.id}`);
+                  }
+                }}
+                style={{
+                  backgroundColor: "#fff",
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+                  display: "flex",
+                  flexDirection: "column",
+                  minHeight: viewMode === "grid" ? "420px" : "auto",
+                  flex: viewMode === "grid" ? "1 1 clamp(280px, 100%, 320px)" : "1 1 100%",
+                  maxWidth: viewMode === "grid" ? "calc((100% - 48px) / 3)" : "100%",
+                  cursor: "pointer",
+                  outline: "none",
+                }}
+              >
+                <div style={{ position: "relative", height: viewMode === "grid" ? "220px" : "240px" }}>
+                  <div style={{ width: "100%", height: "100%", backgroundImage: `url('${currentImage}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
+                  {/* Best Deal badge removed */}
                 </div>
-                {/* Bottom action icons */}
-                <div style={{ position: "absolute", bottom: "10px", left: "10px", display: "flex", gap: "6px" }}>
-                  <a
-                    href={propertyMapUrl}
-                    onClick={(e) => e.stopPropagation()}
-                    target="_blank"
-                    rel="noreferrer"
-                    title={`Open map for ${p.title}`}
-                    style={{
-                      width: 26,
-                      height: 26,
-                      borderRadius: "50%",
-                      background: "rgba(255,255,255,0.9)",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#c49a6c",
-                      textDecoration: "none",
-                    }}
-                  >
-                    <FaMapMarkerAlt size={12} />
-                  </a>
+                <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
+                  <div>
+                    <p style={{ margin: 0, color: "#111827", fontSize: "18px", fontWeight: 800 }}>{p.price}</p>
+                    <p style={{ margin: "4px 0 0", color: "#4b5563", fontSize: "15px", fontWeight: 700 }}>{p.title}</p>
+                  </div>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", color: "#374151", fontSize: 13, fontWeight: 600 }}>
+                    <span>Bed {p.beds}</span>
+                    <span>Bath {p.baths}</span>
+                    <span>Size {p.size.toLocaleString()} m²</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#555", fontSize: 13 }}>
+                    <FaMapMarkerAlt color="#c49a6c" size={13} />
+                    <span style={{ lineHeight: 1.5 }}>{p.location}</span>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => openGalleryModal(p.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/properties/${p.id}`);
+                    }}
                     style={{
-                      padding: "5px 10px",
-                      borderRadius: "999px",
+                      marginTop: "auto",
                       border: "none",
-                      background: "rgba(255,255,255,0.9)",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#c49a6c",
-                      textDecoration: "none",
-                      fontSize: "11px",
+                      borderRadius: "999px",
+                      padding: "10px 16px",
+                      background: "#c49a6c",
+                      color: "#fff",
                       fontWeight: 700,
-                      whiteSpace: "nowrap",
+                      cursor: "pointer",
+                      alignSelf: "flex-start",
                     }}
                   >
-                    Gallery
+                    Show More
                   </button>
-                </div>
-                {/* Prev/Next arrows */}
-                <button
-                  onClick={() => goToPrevPropertyImage(p.id, propertyImages.length)}
-                  disabled={propertyImages.length <= 1}
-                  style={{ position: "absolute", left: "8px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.8)", border: "none", borderRadius: "50%", width: 26, height: 26, cursor: propertyImages.length <= 1 ? "default" : "pointer", fontSize: "14px", opacity: propertyImages.length <= 1 ? 0.5 : 1 }}
-                  aria-label={`Previous image for ${p.title}`}
-                >
-                  ‹
-                </button>
-                <button
-                  onClick={() => goToNextPropertyImage(p.id, propertyImages.length)}
-                  disabled={propertyImages.length <= 1}
-                  style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.8)", border: "none", borderRadius: "50%", width: 26, height: 26, cursor: propertyImages.length <= 1 ? "default" : "pointer", fontSize: "14px", opacity: propertyImages.length <= 1 ? 0.5 : 1 }}
-                  aria-label={`Next image for ${p.title}`}
-                >
-                  ›
-                </button>
-              </div>
-
-              {/* Info */}
-              <div style={{ padding: "clamp(12px, 3vw, 16px)", display: "flex", flexDirection: "column", flex: 1 }}>
-                <p style={{ color: "#c49a6c", fontSize: "clamp(13px, 3vw, 15px)", fontWeight: 700, marginBottom: "4px" }}>{p.price}</p>
-                <h3 style={{ fontSize: "clamp(13px, 3vw, 15px)", fontWeight: 600, color: "#222", marginBottom: "8px" }}>{p.title}</h3>
-                <ExpandableDescription
-                  description={p.description}
-                  maxLength={150}
-                  color="#777"
-                  fontSize="clamp(11px, 2vw, 12px)"
-                  marginBottom="12px"
-                  lineHeight={1.8}
-                />
-                <p style={{ color: "#666", fontSize: "clamp(11px, 2vw, 12px)", marginBottom: "12px" }}>
-                  Location: {p.location}
-                  {propertyMapUrl ? (
-                    <>
-                      {" "}
-                      <a href={propertyMapUrl} target="_blank" rel="noreferrer" style={{ color: "#c49a6c", textDecoration: "none", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                        <FaMapMarkerAlt size={12} />
-                        View Map
-                      </a>
-                    </>
-                  ) : null}
-                </p>
-                <div style={{ display: "flex", gap: "clamp(8px, 2vw, 14px)", fontSize: "clamp(10px, 2vw, 12px)", fontWeight: 600, color: "#333", marginBottom: "14px", flexWrap: "wrap" }}>
-                  <span>Beds: {p.beds}</span>
-                  <span>Baths: {p.baths}</span>
-                  <span>Size: {p.size.toLocaleString()} m²</span>
-                  <span>Year Built: {p.year}</span>
-                </div>
-                <div style={{ display: "flex", gap: "clamp(6px, 1.5vw, 8px)", marginTop: "auto", flexWrap: "wrap" }}>
-                  <button type="button" onClick={openCallModal} style={{ flex: "1 1 calc(50% - 4px)", minWidth: "80px", padding: "clamp(6px, 2vw, 8px)", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", fontSize: "clamp(10px, 2vw, 12px)", color: "#555" }}>
-                    <FaPhone size={11} color="#c49a6c" /> Call
-                  </button>
-                  <button type="button" onClick={() => openEmailModal(p.id)} style={{ flex: "1 1 calc(50% - 4px)", minWidth: "80px", padding: "clamp(6px, 2vw, 8px)", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", fontSize: "clamp(10px, 2vw, 12px)", color: "#555" }}>
-                    <FaEnvelope size={11} color="#c49a6c" /> Email
-                  </button>
-                  <button type="button" onClick={() => openPropertyVideo(p.videoUrl, p.title)} style={{ flex: "1 1 calc(50% - 4px)", minWidth: "80px", padding: "clamp(6px, 2vw, 8px)", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", fontSize: "clamp(10px, 2vw, 12px)", color: hasVideo ? "#c49a6c" : "#777", fontWeight: 600 }}>
-                      Watch Video
-                  </button>
-                  <a href={toWhatsAppHref(p.contactWhatsapp, content.contactActions.whatsappMessage)} target="_blank" rel="noreferrer" style={{ padding: "clamp(6px, 2vw, 8px) clamp(8px, 2vw, 12px)", border: "1px solid #e5e5e5", borderRadius: "4px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", minWidth: "44px" }}>
-                    <FaWhatsapp size={14} color="#25D366" />
-                  </a>
                 </div>
               </div>
-            </div>
-              );
-            })()
-          ))}
+            );
+          })}
         </div>
         {filteredProperties.length === 0 ? (
           <p style={{ marginTop: "18px", color: "#666", fontSize: "14px" }}>

@@ -61,6 +61,8 @@ export async function getSiteContent(): Promise<SiteContent> {
             return {
               ...merged,
               images: gallery.length > 0 ? gallery : [merged.image],
+              agentFullName: typeof merged.agentFullName === "string" ? merged.agentFullName : "Archipelago Estates Agent",
+              agentImage: typeof merged.agentImage === "string" ? merged.agentImage : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80",
               otherMobilePhone: typeof merged.otherMobilePhone === "string" ? merged.otherMobilePhone : "",
             };
           })

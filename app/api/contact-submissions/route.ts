@@ -8,6 +8,10 @@ import nodemailer from "nodemailer";
 
 const COMPANY_EMAIL = process.env.NOTIFY_EMAIL || process.env.COMPANY_EMAIL || "archipelagoproperties.zanzibar@gmail.com";
 
+function isValidEmail(value?: string): value is string {
+  return typeof value === "string" && /^\S+@\S+\.\S+$/.test(value);
+}
+
 type EmailRoutingInfo = {
   to: string;
   from: string;
@@ -15,7 +19,7 @@ type EmailRoutingInfo = {
   sent: boolean;
 };
 
-function getEmailRoutingInfo(submission: ContactSubmission): Omit<EmailRoutingInfo, "sent"> {
+function getEmailRoutingInfo(submission: ContactSubmission, recipientEmail?: string): Omit<EmailRoutingInfo, "sent"> {
   const smtpUser = process.env.SMTP_USER;
   const smtpFromAddress = process.env.SMTP_FROM || process.env.SMTP_FROM_EMAIL || smtpUser || "SMTP not configured";
   const clientEmail = submission.email.includes("@") ? submission.email : undefined;
@@ -24,18 +28,18 @@ function getEmailRoutingInfo(submission: ContactSubmission): Omit<EmailRoutingIn
     : smtpFromAddress;
   const replyToAddress = clientEmail;
   return {
-    to: COMPANY_EMAIL,
+    to: isValidEmail(recipientEmail) ? recipientEmail : COMPANY_EMAIL,
     from: fromAddress,
     replyTo: replyToAddress,
   };
 }
 
-async function sendContactNotification(submission: ContactSubmission): Promise<EmailRoutingInfo> {
+async function sendContactNotification(submission: ContactSubmission, recipientEmail?: string): Promise<EmailRoutingInfo> {
   const smtpHost = process.env.SMTP_HOST;
   const smtpPort = Number(process.env.SMTP_PORT || "587");
   const smtpUser = process.env.SMTP_USER;
   const smtpPass = process.env.SMTP_PASS;
-  const routing = getEmailRoutingInfo(submission);
+  const routing = getEmailRoutingInfo(submission, recipientEmail);
 
   if (!smtpHost || !smtpUser || !smtpPass) {
     return {
@@ -96,6 +100,7 @@ export async function POST(request: Request) {
     phone?: string;
     message?: string;
     hearAboutUs?: string[];
+    recipientEmail?: string;
   };
 
   const contentType = request.headers.get("content-type") ?? "";
@@ -114,6 +119,7 @@ export async function POST(request: Request) {
       phone: String(formData.get("phone") ?? ""),
       message: String(formData.get("message") ?? ""),
       hearAboutUs: formData.getAll("hearAboutUs").map((item) => String(item).trim()).filter(Boolean),
+      recipientEmail: String(formData.get("recipientEmail") ?? ""),
     };
   }
 
@@ -155,12 +161,12 @@ export async function POST(request: Request) {
 
   await addContactSubmission(submission);
   let emailRouting: EmailRoutingInfo = {
-    ...getEmailRoutingInfo(submission),
+    ...getEmailRoutingInfo(submission, data.recipientEmail),
     sent: false,
   };
 
   try {
-    emailRouting = await sendContactNotification(submission);
+    emailRouting = await sendContactNotification(submission, data.recipientEmail);
   } catch (error) {
     console.error("Failed to send contact notification email", error);
   }

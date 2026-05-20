@@ -54,6 +54,8 @@ export type PropertyItem = {
   size: number;
   year: number;
   location: string;
+  agentFullName: string;
+  agentImage: string;
   mapUrl: string;
   description: string;
   image: string;
@@ -207,6 +209,8 @@ export const defaultSiteContent: SiteContent = {
       size: 10000,
       year: 2026,
       location: "kiwengwa,Zanzibar",
+      agentFullName: "Archipelago Estates Agent",
+      agentImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80",
       mapUrl: "https://maps.google.com/?q=kiwengwa",
       description: "An extraordinary and once-in-a-lifetime opportunity to own a massive beachfront plot in one of Zanzibar's most breathtaking and secluded coastal locations. 100 meters of direct beach frontage with coral rock terrain, ideal for unique over-water and ocean-facing construction.",
       image: "/uploads/1778565187716-na.jpg",
@@ -230,6 +234,8 @@ export const defaultSiteContent: SiteContent = {
       size: 300,
       year: 2025,
       location: "Zanzibar",
+      agentFullName: "Archipelago Estates Agent",
+      agentImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80",
       mapUrl: "https://maps.google.com/?q=Zanzibar",
       description: "A stunning, newly built home offering a perfect blend of modern comfort and tropical living. Thoughtfully designed for families who value space, privacy, and quality. Features spacious layout, modern finishes, open kitchen, and secure neighborhood near airport.",
       image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80",
@@ -253,6 +259,8 @@ export const defaultSiteContent: SiteContent = {
       size: 150,
       year: 2026,
       location: "Zanzibar",
+      agentFullName: "Archipelago Estates Agent",
+      agentImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80",
       mapUrl: "https://maps.google.com/?q=Zanzibar",
       description: "A newly built property with quality finishes in a secure location. Perfect for families or investors seeking stable growth opportunities in Zanzibar's real estate market.",
       image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80",
@@ -276,6 +284,8 @@ export const defaultSiteContent: SiteContent = {
       size: 100,
       year: 2026,
       location: "Zanzibar",
+      agentFullName: "Archipelago Estates Agent",
+      agentImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80",
       mapUrl: "https://maps.google.com/?q=Zanzibar",
       description: "A prime location property ready for investment. Showcase your business potential in one of Zanzibar's most sought-after areas.",
       image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80",

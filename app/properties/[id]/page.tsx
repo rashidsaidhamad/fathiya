@@ -32,6 +32,8 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const gallery = Array.isArray(property.images) && property.images.length > 0 ? property.images : [property.image];
   const hasVideo = Boolean(property.videoUrl?.trim());
   const mapUrl = property.mapUrl?.trim() || `https://maps.google.com/?q=${encodeURIComponent(property.location)}`;
+  const agentFullName = property.agentFullName?.trim() || "Property Agent";
+  const agentImage = property.agentImage?.trim() || "";
 
   return (
     <>
@@ -105,20 +107,44 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
                   <div>
                     <p style={{ margin: 0, color: "#c49a6c", fontWeight: 800 }}>Contact</p>
-                    <h2 style={{ margin: "6px 0 0", fontSize: 20, fontFamily: "Georgia, serif" }}>Get in touch</h2>
+                    <h2 style={{ margin: "6px 0 0", fontSize: 20, fontFamily: "Georgia, serif" }}>Contact {agentFullName}</h2>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: 12, display: "grid", gap: 6, padding: 14, borderRadius: 14, background: "#f9fafb" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    {agentImage ? (
+                      <div
+                        style={{
+                          width: 64,
+                          height: 84,
+                          borderRadius: 12,
+                          backgroundImage: `url('${agentImage}')`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "top center",
+                          flex: "0 0 auto",
+                        }}
+                      />
+                    ) : null}
+                    <div style={{ display: "grid", gap: 2 }}>
+                      <div style={{ color: "#374151", fontWeight: 700 }}>{agentFullName}</div>
+                      <div style={{ color: "#6b7280", fontSize: 13 }}>{property.contactEmail}</div>
+                    </div>
                   </div>
                 </div>
 
                 <PropertyContactActions
                   propertyTitle={property.title}
                   propertyLocation={property.location}
+                  contactPersonName={agentFullName}
+                  contactPersonImage={agentImage}
                   phoneNumbers={[
                     property.contactPhone,
                     property.otherMobilePhone || "+255659741770",
                   ]}
                   email={property.contactEmail}
                   whatsappNumber={property.contactWhatsapp}
-                  whatsappMessage={defaultSiteContent.contactActions.whatsappMessage}
+                  whatsappMessage={`Hello ${agentFullName}, I want to know more about ${property.title}.`}
                 />
               </section>
 

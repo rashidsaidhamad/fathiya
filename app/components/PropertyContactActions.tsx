@@ -7,6 +7,8 @@ import { toMailtoHref, toTelHref, toWhatsAppHref } from "../../lib/contactLinks"
 type PropertyContactActionsProps = {
   propertyTitle: string;
   propertyLocation: string;
+  contactPersonName: string;
+  contactPersonImage?: string;
   phoneNumbers: string[];
   email: string;
   whatsappNumber: string;
@@ -16,6 +18,8 @@ type PropertyContactActionsProps = {
 export default function PropertyContactActions({
   propertyTitle,
   propertyLocation,
+  contactPersonName,
+  contactPersonImage,
   phoneNumbers,
   email,
   whatsappNumber,
@@ -50,7 +54,8 @@ export default function PropertyContactActions({
           name: name.trim(),
           email: emailValue.trim(),
           phone: phone.trim(),
-          message: `Property enquiry for: ${propertyTitle}\nLocation: ${propertyLocation}\n\n${message.trim()}`,
+          recipientEmail: email.trim(),
+          message: `Agent: ${contactPersonName}\nProperty enquiry for: ${propertyTitle}\nLocation: ${propertyLocation}\nContact email: ${email}\n\n${message.trim()}`,
           hearAboutUs: [],
         }),
       });
@@ -85,7 +90,7 @@ export default function PropertyContactActions({
           style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", color: "#111827", background: "#f9fafb", borderRadius: 14, padding: 14, border: "none", cursor: "pointer", width: "100%", textAlign: "left" }}
         >
           <span style={{ width: 40, height: 40, borderRadius: 12, background: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#c49a6c" }}><FaPhone /></span>
-          <span>Call</span>
+          <span>Call Agent</span>
         </button>
 
         <button
@@ -94,7 +99,7 @@ export default function PropertyContactActions({
           style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", color: "#111827", background: "#f9fafb", borderRadius: 14, padding: 14, border: "none", cursor: "pointer", width: "100%", textAlign: "left" }}
         >
           <span style={{ width: 40, height: 40, borderRadius: 12, background: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#c49a6c" }}><FaEnvelope /></span>
-          <span>Email</span>
+          <span>Email Agent</span>
         </button>
 
         <a
@@ -104,7 +109,7 @@ export default function PropertyContactActions({
           style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", color: "#111827", background: "#f9fafb", borderRadius: 14, padding: 14 }}
         >
           <span style={{ width: 40, height: 40, borderRadius: 12, background: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#25D366" }}><FaWhatsapp /></span>
-          <span>WhatsApp</span>
+          <span>WhatsApp Agent</span>
         </a>
       </div>
 
@@ -151,8 +156,32 @@ export default function PropertyContactActions({
           <div onClick={(event) => event.stopPropagation()} style={{ width: "100%", maxWidth: 520, background: "#fff", borderRadius: 18, padding: 22, boxShadow: "0 24px 60px rgba(0,0,0,0.25)", display: "grid", gap: 14 }}>
             <div>
               <p style={{ margin: 0, color: "#c49a6c", fontWeight: 800 }}>Email</p>
-              <h3 style={{ margin: "6px 0 0", fontSize: 22, fontFamily: "Georgia, serif", color: "#111827" }}>Send an enquiry</h3>
+              <h3 style={{ margin: "6px 0 0", fontSize: 22, fontFamily: "Georgia, serif", color: "#111827" }}>Send an enquiry to {contactPersonName}</h3>
             </div>
+
+            {contactPersonImage ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 12, borderRadius: 14, background: "#f9fafb" }}>
+                <div
+                  style={{
+                    width: 72,
+                    height: 92,
+                    borderRadius: 12,
+                    backgroundImage: `url('${contactPersonImage}')`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "top center",
+                    flex: "0 0 auto",
+                  }}
+                />
+                <div style={{ display: "grid", gap: 2 }}>
+                  <div style={{ color: "#111827", fontWeight: 700 }}>{contactPersonName}</div>
+                  <div style={{ color: "#6b7280", fontSize: 13 }}>{email}</div>
+                </div>
+              </div>
+            ) : null}
+
+            <p style={{ margin: 0, color: "#6b7280", fontSize: 13 }}>
+              This message will be sent to {email}
+            </p>
 
             <form onSubmit={submitEmailForm} style={{ display: "grid", gap: 12 }}>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>

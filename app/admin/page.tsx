@@ -410,6 +410,20 @@ export default function AdminPage() {
     });
   }
 
+  async function handlePropertyAgentImageUpload(index: number, file: File | null) {
+    if (!file) return;
+    setStatus("Preparing image...");
+    showUploadDialog(file, async (preparedFile) => {
+      try {
+        const url = await uploadAsset(preparedFile);
+        updateProperty(index, { agentImage: url });
+        setStatus("Property agent image uploaded. Save all changes to publish.");
+      } catch (error) {
+        setStatus((error as Error).message || "Property agent image upload failed");
+      }
+    });
+  }
+
   async function handleTeamImageUpload(index: number, file: File | null) {
     if (!file) return;
     setStatus("Preparing image...");
@@ -597,6 +611,8 @@ export default function AdminPage() {
           size: 100,
           year: new Date().getFullYear(),
           location: "Zanzibar",
+          agentFullName: "Archipelago Estates Agent",
+          agentImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80",
           mapUrl: "https://maps.google.com/?q=Zanzibar",
           description: "Property description",
           image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80",
@@ -1274,10 +1290,6 @@ export default function AdminPage() {
                           ["Location", item.location, "location"],
                           ["Location Map URL", item.mapUrl, "mapUrl"],
                           ["Image URL", item.image, "image"],
-                          ["Contact Email", item.contactEmail, "contactEmail"],
-                          ["Contact Phone", item.contactPhone, "contactPhone"],
-                          ["Other Mobile Phone", item.otherMobilePhone ?? "", "otherMobilePhone"],
-                          ["Contact WhatsApp", item.contactWhatsapp, "contactWhatsapp"],
                         ].map(([label, value, key]) => (
                           <label key={key as string} style={{ display: "grid", gap: "6px" }}>
                             <span style={{ fontSize: "12px", color: "#555", fontWeight: 600 }}>{label}</span>
@@ -1330,6 +1342,71 @@ export default function AdminPage() {
                           style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px", resize: "vertical" }}
                         />
                       </label>
+
+                      <div style={{ border: "1px solid #e5e7eb", borderRadius: "10px", padding: "12px", backgroundColor: "#f9fafb", display: "grid", gap: "10px" }}>
+                        <p style={{ margin: 0, fontSize: "13px", color: "#374151", fontWeight: 700 }}>Agent Contact</p>
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                          <div
+                            style={{
+                              width: "120px",
+                              height: "160px",
+                              borderRadius: "8px",
+                              border: "1px solid #e5e7eb",
+                              backgroundColor: "#fff",
+                              backgroundImage: item.agentImage ? `url('${item.agentImage}')` : "none",
+                              backgroundSize: "cover",
+                              backgroundPosition: "top center",
+                            }}
+                          />
+                          <div style={{ display: "grid", gap: "4px" }}>
+                            <span style={{ fontSize: "12px", color: "#6b7280" }}>Current agent image</span>
+                            <span style={{ fontSize: "12px", color: "#374151", wordBreak: "break-all" }}>{item.agentImage || "No image uploaded"}</span>
+                          </div>
+                          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                            <button
+                              type="button"
+                              onClick={() => openMediaPreview(item.agentImage, "image", `Property ${item.id} agent image`)}
+                              style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                            >
+                              Preview
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => updateProperty(index, { agentImage: "" })}
+                              style={{ border: "1px solid #fecaca", backgroundColor: "#fff1f2", color: "#b91c1c", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                        <label style={{ display: "grid", gap: "6px" }}>
+                          <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>Upload Agent Image</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handlePropertyAgentImageUpload(index, e.target.files?.[0] ?? null)}
+                            style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px", fontSize: "12px", backgroundColor: "#fff" }}
+                          />
+                        </label>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "10px" }}>
+                          {[
+                            ["Agent Full Name", item.agentFullName ?? "", "agentFullName"],
+                            ["Agent Email", item.contactEmail ?? "", "contactEmail"],
+                            ["Agent Phone Number", item.contactPhone ?? "", "contactPhone"],
+                            ["Agent WhatsApp", item.contactWhatsapp ?? "", "contactWhatsapp"],
+                            ["Other Mobile Phone", item.otherMobilePhone ?? "", "otherMobilePhone"],
+                          ].map(([label, value, key]) => (
+                            <label key={key as string} style={{ display: "grid", gap: "6px" }}>
+                              <span style={{ fontSize: "12px", color: "#4b5563", fontWeight: 600 }}>{label}</span>
+                              <input
+                                value={value as string}
+                                onChange={(e) => updateProperty(index, { [key as keyof PropertyItem]: e.target.value } as Partial<PropertyItem>)}
+                                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "9px 10px", fontSize: "13px" }}
+                              />
+                            </label>
+                          ))}
+                        </div>
+                      </div>
 
                       <div style={{ border: "1px solid #e5e7eb", borderRadius: "10px", padding: "12px", backgroundColor: "#f9fafb", display: "grid", gap: "10px" }}>
                         <p style={{ margin: 0, fontSize: "13px", color: "#374151", fontWeight: 700 }}>Property Video</p>

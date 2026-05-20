@@ -32,10 +32,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Only image or video files are allowed" }, { status: 400 });
     }
 
-    const maxBytes = isVideo ? 700 * 1024 * 1024 : 10 * 1024 * 1024;
+    const maxBytes = isVideo ? 200 * 1024 * 1024 : 10 * 1024 * 1024;
     if (fileEntry.size > maxBytes) {
       return NextResponse.json(
-        { error: isVideo ? "Video too large (max 700MB)" : "Image too large (max 10MB)" },
+        { error: isVideo ? "Video too large (max 200MB)" : "Image too large (max 10MB)" },
         { status: 400 },
       );
     }
@@ -56,7 +56,9 @@ export async function POST(request: NextRequest) {
       contentType: fileEntry.type,
       size: fileEntry.size,
     });
-  } catch {
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[upload] Error:", message);
+    return NextResponse.json({ error: `Upload failed: ${message}` }, { status: 500 });
   }
 }

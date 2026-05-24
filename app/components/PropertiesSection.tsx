@@ -111,6 +111,11 @@ export default function PropertiesSection() {
       return;
     }
 
+    if (leadPhone && !/^[1-9]\d{7,14}$/.test(leadPhone.trim())) {
+      setLeadFormStatus("Please enter a valid phone number starting with country code (digits only, e.g. 255772818324).");
+      return;
+    }
+
     setLeadFormBusy(true);
     setLeadFormStatus("Sending...");
 

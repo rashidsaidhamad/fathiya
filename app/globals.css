@@ -399,6 +399,98 @@ body {
   gap: 8px;
 }
 
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .company-page .company-hero {
+    min-height: 300px;
+    padding-top: 56px;
+    background-position: center;
+  }
+
+  .company-page .pillar-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .company-page .testimonial-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .company-page .testimonial-grid article {
+    padding: 16px;
+  }
+
+  .company-page .faq-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .company-page .contact-card {
+    grid-template-columns: 1fr;
+  }
+
+  .company-page .contact-photo {
+    min-height: 280px;
+  }
+
+  .company-page .form-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .company-page .company-hero {
+    min-height: 220px;
+    padding-top: 40px;
+    background-position: center center;
+  }
+
+  .company-page .company-hero-copy h1 {
+    font-size: clamp(24px, 8vw, 36px);
+  }
+
+  .company-page .intro-wrap,
+  .company-page .testimonial-grid,
+  .company-page .faq-grid,
+  .company-page .contact-card,
+  .company-page .contact-meta,
+  .company-page .section-head,
+  .company-page .team-card {
+    width: calc(100% - 32px);
+    margin: 0 auto;
+  }
+
+  .company-page .pillar-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .company-page .testimonial-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .company-page .testimonial-grid article {
+    padding: 14px;
+  }
+
+  .company-page .contact-photo {
+    min-height: 160px;
+    background-position: center;
+  }
+
+  .company-page .contact-form-wrap {
+    padding: 20px;
+  }
+
+  .company-page .contact-meta {
+    gap: 12px;
+    padding: 12px 0 6px;
+  }
+
+  .company-page .team-card {
+    max-width: 100%;
+    padding: 12px;
+  }
+}
+
 /* Property detail page styles */
 .property-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.8fr); gap: 24px; align-items: start; }
 .hero { background-repeat: no-repeat; background-position: center; background-size: cover; }

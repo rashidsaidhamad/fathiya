@@ -42,6 +42,11 @@ export default function PropertyContactActions({
       return;
     }
 
+    if (phone && !/^[1-9]\d{7,14}$/.test(phone.trim())) {
+      setStatus("Please enter a valid phone number starting with country code (digits only, e.g. 255772818324).");
+      return;
+    }
+
     setBusy(true);
     setStatus("Sending...");
 
@@ -197,7 +202,16 @@ export default function PropertyContactActions({
 
               <label style={{ display: "grid", gap: 6 }}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: "#4b5563" }}>Phone</span>
-                <input value={phone} onChange={(e) => setPhone(e.target.value)} style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 14 }} />
+                <input
+                  type="tel"
+                  inputMode="tel"
+                  pattern="^[1-9]\d{7,14}$"
+                  title="Digits only, start with country code (e.g. 255772818324)"
+                  placeholder="255772818324"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                  style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 14 }}
+                />
               </label>
 
               <label style={{ display: "grid", gap: 6 }}>

@@ -55,12 +55,19 @@ const faqs = [
 
 export default function CompanyPage() {
   const [formStatus, setFormStatus] = useState("");
+  const [phone, setPhone] = useState("");
   const content = useSiteContent();
 
   const handleCompanySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
+
+    const phoneValue = String(formData.get("phone") ?? "").trim();
+    if (phoneValue && !/^[1-9]\d{7,14}$/.test(phoneValue)) {
+      setFormStatus("Please enter a valid phone number starting with country code (digits only, e.g. 255772818324).");
+      return;
+    }
 
     setFormStatus("Sending...");
 
@@ -88,6 +95,7 @@ export default function CompanyPage() {
 
     setFormStatus(`Thanks! Your message was received.${deliveryText}`);
     form.reset();
+    setPhone("");
   };
 
   return (
@@ -242,7 +250,20 @@ export default function CompanyPage() {
                 </label>
                 <label>
                   Mobile
-                  <input type="text" name="phone" placeholder="+255" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="255772818324"
+                    inputMode="tel"
+                    pattern="^[1-9]\d{7,14}$"
+                    title="Digits only, start with country code (e.g. 255772818324)"
+                    value={phone}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const sanitized = val.replace(/\D/g, "");
+                      setPhone(sanitized);
+                    }}
+                  />
                 </label>
               </div>
               <label className="message-field">

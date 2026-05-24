@@ -602,9 +602,13 @@ export default function PropertiesPage() {
             <label style={{ display: "grid", gap: "6px" }}>
               <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Phone Number</span>
               <input
+                type="tel"
+                inputMode="tel"
+                pattern="^[1-9]\d{7,14}$"
+                title="Digits only, start with country code (e.g. 255772818324)"
                 value={leadPhone}
-                onChange={(event) => setLeadPhone(event.target.value)}
-                placeholder="Enter phone number"
+                onChange={(event) => setLeadPhone(event.target.value.replace(/\D/g, ""))}
+                placeholder="255772818324"
                 style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
               />
             </label>

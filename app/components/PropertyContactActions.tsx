@@ -156,20 +156,20 @@ export default function PropertyContactActions({
       {showEmailForm ? (
         <div
           onClick={() => setShowEmailForm(false)}
-          style={{ position: "fixed", inset: 0, zIndex: 5200, background: "rgba(0,0,0,0.6)", display: "grid", placeItems: "center", padding: 20 }}
+          style={{ position: "fixed", inset: 0, zIndex: 5200, background: "rgba(0,0,0,0.6)", display: "grid", placeItems: "center", padding: "clamp(12px, 4vw, 20px)", overflowY: "auto" }}
         >
-          <div onClick={(event) => event.stopPropagation()} style={{ width: "100%", maxWidth: 520, background: "#fff", borderRadius: 18, padding: 22, boxShadow: "0 24px 60px rgba(0,0,0,0.25)", display: "grid", gap: 14 }}>
+          <div onClick={(event) => event.stopPropagation()} style={{ width: "100%", maxWidth: "clamp(300px, 95vw, 520px)", background: "#fff", borderRadius: 18, padding: "clamp(16px, 5vw, 22px)", boxShadow: "0 24px 60px rgba(0,0,0,0.25)", display: "grid", gap: 14, margin: "auto" }}>
             <div>
-              <p style={{ margin: 0, color: "#c49a6c", fontWeight: 800 }}>Email</p>
-              <h3 style={{ margin: "6px 0 0", fontSize: 22, fontFamily: "Georgia, serif", color: "#111827" }}>Send an enquiry to {contactPersonName}</h3>
+              <p style={{ margin: 0, color: "#c49a6c", fontWeight: 800, fontSize: "clamp(12px, 3vw, 14px)" }}>Email</p>
+              <h3 style={{ margin: "6px 0 0", fontSize: "clamp(18px, 5vw, 22px)", fontFamily: "Georgia, serif", color: "#111827", lineHeight: 1.2 }}>Send an enquiry to {contactPersonName}</h3>
             </div>
 
             {contactPersonImage ? (
-              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 12, borderRadius: 14, background: "#f9fafb" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 3vw, 12px)", padding: "clamp(8px, 2vw, 12px)", borderRadius: 14, background: "#f9fafb", flexWrap: "wrap" }}>
                 <div
                   style={{
-                    width: 72,
-                    height: 92,
+                    width: "clamp(60px, 15vw, 72px)",
+                    height: "clamp(75px, 18vw, 92px)",
                     borderRadius: 12,
                     backgroundImage: `url('${contactPersonImage}')`,
                     backgroundSize: "cover",
@@ -177,31 +177,31 @@ export default function PropertyContactActions({
                     flex: "0 0 auto",
                   }}
                 />
-                <div style={{ display: "grid", gap: 2 }}>
-                  <div style={{ color: "#111827", fontWeight: 700 }}>{contactPersonName}</div>
-                  <div style={{ color: "#6b7280", fontSize: 13 }}>{email}</div>
+                <div style={{ display: "grid", gap: 2, minWidth: 0 }}>
+                  <div style={{ color: "#111827", fontWeight: 700, fontSize: "clamp(13px, 3vw, 14px)", wordBreak: "break-word" }}>{contactPersonName}</div>
+                  <div style={{ color: "#6b7280", fontSize: "clamp(11px, 2.5vw, 13px)", wordBreak: "break-all" }}>{email}</div>
                 </div>
               </div>
             ) : null}
 
-            <p style={{ margin: 0, color: "#6b7280", fontSize: 13 }}>
+            <p style={{ margin: 0, color: "#6b7280", fontSize: "clamp(12px, 3vw, 13px)" }}>
               This message will be sent to {email}
             </p>
 
             <form onSubmit={submitEmailForm} style={{ display: "grid", gap: 12 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
+              <div className="email-form-row" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12 }}>
                 <label style={{ display: "grid", gap: 6 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#4b5563" }}>Your name</span>
-                  <input value={name} onChange={(e) => setName(e.target.value)} style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 14 }} />
+                  <span style={{ fontSize: "clamp(12px, 3vw, 13px)", fontWeight: 600, color: "#4b5563" }}>Your name</span>
+                  <input value={name} onChange={(e) => setName(e.target.value)} style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 10, padding: "clamp(8px, 2vw, 10px) clamp(10px, 2vw, 12px)", fontSize: "clamp(13px, 3vw, 14px)", fontFamily: "inherit" }} />
                 </label>
                 <label style={{ display: "grid", gap: 6 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#4b5563" }}>Your email</span>
-                  <input type="email" value={emailValue} onChange={(e) => setEmailValue(e.target.value)} style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 14 }} />
+                  <span style={{ fontSize: "clamp(12px, 3vw, 13px)", fontWeight: 600, color: "#4b5563" }}>Your email</span>
+                  <input type="email" value={emailValue} onChange={(e) => setEmailValue(e.target.value)} style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 10, padding: "clamp(8px, 2vw, 10px) clamp(10px, 2vw, 12px)", fontSize: "clamp(13px, 3vw, 14px)", fontFamily: "inherit" }} />
                 </label>
               </div>
 
               <label style={{ display: "grid", gap: 6 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#4b5563" }}>Phone</span>
+                <span style={{ fontSize: "clamp(12px, 3vw, 13px)", fontWeight: 600, color: "#4b5563" }}>Phone</span>
                 <input
                   type="tel"
                   inputMode="tel"
@@ -210,29 +210,29 @@ export default function PropertyContactActions({
                   placeholder="255772818324"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                  style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 14 }}
+                  style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 10, padding: "clamp(8px, 2vw, 10px) clamp(10px, 2vw, 12px)", fontSize: "clamp(13px, 3vw, 14px)", fontFamily: "inherit" }}
                 />
               </label>
 
               <label style={{ display: "grid", gap: 6 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#4b5563" }}>Message</span>
-                <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={5} style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 14, resize: "vertical" }} />
+                <span style={{ fontSize: "clamp(12px, 3vw, 13px)", fontWeight: 600, color: "#4b5563" }}>Message</span>
+                <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={5} style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 10, padding: "clamp(8px, 2vw, 10px) clamp(10px, 2vw, 12px)", fontSize: "clamp(13px, 3vw, 14px)", resize: "vertical", fontFamily: "inherit", minHeight: "clamp(120px, 30vw, 150px)" }} />
               </label>
 
-              <p style={{ margin: 0, minHeight: 18, fontSize: 13, color: status.includes("sent") ? "#166534" : "#b42318" }}>{status}</p>
+              <p style={{ margin: 0, minHeight: 18, fontSize: "clamp(12px, 3vw, 13px)", color: status.includes("sent") ? "#166534" : "#b42318" }}>{status}</p>
 
-              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", flexWrap: "wrap" }}>
+              <div className="email-form-buttons" style={{ display: "grid", gridTemplateColumns: "1fr", gap: "clamp(8px, 2vw, 10px)", justifyItems: "stretch" }}>
                 <button
                   type="button"
                   onClick={() => setShowEmailForm(false)}
-                  style={{ border: "1px solid #d1d5db", background: "#fff", color: "#374151", borderRadius: 12, padding: "10px 14px", fontWeight: 700, cursor: "pointer" }}
+                  style={{ border: "1px solid #d1d5db", background: "#fff", color: "#374151", borderRadius: 12, padding: "clamp(8px, 2vw, 10px) clamp(12px, 3vw, 14px)", fontWeight: 700, cursor: "pointer", fontSize: "clamp(12px, 3vw, 13px)", whiteSpace: "nowrap" }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={busy}
-                  style={{ border: "none", background: "#c49a6c", color: "#fff", borderRadius: 12, padding: "10px 16px", fontWeight: 700, cursor: busy ? "wait" : "pointer" }}
+                  style={{ border: "none", background: "#c49a6c", color: "#fff", borderRadius: 12, padding: "clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px)", fontWeight: 700, cursor: busy ? "wait" : "pointer", fontSize: "clamp(12px, 3vw, 13px)", whiteSpace: "nowrap" }}
                 >
                   {busy ? "Sending..." : "Send Email"}
                 </button>
@@ -243,24 +243,38 @@ export default function PropertyContactActions({
       ) : null}
 
       <style jsx>{`
-        .property-contact-modal .form-input,
-        .property-contact-modal textarea {
-          width: 100%;
+        /* Ensure proper responsive form layout */
+        @media (min-width: 480px) {
+          .email-form-row {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
         }
 
-        @media (max-width: 720px) {
-          .property-contact-modal > div[onClick] {
-            padding: 12px !important;
+        @media (max-width: 479px) {
+          .email-form-row {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+          }
+        }
+
+        @media (min-width: 360px) {
+          .email-form-buttons {
+            display: grid !important;
+            grid-template-columns: auto auto !important;
+            justify-content: flex-end !important;
+          }
+        }
+
+        @media (max-width: 359px) {
+          .email-form-buttons {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            justify-items: stretch !important;
           }
 
-          .property-contact-modal form {
-            gap: 10px !important;
-          }
-
-          .property-contact-modal input,
-          .property-contact-modal textarea {
-            font-size: 14px !important;
-            padding: 10px !important;
+          .email-form-buttons button {
+            width: 100% !important;
           }
         }
       `}</style>

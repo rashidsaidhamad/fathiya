@@ -1,10 +1,13 @@
 import type { ReactNode } from "react";
+import { looksLikeHtml, sanitizeRichHtml } from "./sanitizeHtml";
 
 /**
- * Minimal "markdown-lite" formatting used by the property description field:
- *   **bold**, *italic*, __underline__, and "- " bullet lines.
- * Deliberately renders to React elements (never dangerouslySetInnerHTML), so
- * arbitrary HTML typed by an editor can never execute as markup.
+ * Property descriptions can be in one of two formats:
+ *  - New WYSIWYG HTML (from RichTextEditor), sanitized through an allowlist
+ *    before it's ever saved, and re-sanitized here as defense-in-depth.
+ *  - Legacy "markdown-lite" marker text (**bold**, *italic*, __underline__,
+ *    "- " bullets) from before the WYSIWYG editor existed, still rendered to
+ *    plain React elements for any descriptions saved before this change.
  */
 function parseInline(text: string, keyPrefix: string): ReactNode[] {
   const nodes: ReactNode[] = [];
@@ -41,6 +44,10 @@ function parseInline(text: string, keyPrefix: string): ReactNode[] {
 
 export function renderRichText(text: string): ReactNode {
   if (!text || !text.trim()) return null;
+
+  if (looksLikeHtml(text)) {
+    return <div className="rich-text-html" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(text) }} />;
+  }
 
   const lines = text.split("\n");
   const blocks: ReactNode[] = [];

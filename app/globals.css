@@ -642,6 +642,40 @@ body {
   font-size: 13.5px;
 }
 
+.wysiwyg-editor:empty::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.wysiwyg-editor ul,
+.wysiwyg-editor ol {
+  margin: 8px 0;
+  padding-left: 22px;
+}
+
+.wysiwyg-editor a {
+  color: var(--accent-dark);
+}
+
+.rich-text-html ul,
+.rich-text-html ol {
+  margin: 10px 0;
+  padding-left: 22px;
+}
+
+.rich-text-html li {
+  margin-bottom: 4px;
+}
+
+.rich-text-html p {
+  margin: 0 0 12px;
+}
+
+.rich-text-html a {
+  color: var(--accent-dark);
+}
+
 /* Responsive adjustments */
 @media (max-width: 1024px) {
   .company-page .company-hero {
@@ -913,9 +947,10 @@ body {
     padding: 12px !important;
   }
 
-  .properties-page-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 16px !important;
+  .properties-grid > div,
+  .properties-page-grid > div {
+    max-width: calc(50% - 13px) !important;
+    flex-basis: calc(50% - 13px) !important;
   }
 }
 
@@ -952,8 +987,16 @@ body {
     width: 100%;
   }
 
-  .properties-page-grid {
-    grid-template-columns: 1fr !important;
+  .properties-grid > div,
+  .properties-page-grid > div {
+    max-width: 100% !important;
+    flex-basis: 100% !important;
+    min-height: auto !important;
+  }
+
+  .properties-grid > div > div:first-child,
+  .properties-page-grid > div > div:first-child {
+    height: 200px !important;
   }
 }
 
@@ -982,27 +1025,9 @@ body {
     gap: 10px !important;
   }
 
-  /* Horizontal card layout for mobile */
-  .properties-grid > div,
-  .properties-page-grid > div {
-    flex-direction: row !important;
-    min-height: auto !important;
-    max-width: 100% !important;
-  }
-
   .properties-grid > div > div:first-child,
   .properties-page-grid > div > div:first-child {
-    flex-shrink: 0;
-    width: 35% !important;
-    height: 100% !important;
-    min-height: 140px !important;
-    aspect-ratio: 16 / 9 !important;
-  }
-
-  .properties-grid > div > div:nth-child(2),
-  .properties-page-grid > div > div:nth-child(2) {
-    flex: 1;
-    min-width: 0;
+    height: 180px !important;
   }
 }
 
@@ -1069,31 +1094,6 @@ body {
     font-size: 11px !important;
     min-width: auto !important;
   }
-
-  /* Horizontal card layout for mobile */
-  .properties-grid > div,
-  .properties-page-grid > div {
-    flex-direction: row !important;
-    min-height: auto !important;
-    max-width: 100% !important;
-    max-height: 180px !important;
-  }
-
-  .properties-grid > div > div:first-child,
-  .properties-page-grid > div > div:first-child {
-    flex-shrink: 0;
-    width: 35% !important;
-    height: 100% !important;
-    min-height: 160px !important;
-    aspect-ratio: 16 / 9 !important;
-  }
-
-  .properties-grid > div > div:nth-child(2),
-  .properties-page-grid > div > div:nth-child(2) {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-  }
 }
 
 /* Small phones - 481px to 640px */
@@ -1112,48 +1112,6 @@ body {
 
   .properties-page-grid {
     gap: 14px !important;
-  }
-
-  /* Horizontal card layout for mobile */
-  .properties-grid > div,
-  .properties-page-grid > div {
-    flex-direction: row !important;
-    min-height: auto !important;
-    max-width: 100% !important;
-    max-height: 200px !important;
-  }
-
-  .properties-grid > div > div:first-child,
-  .properties-page-grid > div > div:first-child {
-    flex-shrink: 0;
-    width: 40% !important;
-    height: 100% !important;
-    min-height: 180px !important;
-    aspect-ratio: 16 / 9 !important;
-  }
-
-  .properties-grid > div > div:nth-child(2),
-  .properties-page-grid > div > div:nth-child(2) {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-  }
-}
-
-/* Mobile horizontal card layout - all phones up to 640px */
-@media (max-width: 640px) {
-  .properties-grid > div > div:nth-child(2),
-  .properties-page-grid > div > div:nth-child(2) {
-    padding: 8px 10px !important;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  /* Hide overlay buttons on mobile */
-  .properties-grid > div > div:first-child > div:nth-child(3),
-  .properties-page-grid > div > div:first-child > div:nth-child(3) {
-    display: none !important;
   }
 }
 

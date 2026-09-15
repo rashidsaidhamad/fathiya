@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -82,6 +82,18 @@ export default function HeroSection() {
     router.push(suffix ? `/properties?${suffix}` : "/properties");
   };
 
+  const selectStyle: React.CSSProperties = {
+    flex: 2,
+    padding: "15px 16px",
+    fontSize: "14.5px",
+    fontFamily: "var(--font-sans)",
+    border: "1px solid var(--border)",
+    borderRadius: "var(--radius-sm)",
+    backgroundColor: "#fff",
+    color: "var(--ink-soft)",
+    cursor: "pointer",
+  };
+
   return (
     <section
       className="hero-section"
@@ -108,7 +120,22 @@ export default function HeroSection() {
           backgroundImage: heroBackgroundCss,
           backgroundSize: "cover",
           backgroundPosition: "center top",
-          filter: "brightness(0.55)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(180deg, rgba(12,13,20,0.55) 0%, rgba(12,13,20,0.35) 40%, rgba(12,13,20,0.75) 100%)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(circle at 85% 15%, rgba(196,154,108,0.35) 0%, transparent 45%)",
         }}
       />
 
@@ -121,28 +148,38 @@ export default function HeroSection() {
           color: "#fff",
           padding: "0 20px",
           marginBottom: "120px",
+          maxWidth: "900px",
         }}
       >
-        <p
+        <div
           className="animate-fade-in"
           style={{
-            fontSize: "13px",
-            letterSpacing: "4px",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "8px 18px",
+            borderRadius: "var(--radius-pill)",
+            backgroundColor: "rgba(255,255,255,0.12)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            fontSize: "12.5px",
+            letterSpacing: "2.5px",
             textTransform: "uppercase",
-            marginBottom: "16px",
-            fontWeight: 400,
+            marginBottom: "24px",
+            fontWeight: 600,
           }}
         >
+          <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "var(--accent-light)" }} />
           {content.homePage.heroEyebrow}
-        </p>
+        </div>
         <h1
           className="animate-fade-up delay-200"
           style={{
             fontSize: "clamp(48px, 6vw, 80px)",
-            fontFamily: "Georgia, serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
-            lineHeight: 1.1,
-            textShadow: "2px 2px 8px rgba(0,0,0,0.3)",
+            lineHeight: 1.08,
+            letterSpacing: "-0.01em",
+            textShadow: "0 4px 30px rgba(0,0,0,0.35)",
           }}
         >
           {content.homePage.heroTitleLine1}
@@ -152,7 +189,7 @@ export default function HeroSection() {
       </div>
 
       <div
-        className="hero-search-bar animate-fade-up delay-400"
+        className="hero-search-bar glass animate-fade-up delay-400"
         style={{
           position: "absolute",
           bottom: "30px",
@@ -161,30 +198,21 @@ export default function HeroSection() {
           margin: "0 auto",
           width: "88%",
           maxWidth: "1100px",
-          backgroundColor: "rgba(20,20,20,0.85)",
-          borderRadius: "6px",
-          padding: "16px 24px",
+          borderRadius: "var(--radius-lg)",
+          padding: "16px",
           display: "flex",
           flexWrap: "wrap",
           gap: "12px",
           alignItems: "center",
           zIndex: 10,
+          boxShadow: "var(--shadow-lg)",
         }}
       >
         <select
           className="hero-search-field"
           value={selectedLocation}
           onChange={(e) => setSelectedLocation(e.target.value)}
-          style={{
-            flex: 2,
-            padding: "14px 16px",
-            fontSize: "15px",
-            border: "none",
-            borderRadius: "4px",
-            backgroundColor: "#fff",
-            color: "#555",
-            cursor: "pointer",
-          }}
+          style={{ ...selectStyle, flex: 2 }}
         >
           <option value="Search by location">Search by location</option>
           {availableLocations.map((location) => (
@@ -197,16 +225,7 @@ export default function HeroSection() {
           className="hero-search-field"
           value={selectedType}
           onChange={(e) => setSelectedType(e.target.value)}
-          style={{
-            flex: 1,
-            padding: "14px 16px",
-            fontSize: "15px",
-            border: "none",
-            borderRadius: "4px",
-            backgroundColor: "#fff",
-            color: "#555",
-            cursor: "pointer",
-          }}
+          style={{ ...selectStyle, flex: 1 }}
         >
           <option value="Property Type">Property Type</option>
           {availableTypes.map((type) => (
@@ -219,16 +238,7 @@ export default function HeroSection() {
           className="hero-search-field"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          style={{
-            flex: 1,
-            padding: "14px 16px",
-            fontSize: "15px",
-            border: "none",
-            borderRadius: "4px",
-            backgroundColor: "#fff",
-            color: "#555",
-            cursor: "pointer",
-          }}
+          style={{ ...selectStyle, flex: 1 }}
         >
           <option value="Sell or Rent">Sell or Rent</option>
           {availableCategories.map((category) => (
@@ -241,16 +251,7 @@ export default function HeroSection() {
           className="hero-search-field"
           value={selectedActive}
           onChange={(e) => setSelectedActive(e.target.value)}
-          style={{
-            flex: 1,
-            padding: "14px 16px",
-            fontSize: "15px",
-            border: "none",
-            borderRadius: "4px",
-            backgroundColor: "#fff",
-            color: "#555",
-            cursor: "pointer",
-          }}
+          style={{ ...selectStyle, flex: 1 }}
         >
           <option value="Property Status">Property Status</option>
           {availableActiveStates.map((activeState) => (
@@ -264,18 +265,19 @@ export default function HeroSection() {
           type="button"
           onClick={runSearch}
           style={{
-            backgroundColor: "#c49a6c",
+            background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
             border: "none",
-            borderRadius: "4px",
-            padding: "14px 18px",
+            borderRadius: "var(--radius-sm)",
+            padding: "15px 22px",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            transition: "background-color 0.3s",
+            transition: "transform 0.25s ease",
+            boxShadow: "0 8px 20px rgba(196,154,108,0.4)",
           }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#a07850")}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#c49a6c")}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.transform = "translateY(-2px)")}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.transform = "translateY(0)")}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
             <circle cx="11" cy="11" r="8"/>

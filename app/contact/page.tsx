@@ -1,7 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { FaFacebookF, FaWhatsapp, FaTiktok, FaInstagram, FaSnapchatGhost } from "react-icons/fa";
+import { FaFacebookF, FaWhatsapp, FaTiktok, FaInstagram, FaSnapchatGhost, FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useSiteContent } from "../hooks/useSiteContent";
@@ -100,56 +100,124 @@ export default function ContactPage() {
     setHearAboutUs([]);
   };
 
+  const inputStyle: React.CSSProperties = {
+    padding: "12px 14px",
+    border: "1px solid var(--border)",
+    borderRadius: "var(--radius-sm)",
+    fontSize: "13.5px",
+    fontFamily: "var(--font-sans)",
+    outline: "none",
+    color: "var(--ink)",
+    backgroundColor: "#fff",
+  };
+
   return (
     <>
       <Navbar forceWhite />
-      <div style={{ paddingTop: "70px", backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-        {/* Map */}
-        <ContactMap />
 
-        {/* Page content */}
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "28px 24px" }}>
-          {/* Breadcrumb */}
-          <div style={{ fontSize: "13px", color: "#888", marginBottom: "24px" }}>
-            <a href="/" style={{ color: "#555", textDecoration: "none" }}>Home</a>
-            <span style={{ margin: "0 6px", color: "#aaa" }}>›</span>
-            <span style={{ color: "#c49a6c", fontWeight: 600 }}>Contact Us</span>
+      {/* Hero banner */}
+      <div
+        style={{
+          position: "relative",
+          height: "300px",
+          paddingTop: "110px",
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: "url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1800&q=80')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(180deg, rgba(12,13,20,0.68) 0%, rgba(12,13,20,0.58) 100%)",
+          }}
+        />
+        <div style={{ position: "relative", zIndex: 1, textAlign: "center", color: "#fff", padding: "0 20px" }}>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "7px 16px",
+              borderRadius: "var(--radius-pill)",
+              backgroundColor: "rgba(255,255,255,0.14)",
+              border: "1px solid rgba(255,255,255,0.25)",
+              fontSize: "12px",
+              letterSpacing: "2px",
+              textTransform: "uppercase",
+              fontWeight: 600,
+              marginBottom: "18px",
+            }}
+          >
+            <a href="/" style={{ color: "#fff", textDecoration: "none" }}>Home</a>
+            <span>›</span>
+            <span style={{ color: "var(--accent-light)" }}>Contact Us</span>
           </div>
+          <h1 style={{ fontSize: "clamp(32px, 4.5vw, 46px)", fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: "10px" }}>
+            Get In Touch
+          </h1>
+          <p style={{ fontSize: "15px", color: "rgba(255,255,255,0.8)", maxWidth: "520px", margin: "0 auto" }}>
+            Questions about buying, selling, or investing in Zanzibar? Our team is ready to help.
+          </p>
+        </div>
+      </div>
 
+      <div style={{ backgroundColor: "var(--background)", minHeight: "100vh" }}>
+        {/* Page content */}
+        <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "clamp(28px, 4vw, 44px) clamp(14px, 3vw, 40px)" }}>
           {/* Two-column layout */}
-          <div className="contact-page-grid" style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "28px", alignItems: "start" }}>
+          <div className="contact-page-grid" style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: "28px", alignItems: "start" }}>
             {/* Left: Contact info + form */}
-            <div style={{ backgroundColor: "#fff", borderRadius: "8px", padding: "36px", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
-              <h1 style={{ fontSize: "28px", fontWeight: 700, color: "#1a1a2e", marginBottom: "6px" }}>
+            <div style={{ backgroundColor: "var(--surface)", borderRadius: "var(--radius-lg)", padding: "clamp(24px, 4vw, 40px)", boxShadow: "var(--shadow-sm)" }}>
+              <div
+                style={{
+                  display: "inline-flex",
+                  padding: "6px 14px",
+                  borderRadius: "var(--radius-pill)",
+                  backgroundColor: "var(--accent-soft)",
+                  color: "var(--accent-dark)",
+                  fontSize: "11.5px",
+                  fontWeight: 700,
+                  letterSpacing: "1.5px",
+                  textTransform: "uppercase",
+                  marginBottom: "16px",
+                }}
+              >
+                Send a Message
+              </div>
+              <h1 style={{ fontSize: "26px", fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--ink)", marginBottom: "8px" }}>
                 Archipelago Properties Zanzibar
               </h1>
-              <p style={{ color: "#666", fontSize: "14px", marginBottom: "16px" }}>
+              <p style={{ color: "var(--ink-soft)", fontSize: "14px", marginBottom: "18px" }}>
                 Mlandege, Zanzibar Urban/West – Tanzania
               </p>
 
               {/* Social icons */}
-              <div style={{ display: "flex", gap: "10px", marginBottom: "24px" }}>
+              <div style={{ display: "flex", gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}>
                 {socialLinks.map((s, i) => (
                   <a
                     key={i}
                     href={s.href}
                     target="_blank"
                     rel="noreferrer"
+                    className="social-icon"
                     style={{
-                      width: 30, height: 30,
+                      width: 36, height: 36,
                       borderRadius: "50%",
-                      border: "1px solid #ddd",
+                      backgroundColor: "var(--accent-soft)",
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      color: "#555", textDecoration: "none",
-                      transition: "border-color 0.2s, color 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = "#c49a6c";
-                      (e.currentTarget as HTMLElement).style.color = "#c49a6c";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = "#ddd";
-                      (e.currentTarget as HTMLElement).style.color = "#555";
+                      color: "var(--accent-dark)", textDecoration: "none",
                     }}
                   >
                     {s.icon}
@@ -158,209 +226,181 @@ export default function ContactPage() {
               </div>
 
               {/* Contact details */}
-              <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", gap: "8px 0", fontSize: "14px", marginBottom: "20px" }}>
-                <span style={{ color: "#888" }}>Phone:</span>
-                <a href={toTelHref(content.contactActions.phone)} style={{ color: "#333", fontWeight: 500, textDecoration: "none" }}>{content.contactActions.phone}</a>
-                <span style={{ color: "#888" }}>Mobile:</span>
-                <a href={toTelHref(content.contactActions.phone)} style={{ color: "#333", fontWeight: 500, textDecoration: "none" }}>{content.contactActions.phone}</a>
-                <span style={{ color: "#888" }}>Other:</span>
-                <a href={toTelHref("+255659741770")} style={{ color: "#333", fontWeight: 500, textDecoration: "none" }}>+255659741770</a>
-                <span style={{ color: "#888" }}>Email:</span>
-                <a href={toMailtoHref(content.contactActions.email)} style={{ color: "#c49a6c", textDecoration: "none", fontWeight: 500 }}>
-                  {content.contactActions.email}
-                </a>
+              <div style={{ display: "flex", flexDirection: "column", gap: "14px", marginBottom: "22px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <span style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "var(--accent-soft)", color: "var(--accent-dark)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <FaPhone size={13} />
+                  </span>
+                  <a href={toTelHref(content.contactActions.phone)} style={{ color: "var(--ink)", fontWeight: 600, textDecoration: "none", fontSize: "14px" }}>{content.contactActions.phone}</a>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <span style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "var(--accent-soft)", color: "var(--accent-dark)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <FaPhone size={13} />
+                  </span>
+                  <a href={toTelHref("+255659741770")} style={{ color: "var(--ink)", fontWeight: 600, textDecoration: "none", fontSize: "14px" }}>+255659741770</a>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <span style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: "var(--accent-soft)", color: "var(--accent-dark)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <FaEnvelope size={13} />
+                  </span>
+                  <a href={toMailtoHref(content.contactActions.email)} style={{ color: "var(--accent-dark)", textDecoration: "none", fontWeight: 600, fontSize: "14px" }}>
+                    {content.contactActions.email}
+                  </a>
+                </div>
               </div>
 
               {/* Description */}
-              <p style={{ fontSize: "13px", color: "#666", lineHeight: 1.7, marginBottom: "20px", fontStyle: "italic", borderLeft: "3px solid #c49a6c", paddingLeft: "12px" }}>
+              <p style={{ fontSize: "13.5px", color: "var(--ink-soft)", lineHeight: 1.75, marginBottom: "24px", borderLeft: "3px solid var(--accent)", paddingLeft: "14px" }}>
                 We are here to help you with land, property, and investment opportunities in Zanzibar.
-                Whether you want to buy land, sell or rent a property, or need legal and investment support, our team is ready to assist you
+                Whether you want to buy land, sell or rent a property, or need legal and investment support, our team is ready to assist you.
               </p>
 
               {/* Logo */}
               <div style={{ marginBottom: "28px" }}>
-                <img src={companyLogoUrl} alt="Archipelago Real Estate" style={{ height: "60px", filter: "brightness(0) saturate(100%) invert(20%) sepia(10%) saturate(300%)" }} />
+                <img
+                  src={companyLogoUrl}
+                  alt="Archipelago Real Estate"
+                  style={{ height: "52px", filter: "brightness(0) saturate(100%) invert(20%) sepia(10%) saturate(300%)" }}
+                />
               </div>
 
               {/* Contact form */}
-              <h3 style={{ fontSize: "17px", fontWeight: 700, color: "#1a1a2e", marginBottom: "16px" }}>
+              <h3 style={{ fontSize: "18px", fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--ink)", marginBottom: "18px" }}>
                 Contact Me
               </h3>
               <form id="contact-form" onSubmit={handleSubmit}>
                 <input type="hidden" name="source" value="contact" />
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
-                <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "14px" }}>
+                <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "var(--ink-soft)" }}>
                   Last name*
-                  <input
-                    type="text"
-                    name="lastName"
-                    placeholder="Last name"
-                    required
-                    style={{
-                      padding: "10px 12px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                      fontSize: "13px",
-                      outline: "none",
-                      color: "#333",
-                    }}
-                  />
+                  <input type="text" name="lastName" placeholder="Last name" required style={inputStyle} />
                 </label>
-                <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
+                <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "var(--ink-soft)" }}>
                   First name*
-                  <input
-                    type="text"
-                    name="firstName"
-                    placeholder="First name"
-                    required
-                    style={{
-                      padding: "10px 12px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                      fontSize: "13px",
-                      outline: "none",
-                      color: "#333",
-                    }}
-                  />
+                  <input type="text" name="firstName" placeholder="First name" required style={inputStyle} />
                 </label>
-                <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
+                <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "var(--ink-soft)" }}>
                   Email*
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    required
-                    style={{
-                      padding: "10px 12px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                      fontSize: "13px",
-                      outline: "none",
-                      color: "#333",
-                    }}
-                  />
+                  <input type="email" name="email" placeholder="Email" required style={inputStyle} />
                 </label>
-                <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
+                <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "var(--ink-soft)" }}>
                   Mobile
-                  <input
-                    type="text"
-                    name="phone"
-                    placeholder="+255"
-                    style={{
-                      padding: "10px 12px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                      fontSize: "13px",
-                      outline: "none",
-                      color: "#333",
-                    }}
-                  />
+                  <input type="text" name="phone" placeholder="+255" style={inputStyle} />
                 </label>
               </div>
-              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555", marginBottom: "14px" }}>
+              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "var(--ink-soft)", marginBottom: "16px" }}>
                 Message
                 <textarea
                   name="message"
                   rows={4}
                   placeholder="Message"
                   required
-                  style={{
-                    width: "100%",
-                    padding: "10px 12px",
-                    border: "1px solid #ddd",
-                    borderRadius: "4px",
-                    fontSize: "13px",
-                    resize: "vertical",
-                    outline: "none",
-                    boxSizing: "border-box",
-                    color: "#333",
-                  }}
+                  style={{ ...inputStyle, width: "100%", resize: "vertical", boxSizing: "border-box" }}
                 />
               </label>
               <button
                   type="submit"
                 style={{
-                  backgroundColor: "#c49a6c",
+                  background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
                   color: "#fff",
                   border: "none",
-                  borderRadius: "4px",
-                  padding: "11px 28px",
+                  borderRadius: "var(--radius-pill)",
+                  padding: "13px 30px",
                   fontSize: "14px",
-                  fontWeight: 600,
+                  fontWeight: 700,
                   cursor: "pointer",
-                  transition: "background-color 0.3s",
+                  boxShadow: "0 10px 24px rgba(196,154,108,0.35)",
+                  transition: "transform 0.25s",
                 }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#a07850")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#c49a6c")}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.transform = "translateY(-2px)")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.transform = "translateY(0)")}
               >
                 Send Email
               </button>
-                <p style={{ marginTop: "10px", fontSize: "12px", color: "#666" }}>{status}</p>
+                <p style={{ marginTop: "12px", fontSize: "12.5px", color: "var(--ink-soft)" }}>{status}</p>
               </form>
             </div>
 
             {/* Right: How did you hear about us? */}
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-              {/* How did you hear about us form */}
-              <div style={{ backgroundColor: "#fff", borderRadius: "8px", padding: "24px", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
-                <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#1a1a2e", marginBottom: "16px" }}>
+              <div style={{ backgroundColor: "var(--surface)", borderRadius: "var(--radius-lg)", padding: "26px", boxShadow: "var(--shadow-sm)" }}>
+                <h3 style={{ fontSize: "17px", fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--ink)", marginBottom: "4px" }}>
                   How did you hear about us?
                 </h3>
-                <p style={{ fontSize: "12px", color: "#888", marginBottom: "14px", fontStyle: "italic" }}>
+                <p style={{ fontSize: "12.5px", color: "var(--muted)", marginBottom: "18px" }}>
                   (Optional)
                 </p>
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {hearAboutUsOptions.map((option) => (
-                    <label
-                      key={option}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        fontSize: "13px",
-                        color: "#333",
-                        cursor: "pointer",
-                        userSelect: "none",
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        name="hearAboutUs"
-                        form="contact-form"
-                        value={option}
-                        checked={hearAboutUs.includes(option)}
-                        onChange={() => toggleHearAboutUs(option)}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                  {hearAboutUsOptions.map((option) => {
+                    const selected = hearAboutUs.includes(option);
+                    return (
+                      <label
+                        key={option}
                         style={{
-                          width: "16px",
-                          height: "16px",
+                          position: "relative",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          padding: "9px 16px",
+                          borderRadius: "var(--radius-pill)",
+                          border: selected ? "1.5px solid var(--accent)" : "1.5px solid var(--border)",
+                          backgroundColor: selected ? "var(--accent-soft)" : "var(--background)",
+                          color: selected ? "var(--accent-dark)" : "var(--ink-soft)",
+                          fontSize: "13px",
+                          fontWeight: 600,
                           cursor: "pointer",
-                          accentColor: "#c49a6c",
+                          userSelect: "none",
+                          transition: "border-color 0.2s, background-color 0.2s, color 0.2s",
                         }}
-                      />
-                      <span>{option}</span>
-                    </label>
-                  ))}
+                      >
+                        <input
+                          type="checkbox"
+                          name="hearAboutUs"
+                          form="contact-form"
+                          value={option}
+                          checked={selected}
+                          onChange={() => toggleHearAboutUs(option)}
+                          style={{
+                            position: "absolute",
+                            opacity: 0,
+                            width: 1,
+                            height: 1,
+                            pointerEvents: "none",
+                          }}
+                        />
+                        {option}
+                      </label>
+                    );
+                  })}
                 </div>
                 <button
                   type="button"
                   onClick={submitHearAboutUs}
                   style={{
-                    marginTop: "14px",
-                    backgroundColor: "#c49a6c",
+                    marginTop: "20px",
+                    background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
                     color: "#fff",
                     border: "none",
-                    borderRadius: "4px",
-                    padding: "10px 14px",
-                    fontSize: "13px",
-                    fontWeight: 600,
+                    borderRadius: "var(--radius-pill)",
+                    padding: "12px 20px",
+                    fontSize: "13.5px",
+                    fontWeight: 700,
                     cursor: "pointer",
+                    width: "100%",
+                    boxShadow: "0 10px 20px rgba(196,154,108,0.3)",
                   }}
                 >
                   Submit Selection
                 </button>
-                <p style={{ margin: "8px 0 0", fontSize: "12px", color: "#666" }}>{hearAboutUsStatus}</p>
+                <p style={{ margin: "10px 0 0", fontSize: "12.5px", color: "var(--ink-soft)" }}>{hearAboutUsStatus}</p>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Map */}
+        <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "0 clamp(14px, 3vw, 40px) clamp(40px, 6vw, 100px)" }}>
+          <div style={{ borderRadius: "var(--radius-lg)", overflow: "hidden", boxShadow: "var(--shadow-md)" }}>
+            <ContactMap />
           </div>
         </div>
       </div>

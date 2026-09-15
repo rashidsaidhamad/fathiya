@@ -60,104 +60,130 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
       className="nav-root"
       style={{
         position: "fixed",
-        top: 0,
+        top: scrolled ? 0 : "18px",
         left: 0,
         right: 0,
         zIndex: 2000,
-        height: "70px",
         overflow: "visible",
-        backgroundColor: scrolled ? "#1a1e2e" : "transparent",
-        boxShadow: scrolled ? "0 2px 10px rgba(0,0,0,0.1)" : "none",
-        transition: "background-color 0.4s ease, box-shadow 0.4s ease",
-        padding: "0 40px",
+        transition: "top 0.4s cubic-bezier(0.16,1,0.3,1)",
+        padding: "0 24px",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "center",
       }}
     >
-      {/* Left Nav */}
-      <nav className="nav-links" style={{ display: "flex", gap: "32px" }}>
-        {navItems.map((item) => (
-          <Link
-            key={item.label}
-            href={item.href}
+      <div
+        className={scrolled ? "glass-dark" : ""}
+        style={{
+          width: "100%",
+          maxWidth: "1320px",
+          height: scrolled ? "68px" : "76px",
+          borderRadius: "var(--radius-pill)",
+          backgroundColor: scrolled ? undefined : "rgba(255,255,255,0.08)",
+          border: scrolled ? undefined : "1px solid rgba(255,255,255,0.18)",
+          boxShadow: scrolled ? "var(--shadow-md)" : "none",
+          transition: "height 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease",
+          padding: "0 28px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        {/* Left Nav */}
+        <nav className="nav-links" style={{ display: "flex", gap: "6px" }}>
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              style={{
+                textDecoration: "none",
+                color: "rgba(255,255,255,0.92)",
+                fontSize: "14.5px",
+                fontWeight: 500,
+                transition: "color 0.3s, background-color 0.3s",
+                padding: "9px 16px",
+                borderRadius: "var(--radius-pill)",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.color = "#fff";
+                (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(255,255,255,0.14)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.92)";
+                (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+              }}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        <button
+          type="button"
+          className="nav-menu-btn"
+          onClick={() => setMenuOpen((prev) => !prev)}
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          aria-controls="mobile-sidebar"
+          style={{
+            display: "none",
+            border: "1px solid rgba(255,255,255,0.5)",
+            background: "transparent",
+            color: "#fff",
+            borderRadius: "8px",
+            padding: "8px 10px",
+            fontSize: "18px",
+            cursor: "pointer",
+            zIndex: 3001,
+          }}
+        >
+          {menuOpen ? "×" : "☰"}
+        </button>
+
+        {/* Center Logo — hangs below when transparent, fits inside when scrolled */}
+        <div
+          className="nav-logo-wrap"
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: scrolled ? "50%" : "8px",
+            transform: scrolled ? "translate(-50%, -50%)" : "translateX(-50%)",
+            textAlign: "center",
+            zIndex: 1001,
+            transition: "top 0.4s ease, transform 0.4s ease",
+          }}
+        >
+          <img
+            src={companyLogoUrl}
+            alt="Archipelago Real Estate"
             style={{
-              textDecoration: "none",
-              color: "#fff",
-              fontSize: "15px",
-              fontWeight: 500,
-              transition: "color 0.3s",
-              paddingBottom: "3px",
-              borderBottom: "2px solid transparent",
+              height: scrolled ? "54px" : "105px",
+              width: "auto",
+              transition: "height 0.4s ease",
+              cursor: "pointer",
             }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.color = "#c49a6c";
-              (e.currentTarget as HTMLElement).style.borderBottom = "2px solid #c49a6c";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.color = "#fff";
-              (e.currentTarget as HTMLElement).style.borderBottom = "2px solid transparent";
+          />
+        </div>
+
+        {/* Right Phone */}
+        <a className="nav-phone" href={toTelHref(content.contactActions.phone)} style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
+          <span
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgba(255,255,255,0.16)",
             }}
           >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
-
-      <button
-        type="button"
-        className="nav-menu-btn"
-        onClick={() => setMenuOpen((prev) => !prev)}
-        aria-label="Toggle menu"
-        aria-expanded={menuOpen}
-        aria-controls="mobile-sidebar"
-        style={{
-          display: "none",
-          border: "1px solid rgba(255,255,255,0.5)",
-          background: "transparent",
-          color: "#fff",
-          borderRadius: "8px",
-          padding: "8px 10px",
-          fontSize: "18px",
-          cursor: "pointer",
-          zIndex: 3001,
-        }}
-      >
-        {menuOpen ? "×" : "☰"}
-      </button>
-
-      {/* Center Logo — hangs below when transparent, fits inside when scrolled */}
-      <div
-        className="nav-logo-wrap"
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: scrolled ? "50%" : "8px",
-          transform: scrolled ? "translate(-50%, -50%)" : "translateX(-50%)",
-          textAlign: "center",
-          zIndex: 1001,
-          transition: "top 0.4s ease, transform 0.4s ease",
-        }}
-      >
-        <img
-          src={companyLogoUrl}
-          alt="Archipelago Real Estate"
-          style={{
-            height: scrolled ? "54px" : "105px",
-            width: "auto",
-            transition: "height 0.4s ease",
-            cursor: "pointer",
-          }}
-        />
+            <FaPhone size={13} color="#fff" />
+          </span>
+          <span style={{ color: "#fff", fontSize: "14px", fontWeight: 600, whiteSpace: "nowrap" }}>
+            {content.contactActions.phone}
+          </span>
+        </a>
       </div>
-
-      {/* Right Phone */}
-      <a className="nav-phone" href={toTelHref(content.contactActions.phone)} style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
-        <FaPhone size={16} color="#c49a6c" />
-        <span style={{ color: "#fff", fontSize: "15px", fontWeight: 500 }}>
-          {content.contactActions.phone}
-        </span>
-      </a>
 
       {/* Floating side social icons — only visible before scroll */}
       {!scrolled && (
@@ -214,13 +240,13 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
         >
           <div
             id="mobile-sidebar"
+            className="glass-dark"
             style={{
               position: "absolute",
               top: "70px",
               right: 0,
               bottom: 0,
               width: "min(82vw, 320px)",
-              backgroundColor: "#111827",
               borderLeft: "1px solid rgba(255,255,255,0.1)",
               padding: "18px 20px",
               display: "flex",
@@ -235,12 +261,12 @@ export default function Navbar({ forceWhite = false }: { forceWhite?: boolean })
                 key={`mobile-${item.label}`}
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
-                style={{ color: "#fff", textDecoration: "none", fontSize: "15px", fontWeight: 500 }}
+                style={{ color: "#fff", textDecoration: "none", fontSize: "15px", fontWeight: 500, padding: "8px 4px" }}
               >
                 {item.label}
               </Link>
             ))}
-            <a href={toTelHref(content.contactActions.phone)} style={{ color: "#d1d5db", textDecoration: "none", fontSize: "14px", marginTop: "10px" }}>
+            <a href={toTelHref(content.contactActions.phone)} style={{ color: "rgba(255,255,255,0.75)", textDecoration: "none", fontSize: "14px", marginTop: "10px" }}>
               {content.contactActions.phone}
             </a>
           </div>

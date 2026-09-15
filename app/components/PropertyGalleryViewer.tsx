@@ -200,7 +200,7 @@ export default function PropertyGalleryViewer({ images }: PropertyGalleryViewerP
                     onClick={() => setCurrentIndex(index)}
                     className="gallery-thumb-button"
                     style={{
-                      border: index === currentIndex ? "2px solid #c49a6c" : "2px solid transparent",
+                      border: index === currentIndex ? "2px solid var(--accent-dark)" : "2px solid transparent",
                       padding: 0,
                       borderRadius: 12,
                       overflow: "hidden",

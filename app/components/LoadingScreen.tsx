@@ -67,7 +67,7 @@ export default function LoadingScreen() {
             width: "60px",
             height: "60px",
             border: "4px solid #e5e7eb",
-            borderTop: "4px solid #c49a6c",
+            borderTop: "4px solid var(--accent, #c49a6c)",
             borderRadius: "50%",
             animation: "spin 1s linear infinite",
             margin: "0 auto 24px",
@@ -79,7 +79,8 @@ export default function LoadingScreen() {
           style={{
             margin: 0,
             fontSize: "16px",
-            color: "#1a1e2e",
+            fontFamily: "var(--font-sans, Arial, sans-serif)",
+            color: "var(--navy, #1a1e2e)",
             fontWeight: 500,
             letterSpacing: "0.5px",
             animation: "pulse 1.5s ease-in-out infinite",

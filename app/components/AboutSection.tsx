@@ -16,13 +16,13 @@ export default function AboutSection() {
         width: "100%",
         maxWidth: "1240px",
         margin: "0 auto",
-        padding: "80px 32px",
+        padding: "100px 32px",
         display: "flex",
         flexWrap: "wrap",
         alignItems: "center",
         justifyContent: "space-between",
-        gap: "60px",
-        backgroundColor: "#fff",
+        gap: "70px",
+        backgroundColor: "var(--surface)",
       }}
     >
       {/* Left Text */}
@@ -36,66 +36,95 @@ export default function AboutSection() {
           transition: "opacity 0.8s ease, transform 0.8s ease",
         }}
       >
-        <p
+        <div
           style={{
-            color: "#c49a6c",
-            fontSize: "13px",
-            letterSpacing: "3px",
-            textTransform: "uppercase",
-            marginBottom: "16px",
-            display: "flex",
+            display: "inline-flex",
             alignItems: "center",
             gap: "8px",
+            padding: "7px 16px",
+            borderRadius: "var(--radius-pill)",
+            backgroundColor: "var(--accent-soft)",
+            color: "var(--accent-dark)",
+            fontSize: "12px",
+            fontWeight: 700,
+            letterSpacing: "2px",
+            textTransform: "uppercase",
+            marginBottom: "22px",
           }}
         >
-          <span style={{ fontSize: "16px" }}>⊞</span> {content.homePage.aboutBadge}
-        </p>
+          {content.homePage.aboutBadge}
+        </div>
         <h2
           style={{
-            fontSize: "36px",
-            fontFamily: "Georgia, serif",
-            color: "#222",
-            marginBottom: "20px",
-            lineHeight: 1.2,
+            fontSize: "42px",
+            fontFamily: "var(--font-display)",
+            fontWeight: 700,
+            color: "var(--ink)",
+            marginBottom: "22px",
+            lineHeight: 1.18,
+            letterSpacing: "-0.01em",
           }}
         >
           {content.homePage.aboutTitleLine1}
           <br />
           {content.homePage.aboutTitleLine2}
         </h2>
-        <p style={{ color: "#555", fontSize: "14px", marginBottom: "10px", lineHeight: 1.7 }}>
+        <p style={{ color: "var(--ink-soft)", fontSize: "15px", marginBottom: "12px", lineHeight: 1.75 }}>
           {content.homePage.aboutIntroLine1}
         </p>
-        <p style={{ color: "#555", fontSize: "14px", marginBottom: "10px", lineHeight: 1.7 }}>
+        <p style={{ color: "var(--ink-soft)", fontSize: "15px", marginBottom: "12px", lineHeight: 1.75 }}>
           {content.homePage.aboutIntroLine2}
         </p>
-        <p style={{ color: "#555", fontSize: "14px", marginBottom: "20px", lineHeight: 1.7 }}>
+        <p style={{ color: "var(--ink-soft)", fontSize: "15px", marginBottom: "24px", lineHeight: 1.75 }}>
           {content.homePage.aboutIntroLine3}
         </p>
-        {content.homePage.aboutChecklist.map((item) => (
-          <p key={item} style={{ color: "#555", fontSize: "14px", marginBottom: "6px", display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ color: "#c49a6c", fontWeight: "bold" }}>✓</span> {item}
-          </p>
-        ))}
-        <p style={{ color: "#555", fontSize: "14px", marginTop: "16px", marginBottom: "28px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "8px" }}>
+          {content.homePage.aboutChecklist.map((item) => (
+            <div key={item} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <span
+                style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: "50%",
+                  backgroundColor: "var(--accent-soft)",
+                  color: "var(--accent-dark)",
+                  fontSize: "12px",
+                  fontWeight: 800,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                ✓
+              </span>
+              <span style={{ color: "var(--ink)", fontSize: "14.5px", fontWeight: 500 }}>{item}</span>
+            </div>
+          ))}
+        </div>
+        <p style={{ color: "var(--ink-soft)", fontSize: "14.5px", marginTop: "20px", marginBottom: "32px", lineHeight: 1.7 }}>
           Begin your property journey today, we are ready to assist you.
         </p>
-        <div style={{ display: "flex", gap: "16px" }}>
+        <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
           <Link
             href="/company"
             style={{
-              backgroundColor: "#c49a6c",
+              background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
               color: "#fff",
               border: "none",
-              padding: "12px 28px",
-              borderRadius: "4px",
-              fontSize: "14px",
+              padding: "14px 30px",
+              borderRadius: "var(--radius-pill)",
+              fontSize: "14.5px",
               cursor: "pointer",
-              fontWeight: 500,
+              fontWeight: 600,
               textDecoration: "none",
               display: "inline-flex",
               alignItems: "center",
+              boxShadow: "0 10px 24px rgba(196,154,108,0.35)",
+              transition: "transform 0.25s ease",
             }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.transform = "translateY(-2px)")}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.transform = "translateY(0)")}
           >
             About Us
           </Link>
@@ -105,16 +134,25 @@ export default function AboutSection() {
             rel="noreferrer"
             style={{
               backgroundColor: "transparent",
-              color: "#333",
-              border: "1.5px solid #333",
-              padding: "12px 28px",
-              borderRadius: "4px",
-              fontSize: "14px",
+              color: "var(--ink)",
+              border: "1.5px solid var(--border)",
+              padding: "14px 30px",
+              borderRadius: "var(--radius-pill)",
+              fontSize: "14.5px",
               cursor: "pointer",
-              fontWeight: 500,
+              fontWeight: 600,
               textDecoration: "none",
               display: "inline-flex",
               alignItems: "center",
+              transition: "border-color 0.25s ease, color 0.25s ease",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)";
+              (e.currentTarget as HTMLElement).style.color = "var(--accent-dark)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
+              (e.currentTarget as HTMLElement).style.color = "var(--ink)";
             }}
           >
             Chat on WhatsApp
@@ -138,17 +176,30 @@ export default function AboutSection() {
           transition: "opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s",
         }}
       >
+        <div
+          style={{
+            position: "absolute",
+            left: "0%",
+            top: "-20px",
+            width: "46%",
+            height: "70%",
+            borderRadius: "var(--radius-lg)",
+            background: "linear-gradient(135deg, var(--accent-light), var(--accent))",
+            opacity: 0.22,
+          }}
+        />
         {/* For Rent image */}
         <div
+          className="hover-lift"
           style={{
             position: "absolute",
             left: "6%",
             top: "16px",
             width: "44%",
             height: "530px",
-            borderRadius: "8px",
+            borderRadius: "var(--radius-md)",
             overflow: "hidden",
-            boxShadow: "0 14px 34px rgba(0,0,0,0.18)",
+            boxShadow: "var(--shadow-md)",
           }}
         >
           <div
@@ -163,12 +214,19 @@ export default function AboutSection() {
           <div
             style={{
               position: "absolute",
-              top: "16px",
+              inset: 0,
+              background: "linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.5) 100%)",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              bottom: "18px",
               left: "18px",
               color: "#fff",
               fontSize: "20px",
-              fontFamily: "Arial, Helvetica, sans-serif",
-              fontWeight: 400,
+              fontFamily: "var(--font-display)",
+              fontWeight: 600,
               textShadow: "0 1px 4px rgba(0,0,0,0.3)",
             }}
           >
@@ -178,15 +236,17 @@ export default function AboutSection() {
 
         {/* For Sale image */}
         <div
+          className="hover-lift"
           style={{
             position: "absolute",
             right: "0",
             top: "0",
             width: "44%",
             height: "530px",
-            borderRadius: "8px",
+            borderRadius: "var(--radius-md)",
             overflow: "hidden",
-            boxShadow: "0 14px 34px rgba(0,0,0,0.18)",
+            boxShadow: "var(--shadow-md)",
+            border: "6px solid var(--surface)",
           }}
         >
           <div
@@ -201,12 +261,19 @@ export default function AboutSection() {
           <div
             style={{
               position: "absolute",
-              top: "16px",
+              inset: 0,
+              background: "linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.5) 100%)",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              bottom: "18px",
               left: "18px",
               color: "#fff",
               fontSize: "20px",
-              fontFamily: "Arial, Helvetica, sans-serif",
-              fontWeight: 400,
+              fontFamily: "var(--font-display)",
+              fontWeight: 600,
               textShadow: "0 1px 4px rgba(0,0,0,0.3)",
             }}
           >

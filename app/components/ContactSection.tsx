@@ -45,6 +45,18 @@ export default function ContactSection() {
     }
   };
 
+  const inputStyle: React.CSSProperties = {
+    padding: "12px 14px",
+    border: "1px solid var(--border)",
+    borderRadius: "var(--radius-sm)",
+    fontSize: "14px",
+    fontFamily: "var(--font-sans)",
+    outline: "none",
+    color: "var(--ink)",
+    backgroundColor: "#fff",
+    transition: "border-color 0.2s",
+  };
+
   return (
     <section
       className="contact-home-root"
@@ -57,36 +69,52 @@ export default function ContactSection() {
         backgroundPosition: "center",
         display: "flex",
         alignItems: "center",
-        padding: "80px clamp(18px, 6vw, 80px)",
+        padding: "100px clamp(18px, 6vw, 80px)",
       }}
     >
       <div
         style={{
           position: "absolute",
           inset: 0,
-          backgroundColor: "rgba(0,0,0,0.55)",
+          background: "linear-gradient(120deg, rgba(11,12,19,0.82) 0%, rgba(11,12,19,0.55) 100%)",
         }}
       />
 
       <div className="contact-home-inner" style={{ position: "relative", zIndex: 5, display: "flex", gap: "60px", width: "100%", alignItems: "center", flexWrap: "wrap" }}>
         {/* Contact Form Card */}
         <div
-          className="contact-home-form-card"
+          className="contact-home-form-card glass"
           style={{
-            backgroundColor: "#fff",
-            borderRadius: "8px",
+            borderRadius: "var(--radius-lg)",
             padding: "40px",
             width: "480px",
             maxWidth: "100%",
             flexShrink: 0,
-            boxShadow: "0 8px 40px rgba(0,0,0,0.2)",
+            boxShadow: "var(--shadow-lg)",
           }}
         >
+          <div
+            style={{
+              display: "inline-flex",
+              padding: "6px 14px",
+              borderRadius: "var(--radius-pill)",
+              backgroundColor: "var(--accent-soft)",
+              color: "var(--accent-dark)",
+              fontSize: "11.5px",
+              fontWeight: 700,
+              letterSpacing: "1.5px",
+              textTransform: "uppercase",
+              marginBottom: "16px",
+            }}
+          >
+            Get In Touch
+          </div>
           <h2
             style={{
               fontSize: "24px",
-              fontFamily: "Georgia, serif",
-              color: "#222",
+              fontFamily: "var(--font-display)",
+              color: "var(--ink)",
+              fontWeight: 700,
               marginBottom: "24px",
             }}
           >
@@ -94,91 +122,64 @@ export default function ContactSection() {
           </h2>
           <form onSubmit={handleSubmit}>
             <div className="contact-home-form-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "14px" }}>
-              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
+              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "var(--ink-soft)" }}>
                 Last name*
                 <input
                   type="text"
                   name="lastName"
                   placeholder="Last name"
                   required
-                  style={{
-                    padding: "10px 14px",
-                    border: "1px solid #ddd",
-                    borderRadius: "4px",
-                    fontSize: "14px",
-                    outline: "none",
-                    color: "#555",
-                  }}
+                  style={inputStyle}
+                  onFocus={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--accent)")}
+                  onBlur={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--border)")}
                 />
               </label>
-              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
+              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "var(--ink-soft)" }}>
                 First name*
                 <input
                   type="text"
                   name="firstName"
                   placeholder="First name"
                   required
-                  style={{
-                    padding: "10px 14px",
-                    border: "1px solid #ddd",
-                    borderRadius: "4px",
-                    fontSize: "14px",
-                    outline: "none",
-                    color: "#555",
-                  }}
+                  style={inputStyle}
+                  onFocus={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--accent)")}
+                  onBlur={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--border)")}
                 />
               </label>
-              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
+              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "var(--ink-soft)" }}>
                 Email*
                 <input
                   type="email"
                   name="email"
                   placeholder="Email"
                   required
-                  style={{
-                    padding: "10px 14px",
-                    border: "1px solid #ddd",
-                    borderRadius: "4px",
-                    fontSize: "14px",
-                    outline: "none",
-                    color: "#555",
-                  }}
+                  style={inputStyle}
+                  onFocus={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--accent)")}
+                  onBlur={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--border)")}
                 />
               </label>
-              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555" }}>
+              <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "var(--ink-soft)" }}>
                 Mobile
                 <input
                   type="text"
                   name="phone"
                   placeholder="+255"
-                  style={{
-                    padding: "10px 14px",
-                    border: "1px solid #ddd",
-                    borderRadius: "4px",
-                    fontSize: "14px",
-                    outline: "none",
-                    color: "#555",
-                  }}
+                  style={inputStyle}
+                  onFocus={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--accent)")}
+                  onBlur={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--border)")}
                 />
               </label>
             </div>
-            <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#555", marginBottom: "14px" }}>
+            <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "var(--ink-soft)", marginBottom: "16px" }}>
               Message
               <textarea
                 name="message"
                 placeholder="Message"
                 rows={4}
                 required
-                style={{
-                  width: "100%",
-                  padding: "10px 14px",
-                  border: "1px solid #ddd",
-                  borderRadius: "4px",
-                  fontSize: "14px",
-                  outline: "none",
-                  resize: "vertical",
-                  color: "#555",
-                }}
+                style={{ ...inputStyle, width: "100%", resize: "vertical" }}
+                onFocus={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--accent)")}
+                onBlur={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--border)")}
               />
             </label>
             <p style={{ margin: "0 0 14px", fontSize: "13px", color: formStatus.includes("Could not") ? "#b42318" : "#276749" }}>
@@ -187,16 +188,20 @@ export default function ContactSection() {
           <button
             type="submit"
             style={{
-              backgroundColor: "#c49a6c",
+              background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
               color: "#fff",
               border: "none",
-              padding: "12px 28px",
-              borderRadius: "4px",
-              fontSize: "14px",
+              padding: "14px 28px",
+              borderRadius: "var(--radius-pill)",
+              fontSize: "14.5px",
               cursor: "pointer",
-              fontWeight: 500,
+              fontWeight: 700,
               width: "100%",
+              boxShadow: "0 10px 24px rgba(196,154,108,0.35)",
+              transition: "transform 0.25s",
             }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.transform = "translateY(-2px)")}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.transform = "translateY(0)")}
           >
             Send Email
           </button>
@@ -207,35 +212,41 @@ export default function ContactSection() {
         <div className="contact-home-info" style={{ color: "#fff", flex: 1 }}>
           <h2
             style={{
-              fontSize: "36px",
-              fontFamily: "Georgia, serif",
+              fontSize: "clamp(30px, 4vw, 40px)",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               lineHeight: 1.2,
-              marginBottom: "32px",
+              marginBottom: "36px",
             }}
           >
             In need of support?
             <br />
             Get in touch!
           </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
-              <FaMapMarkerAlt color="#c49a6c" size={18} style={{ marginTop: 2, flexShrink: 0 }} />
-              <span style={{ color: "#ddd", fontSize: "15px" }}>Mlandege, Zanzibar Urban/West – Tanzania</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "14px" }}>
+              <span style={{ width: 40, height: 40, borderRadius: "50%", backgroundColor: "rgba(196,154,108,0.22)", color: "var(--accent-light)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <FaMapMarkerAlt size={16} />
+              </span>
+              <span style={{ color: "rgba(255,255,255,0.85)", fontSize: "15px", paddingTop: "8px" }}>Mlandege, Zanzibar Urban/West – Tanzania</span>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <FaEnvelope color="#c49a6c" size={16} />
-              <a href={toMailtoHref(content.contactActions.email)} style={{ color: "#ddd", fontSize: "15px", textDecoration: "none" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+              <span style={{ width: 40, height: 40, borderRadius: "50%", backgroundColor: "rgba(196,154,108,0.22)", color: "var(--accent-light)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <FaEnvelope size={15} />
+              </span>
+              <a href={toMailtoHref(content.contactActions.email)} style={{ color: "rgba(255,255,255,0.85)", fontSize: "15px", textDecoration: "none" }}>
                 {content.contactActions.email}
               </a>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <FaPhone color="#c49a6c" size={16} />
-              <a href={toTelHref(content.contactActions.phone)} style={{ color: "#ddd", fontSize: "15px", textDecoration: "none" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+              <span style={{ width: 40, height: 40, borderRadius: "50%", backgroundColor: "rgba(196,154,108,0.22)", color: "var(--accent-light)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <FaPhone size={15} />
+              </span>
+              <a href={toTelHref(content.contactActions.phone)} style={{ color: "rgba(255,255,255,0.85)", fontSize: "15px", textDecoration: "none" }}>
                 {content.contactActions.phone}
               </a>
             </div>
-            <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
+            <div style={{ display: "flex", gap: "10px", marginTop: "8px", flexWrap: "wrap" }}>
               {[
                   { icon: <FaFacebookF size={14} />, href: "#", title: "Facebook" },
                   { icon: <FaInstagram size={14} />, href: "#", title: "Instagram" },
@@ -256,10 +267,11 @@ export default function ContactSection() {
                   target={s.title === "WhatsApp" ? "_blank" : undefined}
                   rel={s.title === "WhatsApp" ? "noreferrer" : undefined}
                   style={{
-                    width: 36,
-                    height: 36,
+                    width: 38,
+                    height: 38,
                     borderRadius: "50%",
-                    backgroundColor: "rgba(196,154,108,0.8)",
+                    backgroundColor: "rgba(255,255,255,0.14)",
+                    border: "1px solid rgba(255,255,255,0.2)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -279,8 +291,8 @@ export default function ContactSection() {
       <div
         style={{
           position: "absolute",
-          bottom: "20px",
-          right: "20px",
+          bottom: "24px",
+          right: "24px",
           display: "flex",
           gap: "10px",
           zIndex: 10,
@@ -289,17 +301,18 @@ export default function ContactSection() {
         <button
           type="button"
           style={{
-            width: 44,
-            height: 44,
+            width: 46,
+            height: 46,
             borderRadius: "50%",
             backgroundColor: "#fff",
             border: "none",
             cursor: "pointer",
-            fontSize: "18px",
+            fontSize: "17px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+            boxShadow: "var(--shadow-md)",
+            color: "var(--accent-dark)",
           }}
           onClick={() => (window.location.href = toMailtoHref(content.contactActions.email))}
         >
@@ -308,17 +321,18 @@ export default function ContactSection() {
         <button
           type="button"
           style={{
-            width: 44,
-            height: 44,
+            width: 46,
+            height: 46,
             borderRadius: "50%",
             backgroundColor: "#fff",
             border: "none",
             cursor: "pointer",
-            fontSize: "18px",
+            fontSize: "17px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+            boxShadow: "var(--shadow-md)",
+            color: "var(--accent-dark)",
           }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
@@ -355,7 +369,7 @@ export default function ContactSection() {
 
           .contact-home-form-card {
             padding: 20px !important;
-            border-radius: 14px !important;
+            border-radius: 20px !important;
           }
 
           .contact-home-form-grid {

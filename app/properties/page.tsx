@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { FaPhone, FaEnvelope, FaWhatsapp, FaThLarge, FaList, FaMapMarkerAlt } from "react-icons/fa";
+import { FaPhone, FaEnvelope, FaWhatsapp, FaThLarge, FaList, FaMapMarkerAlt, FaBed, FaBath, FaRulerCombined } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -264,53 +264,103 @@ export default function PropertiesPage() {
     }
   }
 
+  const filterSelectStyle: React.CSSProperties = {
+    border: "1px solid var(--border)",
+    borderRadius: "var(--radius-pill)",
+    padding: "clamp(8px, 1.4vw, 10px) clamp(14px, 2vw, 16px)",
+    fontSize: "clamp(12px, 2vw, 13px)",
+    fontFamily: "var(--font-sans)",
+    color: "var(--ink-soft)",
+    cursor: "pointer",
+    background: "var(--background)",
+    flex: "1 1 calc(50% - 4px)",
+    minWidth: "120px",
+  };
+
   return (
     <>
       <Navbar forceWhite />
-      <div style={{ paddingTop: "70px", backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-      {/* Page content */}
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "clamp(20px, 4vw, 32px) clamp(14px, 3vw, 24px)" }}>
-        {/* Breadcrumb */}
-        <div style={{ fontSize: "clamp(11px, 2vw, 13px)", color: "#888", marginBottom: "16px" }}>
-          <a href="/" style={{ color: "#333", textDecoration: "none" }}>Home</a>
-          <span style={{ margin: "0 6px", color: "#aaa" }}>›</span>
-          <span style={{ color: "#c49a6c", fontWeight: 600 }}>Properties</span>
+
+      {/* Hero banner */}
+      <div
+        style={{
+          position: "relative",
+          height: "300px",
+          paddingTop: "110px",
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1800&q=80')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(180deg, rgba(12,13,20,0.65) 0%, rgba(12,13,20,0.55) 100%)",
+          }}
+        />
+        <div style={{ position: "relative", zIndex: 1, textAlign: "center", color: "#fff", padding: "0 20px" }}>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "7px 16px",
+              borderRadius: "var(--radius-pill)",
+              backgroundColor: "rgba(255,255,255,0.14)",
+              border: "1px solid rgba(255,255,255,0.25)",
+              fontSize: "12px",
+              letterSpacing: "2px",
+              textTransform: "uppercase",
+              fontWeight: 600,
+              marginBottom: "18px",
+            }}
+          >
+            <a href="/" style={{ color: "#fff", textDecoration: "none" }}>Home</a>
+            <span>›</span>
+            <span style={{ color: "var(--accent-light)" }}>Properties</span>
+          </div>
+          <h1 style={{ fontSize: "clamp(32px, 4.5vw, 46px)", fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: "10px" }}>
+            Explore Our Properties
+          </h1>
+          <p style={{ fontSize: "15px", color: "rgba(255,255,255,0.8)", maxWidth: "520px", margin: "0 auto" }}>
+            Handpicked homes, villas, and land across Zanzibar — ready for you to discover.
+          </p>
         </div>
+      </div>
 
-        {/* Title */}
-        <h1 style={{ fontSize: "clamp(24px, 6vw, 32px)", fontWeight: 700, color: "#1a1a2e", marginBottom: "24px", fontFamily: "Georgia, serif" }}>
-          Properties
-        </h1>
-
+      <div style={{ backgroundColor: "var(--background)", minHeight: "100vh" }}>
+      {/* Page content */}
+      <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "clamp(28px, 4vw, 44px) clamp(14px, 3vw, 40px) 0" }}>
         {/* Filter bar */}
         <div
-          className="properties-page-filter-bar"
+          className="properties-page-filter-bar glass"
           style={{
-            background: "#fff",
-            border: "1px solid #e5e5e5",
-            borderRadius: "6px",
-            padding: "clamp(10px, 2vw, 12px) clamp(14px, 3vw, 20px)",
+            borderRadius: "var(--radius-md)",
+            padding: "clamp(14px, 2vw, 18px) clamp(16px, 3vw, 22px)",
             display: "flex",
             alignItems: "center",
-            gap: "clamp(6px, 1.5vw, 8px)",
-            marginBottom: "28px",
+            gap: "10px",
+            marginBottom: "32px",
             flexWrap: "wrap",
+            boxShadow: "var(--shadow-sm)",
+            backgroundColor: "var(--surface)",
           }}
         >
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              padding: "clamp(5px, 1vw, 6px) clamp(7px, 1.5vw, 10px)",
-              fontSize: "clamp(11px, 2vw, 13px)",
-              color: "#444",
-              cursor: "pointer",
-              background: "#fff",
-              flex: "1 1 calc(50% - 4px)",
-              minWidth: "120px",
-            }}
+            style={filterSelectStyle}
           >
             {categoryOptions.map((option) => (
               <option key={option} value={option}>
@@ -321,17 +371,7 @@ export default function PropertiesPage() {
           <select
             value={cityFilter}
             onChange={(e) => setCityFilter(e.target.value)}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              padding: "clamp(5px, 1vw, 6px) clamp(7px, 1.5vw, 10px)",
-              fontSize: "clamp(11px, 2vw, 13px)",
-              color: "#444",
-              cursor: "pointer",
-              background: "#fff",
-              flex: "1 1 calc(50% - 4px)",
-              minWidth: "120px",
-            }}
+            style={filterSelectStyle}
           >
             {cityOptions.map((option) => (
               <option key={option} value={option}>
@@ -342,17 +382,7 @@ export default function PropertiesPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              padding: "clamp(5px, 1vw, 6px) clamp(7px, 1.5vw, 10px)",
-              fontSize: "clamp(11px, 2vw, 13px)",
-              color: "#444",
-              cursor: "pointer",
-              background: "#fff",
-              flex: "1 1 calc(50% - 4px)",
-              minWidth: "120px",
-            }}
+            style={filterSelectStyle}
           >
             <option value="Price High to Low">Price High to Low</option>
             <option value="Price Low to High">Price Low to High</option>
@@ -364,33 +394,45 @@ export default function PropertiesPage() {
             <button
               onClick={() => setViewMode("grid")}
               style={{
-                padding: "clamp(5px, 1vw, 6px) clamp(7px, 1.5vw, 10px)",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
+                width: 38,
+                height: 38,
+                border: "none",
+                borderRadius: "var(--radius-sm)",
                 cursor: "pointer",
-                backgroundColor: viewMode === "grid" ? "#c49a6c" : "#fff",
-                color: viewMode === "grid" ? "#fff" : "#555",
-                fontSize: "clamp(11px, 2vw, 13px)",
+                backgroundColor: viewMode === "grid" ? "var(--accent)" : "var(--background)",
+                color: viewMode === "grid" ? "#fff" : "var(--ink-soft)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "background-color 0.25s, color 0.25s",
               }}
             >
-              <FaThLarge size={14} />
+              <FaThLarge size={13} />
             </button>
             <button
               onClick={() => setViewMode("list")}
               style={{
-                padding: "clamp(5px, 1vw, 6px) clamp(7px, 1.5vw, 10px)",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
+                width: 38,
+                height: 38,
+                border: "none",
+                borderRadius: "var(--radius-sm)",
                 cursor: "pointer",
-                backgroundColor: viewMode === "list" ? "#c49a6c" : "#fff",
-                color: viewMode === "list" ? "#fff" : "#555",
-                fontSize: "clamp(11px, 2vw, 13px)",
+                backgroundColor: viewMode === "list" ? "var(--accent)" : "var(--background)",
+                color: viewMode === "list" ? "#fff" : "var(--ink-soft)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "background-color 0.25s, color 0.25s",
               }}
             >
-              <FaList size={14} />
+              <FaList size={13} />
             </button>
           </div>
         </div>
+
+        <p style={{ fontSize: "13.5px", color: "var(--muted)", marginBottom: "20px", fontWeight: 500 }}>
+          Showing {filteredProperties.length} {filteredProperties.length === 1 ? "property" : "properties"}
+        </p>
 
         {/* Properties grid */}
         <div
@@ -398,8 +440,9 @@ export default function PropertiesPage() {
           style={{
             display: "flex",
             flexWrap: "wrap",
-            gap: "24px",
+            gap: "26px",
             alignItems: "flex-start",
+            paddingBottom: "40px",
           }}
         >
           {filteredProperties.map((p) => {
@@ -420,37 +463,77 @@ export default function PropertiesPage() {
                     router.push(`/properties/${p.id}`);
                   }
                 }}
+                className="hover-lift"
                 style={{
-                  backgroundColor: "#fff",
-                  borderRadius: "12px",
+                  backgroundColor: "var(--surface)",
+                  borderRadius: "var(--radius-md)",
                   overflow: "hidden",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+                  boxShadow: "var(--shadow-sm)",
                   display: "flex",
                   flexDirection: "column",
-                  minHeight: viewMode === "grid" ? "420px" : "auto",
+                  minHeight: viewMode === "grid" ? "500px" : "auto",
                   flex: viewMode === "grid" ? "1 1 clamp(280px, 100%, 320px)" : "1 1 100%",
-                  maxWidth: viewMode === "grid" ? "calc((100% - 48px) / 3)" : "100%",
+                  maxWidth: viewMode === "grid" ? "calc((100% - 52px) / 3)" : "100%",
                   cursor: "pointer",
                   outline: "none",
                 }}
               >
-                <div style={{ position: "relative", height: viewMode === "grid" ? "220px" : "240px" }}>
+                <div style={{ position: "relative", height: viewMode === "grid" ? "230px" : "250px" }}>
                   <div style={{ width: "100%", height: "100%", backgroundImage: `url('${currentImage}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
-                  {/* Best Deal badge removed */}
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 45%, rgba(11,12,19,0.72) 100%)" }} />
+                  <div style={{ position: "absolute", top: 14, right: 14, display: "flex", gap: 6 }}>
+                    <span style={{ backgroundColor: p.statusColor || "var(--accent)", color: "#fff", padding: "5px 12px", borderRadius: "var(--radius-pill)", fontSize: "11px", fontWeight: 700 }}>
+                      {p.status}
+                    </span>
+                    <span style={{ backgroundColor: "rgba(255,255,255,0.92)", color: "#2f9e5b", padding: "5px 12px", borderRadius: "var(--radius-pill)", fontSize: "11px", fontWeight: 700 }}>
+                      {p.active}
+                    </span>
+                  </div>
+                  <p style={{ position: "absolute", left: 16, bottom: 12, margin: 0, color: "#fff", fontSize: "21px", fontWeight: 800, textShadow: "0 2px 10px rgba(0,0,0,0.4)" }}>
+                    {p.price}
+                  </p>
                 </div>
-                <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
-                  <div>
-                    <p style={{ margin: 0, color: "#111827", fontSize: "18px", fontWeight: 800 }}>{p.price}</p>
-                    <p style={{ margin: "4px 0 0", color: "#4b5563", fontSize: "15px", fontWeight: 700 }}>{p.title}</p>
-                  </div>
-                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", color: "#374151", fontSize: 13, fontWeight: 600 }}>
-                    <span>Bed {p.beds}</span>
-                    <span>Bath {p.baths}</span>
-                    <span>Size {p.size.toLocaleString()} m²</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#555", fontSize: 13 }}>
-                    <FaMapMarkerAlt color="#c49a6c" size={13} />
+                <div style={{ padding: "18px", display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
+                  <p style={{ margin: 0, color: "var(--ink)", fontSize: "16px", fontWeight: 700, lineHeight: 1.35 }}>{p.title}</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--ink-soft)", fontSize: 13 }}>
+                    <FaMapMarkerAlt color="var(--accent-dark)" size={13} />
                     <span style={{ lineHeight: 1.5 }}>{p.location}</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", color: "var(--ink-soft)", fontSize: 13, fontWeight: 600, paddingTop: 12, paddingBottom: 12, borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}><FaBed color="var(--accent-dark)" size={13} /> {p.beds} Beds</span>
+                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}><FaBath color="var(--accent-dark)" size={13} /> {p.baths} Baths</span>
+                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}><FaRulerCombined color="var(--accent-dark)" size={13} /> {p.size.toLocaleString("en-US")} m²</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openCallModal();
+                      }}
+                      style={{ flex: 1, padding: "9px", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", background: "var(--surface)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "var(--ink-soft)", fontWeight: 600 }}
+                    >
+                      <FaPhone size={11} color="var(--accent-dark)" /> Call
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEmailModal(p.id);
+                      }}
+                      style={{ flex: 1, padding: "9px", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", background: "var(--surface)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "var(--ink-soft)", fontWeight: 600 }}
+                    >
+                      <FaEnvelope size={11} color="var(--accent-dark)" /> Email
+                    </button>
+                    <a
+                      href={toWhatsAppHref(p.contactWhatsapp || "+255659740712", `Hello, I'm interested in ${p.title}`)}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ padding: "9px 12px", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", background: "var(--surface)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}
+                    >
+                      <FaWhatsapp size={14} color="#25D366" />
+                    </a>
                   </div>
                   <button
                     type="button"
@@ -460,14 +543,16 @@ export default function PropertiesPage() {
                     }}
                     style={{
                       marginTop: "auto",
+                      width: "100%",
                       border: "none",
-                      borderRadius: "999px",
-                      padding: "10px 16px",
-                      background: "#c49a6c",
+                      borderRadius: "var(--radius-pill)",
+                      padding: "11px 18px",
+                      background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
                       color: "#fff",
                       fontWeight: 700,
+                      fontSize: "13px",
                       cursor: "pointer",
-                      alignSelf: "flex-start",
+                      boxShadow: "0 8px 18px rgba(196,154,108,0.3)",
                     }}
                   >
                     Show More
@@ -478,7 +563,7 @@ export default function PropertiesPage() {
           })}
         </div>
         {filteredProperties.length === 0 ? (
-          <p style={{ marginTop: "18px", color: "#666", fontSize: "14px" }}>
+          <p style={{ marginTop: "-16px", paddingBottom: "40px", color: "var(--muted)", fontSize: "14px" }}>
             No properties match the selected filters.
           </p>
         ) : null}
@@ -490,7 +575,7 @@ export default function PropertiesPage() {
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(0,0,0,0.55)",
+            backgroundColor: "rgba(10,12,20,0.55)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -503,25 +588,25 @@ export default function PropertiesPage() {
             style={{
               width: "100%",
               maxWidth: "360px",
-              backgroundColor: "#fff",
-              borderRadius: "12px",
-              boxShadow: "0 24px 50px rgba(0,0,0,0.25)",
-              padding: "20px",
+              backgroundColor: "var(--surface)",
+              borderRadius: "var(--radius-md)",
+              boxShadow: "var(--shadow-lg)",
+              padding: "24px",
               display: "grid",
               gap: "10px",
             }}
           >
-            <h3 style={{ margin: 0, color: "#111827", fontSize: "20px", fontFamily: "Georgia, serif" }}>Call Archipelago</h3>
-            <p style={{ margin: 0, color: "#4b5563", fontSize: "13px" }}>Choose a number to call:</p>
+            <h3 style={{ margin: 0, color: "var(--ink)", fontSize: "20px", fontFamily: "var(--font-display)" }}>Call Archipelago</h3>
+            <p style={{ margin: 0, color: "var(--ink-soft)", fontSize: "13px" }}>Choose a number to call:</p>
             {CALL_NUMBERS.map((phone) => (
               <a
                 key={phone}
                 href={toTelHref(phone)}
                 style={{
-                  border: "1px solid #d1d5db",
-                  backgroundColor: "#fff",
-                  color: "#374151",
-                  borderRadius: "8px",
+                  border: "1px solid var(--border)",
+                  backgroundColor: "var(--background)",
+                  color: "var(--ink)",
+                  borderRadius: "var(--radius-sm)",
                   padding: "10px 12px",
                   fontWeight: 600,
                   textDecoration: "none",
@@ -530,7 +615,7 @@ export default function PropertiesPage() {
                   gap: "8px",
                 }}
               >
-                <FaPhone size={12} color="#c49a6c" />
+                <FaPhone size={12} color="var(--accent-dark)" />
                 {phone}
               </a>
             ))}
@@ -538,7 +623,7 @@ export default function PropertiesPage() {
               <button
                 type="button"
                 onClick={closeCallModal}
-                style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "9px 14px", fontWeight: 600, cursor: "pointer" }}
+                style={{ border: "1px solid var(--border)", backgroundColor: "var(--surface)", color: "var(--ink)", borderRadius: "var(--radius-sm)", padding: "9px 14px", fontWeight: 600, cursor: "pointer" }}
               >
                 Close
               </button>
@@ -552,7 +637,7 @@ export default function PropertiesPage() {
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(0,0,0,0.55)",
+            backgroundColor: "rgba(10,12,20,0.55)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -565,42 +650,42 @@ export default function PropertiesPage() {
             style={{
               width: "100%",
               maxWidth: "460px",
-              backgroundColor: "#fff",
-              borderRadius: "12px",
-              boxShadow: "0 24px 50px rgba(0,0,0,0.25)",
-              padding: "22px",
+              backgroundColor: "var(--surface)",
+              borderRadius: "var(--radius-md)",
+              boxShadow: "var(--shadow-lg)",
+              padding: "26px",
               display: "grid",
               gap: "12px",
             }}
           >
-            <h3 style={{ margin: 0, color: "#111827", fontSize: "22px", fontFamily: "Georgia, serif" }}>Property Enquiry</h3>
-            <p style={{ margin: 0, color: "#4b5563", fontSize: "13px" }}>
+            <h3 style={{ margin: 0, color: "var(--ink)", fontSize: "22px", fontFamily: "var(--font-display)" }}>Property Enquiry</h3>
+            <p style={{ margin: 0, color: "var(--ink-soft)", fontSize: "13px" }}>
               {selectedEmailProperty.title}
             </p>
-            <p style={{ margin: 0, color: "#6b7280", fontSize: "12px" }}>
+            <p style={{ margin: 0, color: "var(--muted)", fontSize: "12px" }}>
               This message will be sent to archipelagoproperties.zanzibar@gmail.com
             </p>
             <label style={{ display: "grid", gap: "6px" }}>
-              <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Full Name</span>
+              <span style={{ fontSize: "12px", color: "var(--ink)", fontWeight: 600 }}>Full Name</span>
               <input
                 value={leadFullName}
                 onChange={(event) => setLeadFullName(event.target.value)}
                 placeholder="Enter full name"
-                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
+                style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "10px 12px", fontSize: "13px", fontFamily: "var(--font-sans)" }}
               />
             </label>
             <label style={{ display: "grid", gap: "6px" }}>
-              <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Email Address</span>
+              <span style={{ fontSize: "12px", color: "var(--ink)", fontWeight: 600 }}>Email Address</span>
               <input
                 type="email"
                 value={leadEmail}
                 onChange={(event) => setLeadEmail(event.target.value)}
                 placeholder="Enter email address"
-                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
+                style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "10px 12px", fontSize: "13px", fontFamily: "var(--font-sans)" }}
               />
             </label>
             <label style={{ display: "grid", gap: "6px" }}>
-              <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Phone Number</span>
+              <span style={{ fontSize: "12px", color: "var(--ink)", fontWeight: 600 }}>Phone Number</span>
               <input
                 type="tel"
                 inputMode="tel"
@@ -609,17 +694,17 @@ export default function PropertiesPage() {
                 value={leadPhone}
                 onChange={(event) => setLeadPhone(event.target.value.replace(/\D/g, ""))}
                 placeholder="255772818324"
-                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
+                style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "10px 12px", fontSize: "13px", fontFamily: "var(--font-sans)" }}
               />
             </label>
             <label style={{ display: "grid", gap: "6px" }}>
-              <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Message</span>
+              <span style={{ fontSize: "12px", color: "var(--ink)", fontWeight: 600 }}>Message</span>
               <textarea
                 value={leadMessage}
                 onChange={(event) => setLeadMessage(event.target.value)}
                 placeholder="Write your message"
                 rows={4}
-                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px", resize: "vertical" }}
+                style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "10px 12px", fontSize: "13px", fontFamily: "var(--font-sans)", resize: "vertical" }}
               />
             </label>
 
@@ -628,7 +713,7 @@ export default function PropertiesPage() {
                 type="button"
                 onClick={closeEmailModal}
                 disabled={leadFormBusy}
-                style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "10px 14px", fontWeight: 600, cursor: leadFormBusy ? "default" : "pointer" }}
+                style={{ border: "1px solid var(--border)", backgroundColor: "var(--surface)", color: "var(--ink)", borderRadius: "var(--radius-sm)", padding: "10px 16px", fontWeight: 600, cursor: leadFormBusy ? "default" : "pointer" }}
               >
                 Cancel
               </button>
@@ -636,7 +721,7 @@ export default function PropertiesPage() {
                 type="button"
                 onClick={submitPropertyLead}
                 disabled={leadFormBusy}
-                style={{ border: "none", backgroundColor: "#c49a6c", color: "#fff", borderRadius: "8px", padding: "10px 14px", fontWeight: 700, cursor: leadFormBusy ? "default" : "pointer" }}
+                style={{ border: "none", background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)", color: "#fff", borderRadius: "var(--radius-sm)", padding: "10px 16px", fontWeight: 700, cursor: leadFormBusy ? "default" : "pointer" }}
               >
                 {leadFormBusy ? "Sending..." : "Send Email"}
               </button>
@@ -653,7 +738,7 @@ export default function PropertiesPage() {
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(0,0,0,0.55)",
+            backgroundColor: "rgba(10,12,20,0.55)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -666,20 +751,20 @@ export default function PropertiesPage() {
             style={{
               width: "100%",
               maxWidth: "880px",
-              backgroundColor: "#fff",
-              borderRadius: "12px",
-              boxShadow: "0 24px 50px rgba(0,0,0,0.25)",
-              padding: "18px",
+              backgroundColor: "var(--surface)",
+              borderRadius: "var(--radius-md)",
+              boxShadow: "var(--shadow-lg)",
+              padding: "20px",
               display: "grid",
               gap: "12px",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
               <div>
-                <h3 style={{ margin: 0, color: "#111827", fontSize: "22px", fontFamily: "Georgia, serif" }}>{selectedGalleryProperty.title}</h3>
-                <p style={{ margin: "4px 0 0", color: "#6b7280", fontSize: "13px" }}>{selectedGalleryProperty.location}</p>
+                <h3 style={{ margin: 0, color: "var(--ink)", fontSize: "22px", fontFamily: "var(--font-display)" }}>{selectedGalleryProperty.title}</h3>
+                <p style={{ margin: "4px 0 0", color: "var(--muted)", fontSize: "13px" }}>{selectedGalleryProperty.location}</p>
               </div>
-              <button type="button" onClick={closeGalleryModal} style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}>
+              <button type="button" onClick={closeGalleryModal} style={{ border: "1px solid var(--border)", backgroundColor: "var(--surface)", color: "var(--ink)", borderRadius: "var(--radius-sm)", padding: "8px 14px", fontWeight: 600, cursor: "pointer" }}>
                 Close
               </button>
             </div>
@@ -689,10 +774,10 @@ export default function PropertiesPage() {
               const currentGalleryImage = galleryImages[galleryImageIndex] ?? galleryImages[0] ?? selectedGalleryProperty.image;
               return (
                 <div style={{ display: "grid", gap: "10px" }}>
-                  <div style={{ position: "relative", height: "420px", borderRadius: "10px", overflow: "hidden", backgroundColor: "#f3f4f6" }}>
+                  <div style={{ position: "relative", height: "420px", borderRadius: "var(--radius-sm)", overflow: "hidden", backgroundColor: "var(--background)" }}>
                     <div style={{ width: "100%", height: "100%", backgroundImage: `url('${currentGalleryImage}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
-                    <button type="button" onClick={() => setGalleryImageIndex((index) => Math.max(0, index - 1))} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.85)", cursor: "pointer" }}>‹</button>
-                    <button type="button" onClick={() => setGalleryImageIndex((index) => Math.min(galleryImages.length - 1, index + 1))} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.85)", cursor: "pointer" }}>›</button>
+                    <button type="button" onClick={() => setGalleryImageIndex((index) => Math.max(0, index - 1))} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.9)", cursor: "pointer" }}>‹</button>
+                    <button type="button" onClick={() => setGalleryImageIndex((index) => Math.min(galleryImages.length - 1, index + 1))} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.9)", cursor: "pointer" }}>›</button>
                   </div>
 
                   <div style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "4px" }}>
@@ -705,8 +790,8 @@ export default function PropertiesPage() {
                           flex: "0 0 auto",
                           width: "88px",
                           height: "64px",
-                          borderRadius: "8px",
-                          border: galleryImageIndex === index ? "2px solid #c49a6c" : "1px solid #e5e7eb",
+                          borderRadius: "var(--radius-sm)",
+                          border: galleryImageIndex === index ? "2px solid var(--accent)" : "1px solid var(--border)",
                           backgroundImage: `url('${imageUrl}')`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
@@ -718,7 +803,7 @@ export default function PropertiesPage() {
                   </div>
 
                   <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                    <button type="button" onClick={() => openPropertyVideo(selectedGalleryProperty.videoUrl ?? "", selectedGalleryProperty.title)} style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}>
+                    <button type="button" onClick={() => openPropertyVideo(selectedGalleryProperty.videoUrl ?? "", selectedGalleryProperty.title)} style={{ border: "1px solid var(--border)", backgroundColor: "var(--surface)", color: "var(--ink)", borderRadius: "var(--radius-sm)", padding: "8px 14px", fontWeight: 600, cursor: "pointer" }}>
                       Watch Video
                     </button>
                   </div>

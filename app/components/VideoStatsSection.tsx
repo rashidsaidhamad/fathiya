@@ -114,7 +114,7 @@ export default function VideoStatsSection() {
               width: "100%",
               height: "100%",
               objectFit: "cover",
-              filter: "brightness(0.5)",
+              filter: "brightness(0.55)",
             } as React.CSSProperties & { WebkitPlaysinline?: string }}
             data-webkit-playsinline="true"
           />
@@ -127,12 +127,19 @@ export default function VideoStatsSection() {
                 `url('${content.videoSection.backgroundImage}')`,
               backgroundSize: "cover",
               backgroundPosition: "center",
-              filter: "brightness(0.5)",
+              filter: "brightness(0.55)",
             }}
           />
         )}
         <div
-          className="video-overlay-card"
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(90deg, rgba(11,12,19,0.35) 0%, transparent 55%)",
+          }}
+        />
+        <div
+          className="video-overlay-card glass-dark"
           style={{
             position: "absolute",
             left: "42px",
@@ -140,24 +147,21 @@ export default function VideoStatsSection() {
             zIndex: 5,
             textAlign: "left",
             color: "#fff",
-            backgroundColor: "rgba(10, 16, 28, 0.52)",
-            border: "1px solid rgba(255,255,255,0.24)",
-            borderRadius: "16px",
-            padding: "30px 36px",
-            backdropFilter: "blur(3px)",
+            borderRadius: "var(--radius-md)",
+            padding: "32px 38px",
             maxWidth: "620px",
-            boxShadow: "0 16px 45px rgba(0,0,0,0.35)",
+            boxShadow: "var(--shadow-lg)",
             display: "grid",
             gap: "14px",
           }}
         >
           <p
             style={{
-              fontSize: "10px",
+              fontSize: "11px",
               letterSpacing: "3px",
               textTransform: "uppercase",
               margin: 0,
-              color: "#d8c3a5",
+              color: "var(--accent-light)",
               fontWeight: 700,
             }}
           >
@@ -166,7 +170,7 @@ export default function VideoStatsSection() {
           <h2
             style={{
               fontSize: "40px",
-              fontFamily: "Georgia, serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               margin: "2px 0 4px",
               lineHeight: 1.2,
@@ -174,24 +178,29 @@ export default function VideoStatsSection() {
           >
             Zanzibar Real Estate Business
           </h2>
-          <p style={{ margin: 0, fontSize: "14px", color: "#e5e7eb", lineHeight: 1.7 }}>
+          <p style={{ margin: 0, fontSize: "14px", color: "rgba(255,255,255,0.8)", lineHeight: 1.7 }}>
             Trusted property advisory for buying, selling, and investment opportunities across Zanzibar.
           </p>
           <a
             href="/contact"
             style={{
-              display: "inline-block",
+              display: "inline-flex",
+              alignItems: "center",
               width: "fit-content",
               textDecoration: "none",
-              backgroundColor: "#c49a6c",
+              background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
               color: "#fff",
               fontSize: "13px",
               fontWeight: 700,
-              letterSpacing: "0.8px",
+              letterSpacing: "0.6px",
               textTransform: "uppercase",
-              padding: "11px 18px",
-              borderRadius: "8px",
+              padding: "12px 22px",
+              borderRadius: "var(--radius-pill)",
+              boxShadow: "0 10px 24px rgba(196,154,108,0.35)",
+              transition: "transform 0.25s",
             }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.transform = "translateY(-2px)")}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.transform = "translateY(0)")}
           >
             Start Now
           </a>
@@ -202,8 +211,8 @@ export default function VideoStatsSection() {
       <section
         className="video-stats-row"
         style={{
-          backgroundColor: "#1a1e2e",
-          padding: "48px clamp(18px, 6vw, 80px)",
+          backgroundColor: "var(--navy)",
+          padding: "56px clamp(18px, 6vw, 80px)",
           display: "flex",
           justifyContent: "center",
           gap: "80px",
@@ -213,16 +222,16 @@ export default function VideoStatsSection() {
           <div key={i} style={{ textAlign: "center", maxWidth: "220px" }}>
             <p
               style={{
-                fontSize: "48px",
-                color: "#c49a6c",
+                fontSize: "44px",
+                color: "var(--accent-light)",
                 fontWeight: 700,
-                fontFamily: "Georgia, serif",
+                fontFamily: "var(--font-display)",
                 marginBottom: "12px",
               }}
             >
               <AnimatedNumber numeric={stat.numeric} suffix={stat.suffix} decimal={stat.decimal} />
             </p>
-            <p style={{ color: "#ffffff", fontSize: "14px", lineHeight: 1.7 }}>
+            <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "14px", lineHeight: 1.7 }}>
               {stat.label}
             </p>
           </div>

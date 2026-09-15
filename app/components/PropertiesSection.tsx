@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaMapMarkerAlt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaWhatsapp, FaBed, FaBath, FaRulerCombined } from "react-icons/fa";
 import { useInView } from "../hooks/useInView";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
@@ -168,60 +168,69 @@ export default function PropertiesSection() {
       className="properties-root"
       ref={ref}
       style={{
-        padding: "80px clamp(18px, 6vw, 80px)",
-        backgroundColor: "#faf8f5",
+        padding: "100px clamp(18px, 6vw, 80px)",
+        backgroundColor: "var(--background)",
         backgroundImage:
-          "radial-gradient(circle at 10% 20%, rgba(196,154,108,0.05) 0%, transparent 50%)",
+          "radial-gradient(circle at 10% 20%, rgba(196,154,108,0.08) 0%, transparent 50%)",
         overflow: "hidden",
       }}
     >
-      <div style={{ textAlign: "center", marginBottom: "clamp(30px, 6vw, 50px)" }}>
-        <p
+      <div style={{ textAlign: "center", marginBottom: "clamp(30px, 6vw, 56px)" }}>
+        <div
           style={{
-            color: "#c49a6c",
-            fontSize: "clamp(9px, 2vw, 11px)",
-            letterSpacing: "4px",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "7px 16px",
+            borderRadius: "var(--radius-pill)",
+            backgroundColor: "var(--accent-soft)",
+            color: "var(--accent-dark)",
+            fontSize: "12px",
+            fontWeight: 700,
+            letterSpacing: "2px",
             textTransform: "uppercase",
-            marginBottom: "12px",
+            marginBottom: "20px",
           }}
         >
           {content.homePage.propertiesBadge}
-        </p>
+        </div>
         <h2
           style={{
-            fontSize: "clamp(24px, 6vw, 36px)",
-            fontFamily: "Georgia, serif",
-            color: "#222",
-            marginBottom: "12px",
+            fontSize: "clamp(24px, 6vw, 40px)",
+            fontFamily: "var(--font-display)",
+            color: "var(--ink)",
+            fontWeight: 700,
+            marginBottom: "14px",
+            letterSpacing: "-0.01em",
           }}
         >
           {content.homePage.propertiesTitle}
         </h2>
-        <p style={{ color: "#888", fontSize: "clamp(12px, 2.5vw, 14px)", maxWidth: "520px", margin: "0 auto", lineHeight: 1.7 }}>
+        <p style={{ color: "var(--muted)", fontSize: "clamp(12px, 2.5vw, 15px)", maxWidth: "520px", margin: "0 auto", lineHeight: 1.75 }}>
           {content.homePage.propertiesDescription}
         </p>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", marginBottom: "18px", width: "100%" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", marginBottom: "20px", width: "100%" }}>
         <button
           type="button"
           onClick={showPreviousProperties}
           disabled={properties.length <= visiblePropertyCount}
           aria-label="Show previous properties"
           style={{
-            width: "clamp(36px, 8vw, 44px)",
-            height: "clamp(36px, 8vw, 44px)",
+            width: "clamp(38px, 8vw, 46px)",
+            height: "clamp(38px, 8vw, 46px)",
             borderRadius: "50%",
-            border: "1px solid #e0d4c2",
-            backgroundColor: "#fff",
-            color: "#7c5a37",
+            border: "none",
+            backgroundColor: properties.length <= visiblePropertyCount ? "var(--surface)" : "#fff",
+            color: properties.length <= visiblePropertyCount ? "#ccc" : "var(--accent-dark)",
             cursor: properties.length <= visiblePropertyCount ? "default" : "pointer",
-            opacity: properties.length <= visiblePropertyCount ? 0.45 : 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 6px 18px rgba(0,0,0,0.06)",
-            fontSize: "clamp(16px, 4vw, 20px)",
+            boxShadow: "var(--shadow-md)",
+            fontSize: "clamp(16px, 4vw, 22px)",
+            transition: "transform 0.25s",
           }}
         >
           ‹
@@ -232,19 +241,19 @@ export default function PropertiesSection() {
           disabled={properties.length <= visiblePropertyCount}
           aria-label="Show next properties"
           style={{
-            width: "clamp(36px, 8vw, 44px)",
-            height: "clamp(36px, 8vw, 44px)",
+            width: "clamp(38px, 8vw, 46px)",
+            height: "clamp(38px, 8vw, 46px)",
             borderRadius: "50%",
-            border: "1px solid #e0d4c2",
-            backgroundColor: "#fff",
-            color: "#7c5a37",
+            border: "none",
+            backgroundColor: properties.length <= visiblePropertyCount ? "var(--surface)" : "#fff",
+            color: properties.length <= visiblePropertyCount ? "#ccc" : "var(--accent-dark)",
             cursor: properties.length <= visiblePropertyCount ? "default" : "pointer",
-            opacity: properties.length <= visiblePropertyCount ? 0.45 : 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 6px 18px rgba(0,0,0,0.06)",
-            fontSize: "clamp(16px, 4vw, 20px)",
+            boxShadow: "var(--shadow-md)",
+            fontSize: "clamp(16px, 4vw, 22px)",
+            transition: "transform 0.25s",
           }}
         >
           ›
@@ -256,7 +265,7 @@ export default function PropertiesSection() {
         style={{
           display: "flex",
           flexWrap: "wrap",
-          gap: "22px",
+          gap: "26px",
           alignItems: "flex-start",
           justifyContent: properties.length <= 1 ? "center" : "stretch",
         }}
@@ -277,49 +286,85 @@ export default function PropertiesSection() {
                   router.push(`/properties/${p.id}`);
                 }
               }}
+              className="hover-lift"
               style={{
-                backgroundColor: "#fff",
-                borderRadius: "12px",
+                backgroundColor: "var(--surface)",
+                borderRadius: "var(--radius-md)",
                 overflow: "hidden",
-                boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+                boxShadow: "var(--shadow-sm)",
                 opacity: inView ? 1 : 0,
                 transform: inView ? "translateY(0)" : "translateY(30px)",
-                transition: `opacity 0.7s ease ${idx * 0.1}s, transform 0.7s ease ${idx * 0.1}s, box-shadow 0.3s`,
+                transition: `opacity 0.7s ease ${idx * 0.1}s, transform 0.7s ease ${idx * 0.1}s`,
                 flex: properties.length <= 1 ? "1 1 380px" : "1 1 clamp(280px, 100%, 320px)",
-                maxWidth: properties.length <= 1 ? "380px" : `calc((100% - ${22 * (visiblePropertyCount - 1)}px) / ${visiblePropertyCount})`,
-                minHeight: "420px",
+                maxWidth: properties.length <= 1 ? "380px" : `calc((100% - ${26 * (visiblePropertyCount - 1)}px) / ${visiblePropertyCount})`,
+                minHeight: "510px",
                 display: "flex",
                 flexDirection: "column",
                 cursor: "pointer",
                 outline: "none",
               }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 30px rgba(0,0,0,0.15)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px rgba(0,0,0,0.08)";
-              }}
             >
-              <div style={{ position: "relative", height: "220px" }}>
+              <div style={{ position: "relative", height: "230px" }}>
                 <div style={{ width: "100%", height: "100%", backgroundImage: `url('${primaryImage}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
-                {/* Best Deal badge removed */}
-                <div style={{ position: "absolute", bottom: 10, left: 10, display: "flex", gap: 6, alignItems: "center" }}>
-                  <button type="button" onClick={(e) => { e.stopPropagation(); openPropertyVideo(p.videoUrl ?? "", p.title); }} style={{ padding: "5px 10px", borderRadius: "999px", border: "none", background: "rgba(255,255,255,0.9)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#c49a6c", textDecoration: "none", fontSize: "11px", fontWeight: 700, whiteSpace: "nowrap" }}>
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 45%, rgba(11,12,19,0.72) 100%)" }} />
+                <div style={{ position: "absolute", top: 14, right: 14, display: "flex", gap: 6 }}>
+                  <span style={{ backgroundColor: p.statusColor || "var(--accent)", color: "#fff", padding: "5px 12px", borderRadius: "var(--radius-pill)", fontSize: "11px", fontWeight: 700 }}>
+                    {p.status}
+                  </span>
+                  <span style={{ backgroundColor: "rgba(255,255,255,0.92)", color: "#2f9e5b", padding: "5px 12px", borderRadius: "var(--radius-pill)", fontSize: "11px", fontWeight: 700 }}>
+                    {p.active}
+                  </span>
+                </div>
+                <p style={{ position: "absolute", left: 16, bottom: 44, margin: 0, color: "#fff", fontSize: "20px", fontWeight: 800, textShadow: "0 2px 10px rgba(0,0,0,0.4)" }}>
+                  {p.price}
+                </p>
+                <div style={{ position: "absolute", bottom: 12, left: 16, display: "flex", gap: 6, alignItems: "center" }}>
+                  <button type="button" onClick={(e) => { e.stopPropagation(); openPropertyVideo(p.videoUrl ?? "", p.title); }} style={{ padding: "6px 12px", borderRadius: "var(--radius-pill)", border: "none", background: "rgba(255,255,255,0.92)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent-dark)", textDecoration: "none", fontSize: "11px", fontWeight: 700, whiteSpace: "nowrap", boxShadow: "var(--shadow-sm)" }}>
                     Watch Video
                   </button>
                 </div>
               </div>
-              <div style={{ padding: "clamp(12px, 3vw, 16px)", display: "flex", flexDirection: "column", flex: 1 }}>
-                <p style={{ color: "#c49a6c", fontSize: "clamp(13px, 3vw, 15px)", fontWeight: 700, marginBottom: "4px" }}>{p.price}</p>
-                <h3 style={{ fontSize: "clamp(13px, 3vw, 15px)", fontWeight: 700, color: "#222", marginBottom: "8px", lineHeight: 1.35 }}>{p.title}</h3>
-                <div style={{ display: "flex", gap: "12px", color: "#333", fontSize: "clamp(11px, 2vw, 12px)", fontWeight: 600, marginBottom: "12px", flexWrap: "wrap" }}>
-                  <span>Bed: {p.beds}</span>
-                  <span>Bath: {p.baths}</span>
-                  <span>Size: {p.size.toLocaleString()} m<sup>2</sup></span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#555", fontSize: "13px", marginBottom: 12 }}>
-                  <FaMapMarkerAlt color="#c49a6c" size={13} />
+              <div style={{ padding: "clamp(14px, 3vw, 20px)", display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
+                <p style={{ margin: 0, fontSize: "clamp(14px, 3vw, 16px)", fontWeight: 700, color: "var(--ink)", lineHeight: 1.35 }}>{p.title}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--ink-soft)", fontSize: "13px" }}>
+                  <FaMapMarkerAlt color="var(--accent-dark)" size={13} />
                   <span style={{ lineHeight: 1.5 }}>{p.location}</span>
+                </div>
+                <div style={{ display: "flex", gap: "14px", color: "var(--ink-soft)", fontSize: "clamp(11px, 2vw, 12.5px)", fontWeight: 600, flexWrap: "wrap", paddingTop: 12, paddingBottom: 12, borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: 6 }}><FaBed color="var(--accent-dark)" size={12} /> {p.beds} Beds</span>
+                  <span style={{ display: "flex", alignItems: "center", gap: 6 }}><FaBath color="var(--accent-dark)" size={12} /> {p.baths} Baths</span>
+                  <span style={{ display: "flex", alignItems: "center", gap: 6 }}><FaRulerCombined color="var(--accent-dark)" size={12} /> {p.size.toLocaleString("en-US")} m²</span>
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openCallModal();
+                    }}
+                    style={{ flex: 1, padding: "9px", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", background: "var(--surface)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "var(--ink-soft)", fontWeight: 600 }}
+                  >
+                    <FaPhone size={11} color="var(--accent-dark)" /> Call
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openEmailModal(p.id);
+                    }}
+                    style={{ flex: 1, padding: "9px", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", background: "var(--surface)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "12px", color: "var(--ink-soft)", fontWeight: 600 }}
+                  >
+                    <FaEnvelope size={11} color="var(--accent-dark)" /> Email
+                  </button>
+                  <a
+                    href={toWhatsAppHref(p.contactWhatsapp || "+255659740712", `Hello, I'm interested in ${p.title}`)}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ padding: "9px 12px", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", background: "var(--surface)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}
+                  >
+                    <FaWhatsapp size={14} color="#25D366" />
+                  </a>
                 </div>
                 <button
                   type="button"
@@ -329,14 +374,16 @@ export default function PropertiesSection() {
                   }}
                   style={{
                     marginTop: "auto",
+                    width: "100%",
                     border: "none",
-                    borderRadius: "999px",
-                    padding: "10px 16px",
-                    background: "#c49a6c",
+                    borderRadius: "var(--radius-pill)",
+                    padding: "11px 18px",
+                    background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
                     color: "#fff",
                     fontWeight: 700,
+                    fontSize: "13px",
                     cursor: "pointer",
-                    alignSelf: "flex-start",
+                    boxShadow: "0 8px 18px rgba(196,154,108,0.3)",
                   }}
                 >
                   Show More
@@ -348,22 +395,23 @@ export default function PropertiesSection() {
       </div>
 
       {/* View More Button */}
-      <div style={{ display: "flex", justifyContent: "center", margin: "clamp(20px, 4vw, 28px) 0 0" }}>
+      <div style={{ display: "flex", justifyContent: "center", margin: "clamp(24px, 4vw, 36px) 0 0" }}>
         <a
           href="/properties"
           style={{
-            backgroundColor: "#c49a6c",
+            background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
             color: "#fff",
-            padding: "clamp(10px, 2vw, 12px) clamp(24px, 6vw, 36px)",
-            borderRadius: "4px",
+            padding: "clamp(12px, 2vw, 14px) clamp(28px, 6vw, 38px)",
+            borderRadius: "var(--radius-pill)",
             textDecoration: "none",
-            fontSize: "clamp(12px, 2.5vw, 14px)",
-            fontWeight: 600,
-            transition: "background-color 0.3s",
+            fontSize: "clamp(12px, 2.5vw, 14.5px)",
+            fontWeight: 700,
+            transition: "transform 0.25s",
             display: "inline-block",
+            boxShadow: "0 10px 24px rgba(196,154,108,0.35)",
           }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#a07850")}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#c49a6c")}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.transform = "translateY(-2px)")}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.transform = "translateY(0)")}
         >
           View More Properties
         </a>
@@ -375,7 +423,7 @@ export default function PropertiesSection() {
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(0,0,0,0.55)",
+            backgroundColor: "rgba(10,12,20,0.55)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -388,25 +436,25 @@ export default function PropertiesSection() {
             style={{
               width: "100%",
               maxWidth: "360px",
-              backgroundColor: "#fff",
-              borderRadius: "12px",
-              boxShadow: "0 24px 50px rgba(0,0,0,0.25)",
-              padding: "20px",
+              backgroundColor: "var(--surface)",
+              borderRadius: "var(--radius-md)",
+              boxShadow: "var(--shadow-lg)",
+              padding: "24px",
               display: "grid",
               gap: "10px",
             }}
           >
-            <h3 style={{ margin: 0, color: "#111827", fontSize: "20px", fontFamily: "Georgia, serif" }}>Call Archipelago</h3>
-            <p style={{ margin: 0, color: "#4b5563", fontSize: "13px" }}>Choose a number to call:</p>
+            <h3 style={{ margin: 0, color: "var(--ink)", fontSize: "20px", fontFamily: "var(--font-display)" }}>Call Archipelago</h3>
+            <p style={{ margin: 0, color: "var(--ink-soft)", fontSize: "13px" }}>Choose a number to call:</p>
             {CALL_NUMBERS.map((phone) => (
               <a
                 key={phone}
                 href={toTelHref(phone)}
                 style={{
-                  border: "1px solid #d1d5db",
-                  backgroundColor: "#fff",
-                  color: "#374151",
-                  borderRadius: "8px",
+                  border: "1px solid var(--border)",
+                  backgroundColor: "var(--background)",
+                  color: "var(--ink)",
+                  borderRadius: "var(--radius-sm)",
                   padding: "10px 12px",
                   fontWeight: 600,
                   textDecoration: "none",
@@ -423,7 +471,7 @@ export default function PropertiesSection() {
               <button
                 type="button"
                 onClick={closeCallModal}
-                style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "9px 14px", fontWeight: 600, cursor: "pointer" }}
+                style={{ border: "1px solid var(--border)", backgroundColor: "var(--surface)", color: "var(--ink)", borderRadius: "var(--radius-sm)", padding: "9px 14px", fontWeight: 600, cursor: "pointer" }}
               >
                 Close
               </button>
@@ -438,7 +486,7 @@ export default function PropertiesSection() {
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(0,0,0,0.55)",
+            backgroundColor: "rgba(10,12,20,0.55)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -451,57 +499,57 @@ export default function PropertiesSection() {
             style={{
               width: "100%",
               maxWidth: "460px",
-              backgroundColor: "#fff",
-              borderRadius: "12px",
-              boxShadow: "0 24px 50px rgba(0,0,0,0.25)",
-              padding: "22px",
+              backgroundColor: "var(--surface)",
+              borderRadius: "var(--radius-md)",
+              boxShadow: "var(--shadow-lg)",
+              padding: "26px",
               display: "grid",
               gap: "12px",
             }}
           >
-            <h3 style={{ margin: 0, color: "#111827", fontSize: "22px", fontFamily: "Georgia, serif" }}>Property Enquiry</h3>
-            <p style={{ margin: 0, color: "#4b5563", fontSize: "13px" }}>
+            <h3 style={{ margin: 0, color: "var(--ink)", fontSize: "22px", fontFamily: "var(--font-display)" }}>Property Enquiry</h3>
+            <p style={{ margin: 0, color: "var(--ink-soft)", fontSize: "13px" }}>
               {selectedEmailProperty!.title}
             </p>
-            <p style={{ margin: 0, color: "#6b7280", fontSize: "12px" }}>
+            <p style={{ margin: 0, color: "var(--muted)", fontSize: "12px" }}>
               This message will be sent to archipelagoproperties.zanzibar@gmail.com
             </p>
             <label style={{ display: "grid", gap: "6px" }}>
-              <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Full Name</span>
+              <span style={{ fontSize: "12px", color: "var(--ink)", fontWeight: 600 }}>Full Name</span>
               <input
                 value={leadFullName}
                 onChange={(event) => setLeadFullName(event.target.value)}
                 placeholder="Enter full name"
-                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
+                style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "10px 12px", fontSize: "13px", fontFamily: "var(--font-sans)" }}
               />
             </label>
             <label style={{ display: "grid", gap: "6px" }}>
-              <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Email Address</span>
+              <span style={{ fontSize: "12px", color: "var(--ink)", fontWeight: 600 }}>Email Address</span>
               <input
                 type="email"
                 value={leadEmail}
                 onChange={(event) => setLeadEmail(event.target.value)}
                 placeholder="Enter email address"
-                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
+                style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "10px 12px", fontSize: "13px", fontFamily: "var(--font-sans)" }}
               />
             </label>
             <label style={{ display: "grid", gap: "6px" }}>
-              <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Phone Number</span>
+              <span style={{ fontSize: "12px", color: "var(--ink)", fontWeight: 600 }}>Phone Number</span>
               <input
                 value={leadPhone}
                 onChange={(event) => setLeadPhone(event.target.value)}
                 placeholder="Enter phone number"
-                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px" }}
+                style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "10px 12px", fontSize: "13px", fontFamily: "var(--font-sans)" }}
               />
             </label>
             <label style={{ display: "grid", gap: "6px" }}>
-              <span style={{ fontSize: "12px", color: "#374151", fontWeight: 600 }}>Message</span>
+              <span style={{ fontSize: "12px", color: "var(--ink)", fontWeight: 600 }}>Message</span>
               <textarea
                 value={leadMessage}
                 onChange={(event) => setLeadMessage(event.target.value)}
                 placeholder="Write your message"
                 rows={4}
-                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px", resize: "vertical" }}
+                style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "10px 12px", fontSize: "13px", fontFamily: "var(--font-sans)", resize: "vertical" }}
               />
             </label>
 
@@ -510,7 +558,7 @@ export default function PropertiesSection() {
                 type="button"
                 onClick={closeEmailModal}
                 disabled={leadFormBusy}
-                style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "10px 14px", fontWeight: 600, cursor: leadFormBusy ? "default" : "pointer" }}
+                style={{ border: "1px solid var(--border)", backgroundColor: "var(--surface)", color: "var(--ink)", borderRadius: "var(--radius-sm)", padding: "10px 16px", fontWeight: 600, cursor: leadFormBusy ? "default" : "pointer" }}
               >
                 Cancel
               </button>
@@ -518,7 +566,7 @@ export default function PropertiesSection() {
                 type="button"
                 onClick={submitPropertyLead}
                 disabled={leadFormBusy}
-                style={{ border: "none", backgroundColor: "#c49a6c", color: "#fff", borderRadius: "8px", padding: "10px 14px", fontWeight: 700, cursor: leadFormBusy ? "default" : "pointer" }}
+                style={{ border: "none", background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)", color: "#fff", borderRadius: "var(--radius-sm)", padding: "10px 16px", fontWeight: 700, cursor: leadFormBusy ? "default" : "pointer" }}
               >
                 {leadFormBusy ? "Sending..." : "Send Email"}
               </button>
@@ -535,7 +583,7 @@ export default function PropertiesSection() {
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(0,0,0,0.55)",
+            backgroundColor: "rgba(10,12,20,0.55)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -548,20 +596,20 @@ export default function PropertiesSection() {
             style={{
               width: "100%",
               maxWidth: "860px",
-              backgroundColor: "#fff",
-              borderRadius: "12px",
-              boxShadow: "0 24px 50px rgba(0,0,0,0.25)",
-              padding: "18px",
+              backgroundColor: "var(--surface)",
+              borderRadius: "var(--radius-md)",
+              boxShadow: "var(--shadow-lg)",
+              padding: "20px",
               display: "grid",
               gap: "12px",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
               <div>
-                <h3 style={{ margin: 0, color: "#111827", fontSize: "22px", fontFamily: "Georgia, serif" }}>{selectedGalleryProperty!.title}</h3>
-                <p style={{ margin: "4px 0 0", color: "#6b7280", fontSize: "13px" }}>{selectedGalleryProperty!.location}</p>
+                <h3 style={{ margin: 0, color: "var(--ink)", fontSize: "22px", fontFamily: "var(--font-display)" }}>{selectedGalleryProperty!.title}</h3>
+                <p style={{ margin: "4px 0 0", color: "var(--muted)", fontSize: "13px" }}>{selectedGalleryProperty!.location}</p>
               </div>
-              <button type="button" onClick={closeGalleryModal} style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}>
+              <button type="button" onClick={closeGalleryModal} style={{ border: "1px solid var(--border)", backgroundColor: "var(--surface)", color: "var(--ink)", borderRadius: "var(--radius-sm)", padding: "8px 14px", fontWeight: 600, cursor: "pointer" }}>
                 Close
               </button>
             </div>
@@ -572,10 +620,10 @@ export default function PropertiesSection() {
               const currentGalleryImage = galleryImages[galleryImageIndex] ?? galleryImages[0] ?? gallerySource.image;
               return (
                 <div style={{ display: "grid", gap: "10px" }}>
-                  <div style={{ position: "relative", height: "420px", borderRadius: "10px", overflow: "hidden", backgroundColor: "#f3f4f6" }}>
+                  <div style={{ position: "relative", height: "420px", borderRadius: "var(--radius-sm)", overflow: "hidden", backgroundColor: "var(--background)" }}>
                     <div style={{ width: "100%", height: "100%", backgroundImage: `url('${currentGalleryImage}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
-                    <button type="button" onClick={() => setGalleryImageIndex((index) => Math.max(0, index - 1))} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.85)", cursor: "pointer" }}>‹</button>
-                    <button type="button" onClick={() => setGalleryImageIndex((index) => Math.min(galleryImages.length - 1, index + 1))} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.85)", cursor: "pointer" }}>›</button>
+                    <button type="button" onClick={() => setGalleryImageIndex((index) => Math.max(0, index - 1))} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.9)", cursor: "pointer" }}>‹</button>
+                    <button type="button" onClick={() => setGalleryImageIndex((index) => Math.min(galleryImages.length - 1, index + 1))} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.9)", cursor: "pointer" }}>›</button>
                   </div>
 
                   <div style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "4px" }}>
@@ -588,8 +636,8 @@ export default function PropertiesSection() {
                           flex: "0 0 auto",
                           width: "88px",
                           height: "64px",
-                          borderRadius: "8px",
-                          border: galleryImageIndex === index ? "2px solid #c49a6c" : "1px solid #e5e7eb",
+                          borderRadius: "var(--radius-sm)",
+                          border: galleryImageIndex === index ? "2px solid var(--accent)" : "1px solid var(--border)",
                           backgroundImage: `url('${imageUrl}')`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
@@ -601,7 +649,7 @@ export default function PropertiesSection() {
                   </div>
 
                   <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                    <button type="button" onClick={() => openPropertyVideo(gallerySource.videoUrl ?? "", gallerySource.title)} style={{ border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#374151", borderRadius: "8px", padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}>
+                    <button type="button" onClick={() => openPropertyVideo(gallerySource.videoUrl ?? "", gallerySource.title)} style={{ border: "1px solid var(--border)", backgroundColor: "var(--surface)", color: "var(--ink)", borderRadius: "var(--radius-sm)", padding: "8px 14px", fontWeight: 600, cursor: "pointer" }}>
                       Watch Video
                     </button>
                   </div>

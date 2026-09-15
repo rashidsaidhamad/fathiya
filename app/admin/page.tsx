@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ArticleItem, BlogSidebarItem, CompanyTeamMember, CompanyTestimonialItem, ContactSubmission, PropertyItem, SiteContent } from "../../lib/siteContent";
 import { defaultSiteContent } from "../../lib/siteContent";
+import RichTextEditor from "../components/RichTextEditor";
 type AdminSection = "home" | "properties" | "company" | "blog" | "contact";
 
 function JsonEditor({
@@ -1335,11 +1336,11 @@ export default function AdminPage() {
 
                       <label style={{ display: "grid", gap: "6px" }}>
                         <span style={{ fontSize: "12px", color: "#555", fontWeight: 600 }}>Description</span>
-                        <textarea
+                        <RichTextEditor
                           value={item.description}
-                          onChange={(e) => updateProperty(index, { description: e.target.value })}
-                          rows={3}
-                          style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px", resize: "vertical" }}
+                          onChange={(value) => updateProperty(index, { description: value })}
+                          rows={5}
+                          placeholder="Describe this property..."
                         />
                       </label>
 

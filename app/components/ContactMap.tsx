@@ -83,22 +83,22 @@ export default function ContactMap() {
 
       {/* Info overlay */}
       <div
+        className="glass"
         style={{
           position: "absolute",
-          top: "16px",
-          left: "70px",
+          top: "20px",
+          left: "20px",
           zIndex: 1000,
-          background: "#fff",
-          borderRadius: "6px",
-          padding: "24px 28px",
-          width: "380px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+          borderRadius: "var(--radius-md)",
+          padding: "26px 28px",
+          width: "340px",
+          boxShadow: "var(--shadow-lg)",
         }}
       >
-        <h3 style={{ fontWeight: 700, fontSize: "17px", marginBottom: "14px", color: "#1a1a2e" }}>
+        <h3 style={{ fontWeight: 700, fontFamily: "var(--font-display)", fontSize: "18px", marginBottom: "16px", color: "var(--ink)" }}>
           How To Find Us
         </h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "13px", color: "#444", marginBottom: "20px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "13.5px", color: "var(--ink-soft)", marginBottom: "22px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <span>📞</span> +255 659 740 712
           </div>
@@ -113,32 +113,32 @@ export default function ContactMap() {
             <span>Mlandege, Zanzibar Urban/West – Tanzania</span>
           </div>
         </div>
-        <h4 style={{ fontWeight: 700, fontSize: "15px", marginBottom: "10px", color: "#1a1a2e" }}>
+        <h4 style={{ fontWeight: 700, fontSize: "12px", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: "10px", color: "var(--ink)" }}>
           Opening Hours
         </h4>
-        <div style={{ fontSize: "13px", color: "#555", display: "flex", flexDirection: "column", gap: "4px" }}>
+        <div style={{ fontSize: "13px", color: "var(--ink-soft)", display: "flex", flexDirection: "column", gap: "4px" }}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span style={{ fontWeight: 600 }}>Monday - Saturday</span>
+            <span style={{ fontWeight: 600, color: "var(--ink)" }}>Monday - Saturday</span>
             <span>08:30 - 15:30</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span style={{ fontWeight: 600 }}>Sunday</span>
+            <span style={{ fontWeight: 600, color: "var(--ink)" }}>Sunday</span>
             <span>Closed</span>
           </div>
         </div>
       </div>
 
       {/* Toolbar */}
-      <div style={{ position: "absolute", top: "12px", right: "12px", zIndex: 1000, display: "flex", gap: "8px" }}>
+      <div style={{ position: "absolute", top: "20px", right: "20px", zIndex: 1000, display: "flex", gap: "8px" }}>
         {["📍 My Location", "⊕ Fullscreen"].map((btn) => (
-          <button key={btn} style={{ background: "#fff", border: "1px solid #ddd", borderRadius: "4px", padding: "7px 14px", fontSize: "13px", cursor: "pointer", fontWeight: 500 }}>
+          <button key={btn} className="glass" style={{ border: "none", borderRadius: "var(--radius-sm)", padding: "9px 16px", fontSize: "13px", cursor: "pointer", fontWeight: 600, color: "var(--ink)" }}>
             {btn}
           </button>
         ))}
       </div>
 
       {/* open map */}
-      <div style={{ position: "absolute", bottom: "8px", right: "8px", zIndex: 1000, background: "#fff", border: "1px solid #ddd", borderRadius: "4px", padding: "4px 10px", fontSize: "12px", cursor: "pointer" }}>
+      <div className="glass" style={{ position: "absolute", bottom: "16px", right: "16px", zIndex: 1000, borderRadius: "var(--radius-sm)", padding: "6px 14px", fontSize: "12.5px", fontWeight: 600, color: "var(--ink)", cursor: "pointer" }}>
         ∨ open map
       </div>
 

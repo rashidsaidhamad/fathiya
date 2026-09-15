@@ -94,7 +94,7 @@ export default function PropertyContactActions({
           onClick={() => setShowCallOptions(true)}
           style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", color: "#111827", background: "#f9fafb", borderRadius: 14, padding: 14, border: "none", cursor: "pointer", width: "100%", textAlign: "left" }}
         >
-          <span style={{ width: 40, height: 40, borderRadius: 12, background: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#c49a6c" }}><FaPhone /></span>
+          <span style={{ width: 40, height: 40, borderRadius: 12, background: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "var(--accent-dark)" }}><FaPhone /></span>
           <span>Call Agent</span>
         </button>
 
@@ -103,7 +103,7 @@ export default function PropertyContactActions({
           onClick={() => setShowEmailForm(true)}
           style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", color: "#111827", background: "#f9fafb", borderRadius: 14, padding: 14, border: "none", cursor: "pointer", width: "100%", textAlign: "left" }}
         >
-          <span style={{ width: 40, height: 40, borderRadius: 12, background: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#c49a6c" }}><FaEnvelope /></span>
+          <span style={{ width: 40, height: 40, borderRadius: 12, background: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "var(--accent-dark)" }}><FaEnvelope /></span>
           <span>Email Agent</span>
         </button>
 
@@ -125,8 +125,8 @@ export default function PropertyContactActions({
         >
           <div onClick={(event) => event.stopPropagation()} style={{ width: "100%", maxWidth: 420, background: "#fff", borderRadius: 18, padding: 22, boxShadow: "0 24px 60px rgba(0,0,0,0.25)", display: "grid", gap: 12 }}>
             <div>
-              <p style={{ margin: 0, color: "#c49a6c", fontWeight: 800 }}>Call</p>
-              <h3 style={{ margin: "6px 0 0", fontSize: 22, fontFamily: "Georgia, serif", color: "#111827" }}>Choose a number</h3>
+              <p style={{ margin: 0, color: "var(--accent-dark)", fontWeight: 800 }}>Call</p>
+              <h3 style={{ margin: "6px 0 0", fontSize: 22, fontFamily: "var(--font-display)", color: "#111827" }}>Choose a number</h3>
             </div>
 
             <div style={{ display: "grid", gap: 10 }}>
@@ -136,7 +136,7 @@ export default function PropertyContactActions({
                   href={toTelHref(number)}
                   style={{ display: "flex", alignItems: "center", gap: 12, padding: 14, borderRadius: 14, background: "#f9fafb", color: "#111827", textDecoration: "none", fontWeight: 700 }}
                 >
-                  <FaPhone color="#c49a6c" />
+                  <FaPhone color="var(--accent-dark)" />
                   {number}
                 </a>
               ))}
@@ -160,8 +160,8 @@ export default function PropertyContactActions({
         >
           <div onClick={(event) => event.stopPropagation()} style={{ width: "100%", maxWidth: "clamp(300px, 95vw, 520px)", background: "#fff", borderRadius: 18, padding: "clamp(16px, 5vw, 22px)", boxShadow: "0 24px 60px rgba(0,0,0,0.25)", display: "grid", gap: 14, margin: "auto" }}>
             <div>
-              <p style={{ margin: 0, color: "#c49a6c", fontWeight: 800, fontSize: "clamp(12px, 3vw, 14px)" }}>Email</p>
-              <h3 style={{ margin: "6px 0 0", fontSize: "clamp(18px, 5vw, 22px)", fontFamily: "Georgia, serif", color: "#111827", lineHeight: 1.2 }}>Send an enquiry to {contactPersonName}</h3>
+              <p style={{ margin: 0, color: "var(--accent-dark)", fontWeight: 800, fontSize: "clamp(12px, 3vw, 14px)" }}>Email</p>
+              <h3 style={{ margin: "6px 0 0", fontSize: "clamp(18px, 5vw, 22px)", fontFamily: "var(--font-display)", color: "#111827", lineHeight: 1.2 }}>Send an enquiry to {contactPersonName}</h3>
             </div>
 
             {contactPersonImage ? (
@@ -232,7 +232,7 @@ export default function PropertyContactActions({
                 <button
                   type="submit"
                   disabled={busy}
-                  style={{ border: "none", background: "#c49a6c", color: "#fff", borderRadius: 12, padding: "clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px)", fontWeight: 700, cursor: busy ? "wait" : "pointer", fontSize: "clamp(12px, 3vw, 13px)", whiteSpace: "nowrap" }}
+                  style={{ border: "none", background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)", color: "#fff", borderRadius: 12, padding: "clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px)", fontWeight: 700, cursor: busy ? "wait" : "pointer", fontSize: "clamp(12px, 3vw, 13px)", whiteSpace: "nowrap" }}
                 >
                   {busy ? "Sending..." : "Send Email"}
                 </button>

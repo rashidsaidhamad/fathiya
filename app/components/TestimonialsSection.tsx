@@ -10,33 +10,42 @@ export default function TestimonialsSection() {
   const testimonials = content.companyTestimonials;
 
   return (
-    <section ref={ref} className="testimonials-root" style={{ padding: "80px clamp(18px, 6vw, 80px)", backgroundColor: "#fff" }}>
-      <div style={{ textAlign: "center", marginBottom: "50px" }}>
-        <p
+    <section ref={ref} className="testimonials-root" style={{ padding: "100px clamp(18px, 6vw, 80px)", backgroundColor: "var(--surface)" }}>
+      <div style={{ textAlign: "center", marginBottom: "56px" }}>
+        <div
           style={{
-            color: "#c49a6c",
-            fontSize: "11px",
-            letterSpacing: "4px",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "7px 16px",
+            borderRadius: "var(--radius-pill)",
+            backgroundColor: "var(--accent-soft)",
+            color: "var(--accent-dark)",
+            fontSize: "12px",
+            fontWeight: 700,
+            letterSpacing: "2px",
             textTransform: "uppercase",
-            marginBottom: "12px",
+            marginBottom: "20px",
           }}
         >
           {content.homePage.testimonialsBadge}
-        </p>
+        </div>
         <h2
           style={{
-            fontSize: "36px",
-            fontFamily: "Georgia, serif",
-            color: "#222",
-            marginBottom: "12px",
+            fontSize: "40px",
+            fontFamily: "var(--font-display)",
+            color: "var(--ink)",
+            fontWeight: 700,
+            marginBottom: "14px",
+            letterSpacing: "-0.01em",
           }}
         >
           {content.homePage.testimonialsTitle}
         </h2>
-        <p style={{ color: "#888", fontSize: "14px" }}>
+        <p style={{ color: "var(--muted)", fontSize: "15px" }}>
           {content.homePage.testimonialsDescription}
         </p>
-        <div style={{ marginTop: "18px" }}>
+        <div style={{ marginTop: "22px" }}>
           <Link
             href="/company#testimonials"
             style={{
@@ -44,14 +53,23 @@ export default function TestimonialsSection() {
               alignItems: "center",
               justifyContent: "center",
               gap: "8px",
-              padding: "10px 18px",
-              borderRadius: "999px",
-              border: "1px solid #c49a6c",
-              color: "#c49a6c",
+              padding: "11px 22px",
+              borderRadius: "var(--radius-pill)",
+              border: "1.5px solid var(--border)",
+              color: "var(--ink)",
               textDecoration: "none",
               fontSize: "13px",
               fontWeight: 700,
               letterSpacing: "0.4px",
+              transition: "border-color 0.25s, color 0.25s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)";
+              (e.currentTarget as HTMLElement).style.color = "var(--accent-dark)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
+              (e.currentTarget as HTMLElement).style.color = "var(--ink)";
             }}
           >
             See More
@@ -71,12 +89,13 @@ export default function TestimonialsSection() {
         {testimonials.slice(0, 3).map((t, i) => (
           <div
             key={t.id}
+            className="hover-lift"
             style={{
-              backgroundColor: "#fff",
-              border: "1px solid #eee",
-              borderRadius: "8px",
-              padding: "28px",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+              backgroundColor: "var(--background)",
+              borderRadius: "var(--radius-md)",
+              padding: "32px",
+              position: "relative",
+              boxShadow: "var(--shadow-sm)",
               opacity: inView ? 1 : 0,
               transform: inView ? "translateY(0)" : "translateY(30px)",
               transition: `opacity 0.7s ease ${i * 0.15}s, transform 0.7s ease ${i * 0.15}s`,
@@ -86,33 +105,49 @@ export default function TestimonialsSection() {
               flex: "1 1 300px",
             }}
           >
+            <div
+              style={{
+                position: "absolute",
+                top: "22px",
+                right: "26px",
+                fontFamily: "var(--font-display)",
+                fontSize: "52px",
+                color: "var(--accent-soft)",
+                lineHeight: 1,
+                fontWeight: 700,
+              }}
+            >
+              &rdquo;
+            </div>
             <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px" }}>
               <div
                 style={{
                   width: 48,
                   height: 48,
                   borderRadius: "50%",
-                  backgroundColor: "#e8ddd4",
-                  color: "#6b4f33",
+                  backgroundColor: "var(--accent-soft)",
+                  color: "var(--accent-dark)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: "16px",
                   fontWeight: 700,
                   flexShrink: 0,
+                  border: "2px solid var(--surface)",
+                  boxShadow: "var(--shadow-sm)",
                 }}
               >
                 {t.name.slice(0, 1).toUpperCase()}
               </div>
               <div>
-                <p style={{ fontWeight: 600, fontSize: "15px", color: "#222" }}>{t.name}</p>
-                <p style={{ fontSize: "12px", color: "#888" }}>{t.role}</p>
+                <p style={{ fontWeight: 700, fontSize: "15px", color: "var(--ink)" }}>{t.name}</p>
+                <p style={{ fontSize: "12px", color: "var(--muted)" }}>{t.role}</p>
               </div>
             </div>
             <ExpandableDescription
               description={t.text}
               maxLength={200}
-              color="#555"
+              color="var(--ink-soft)"
               fontSize="14px"
               marginBottom="16px"
               lineHeight={1.7}

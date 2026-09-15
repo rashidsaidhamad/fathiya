@@ -2,10 +2,51 @@
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useState } from "react";
+import {
+  FaHandshake,
+  FaEye,
+  FaShieldAlt,
+  FaClipboardCheck,
+  FaEnvelope,
+  FaPhone,
+  FaWhatsapp,
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+} from "react-icons/fa";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { toMailtoHref, toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
 import ExpandableDescription from "../components/ExpandableDescription";
+
+const coreValues = [
+  {
+    icon: <FaHandshake size={20} />,
+    title: "Honesty",
+    text: "We give clients clear, straightforward advice — no hidden fees, no surprises.",
+  },
+  {
+    icon: <FaEye size={20} />,
+    title: "Transparency",
+    text: "Every step of your transaction is explained clearly, so you always know where you stand.",
+  },
+  {
+    icon: <FaShieldAlt size={20} />,
+    title: "Integrity",
+    text: "We hold ourselves to the highest ethical standards in every deal we handle.",
+  },
+  {
+    icon: <FaClipboardCheck size={20} />,
+    title: "Accountability",
+    text: "We stand behind our advice and follow through until the job is done.",
+  },
+];
+
+const companyStats = [
+  { value: "10+", label: "Years of combined market experience" },
+  { value: "500+", label: "Happy clients across Zanzibar" },
+  { value: "300+", label: "Properties sold or rented" },
+  { value: "100%", label: "Legal & ZIPA compliant transactions" },
+];
 
 const companyPillars = [
   {
@@ -54,49 +95,7 @@ const faqs = [
 ];
 
 export default function CompanyPage() {
-  const [formStatus, setFormStatus] = useState("");
-  const [phone, setPhone] = useState("");
   const content = useSiteContent();
-
-  const handleCompanySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-
-    const phoneValue = String(formData.get("phone") ?? "").trim();
-    if (phoneValue && !/^[1-9]\d{7,14}$/.test(phoneValue)) {
-      setFormStatus("Please enter a valid phone number starting with country code (digits only, e.g. 255772818324).");
-      return;
-    }
-
-    setFormStatus("Sending...");
-
-    const response = await fetch("/api/contact-submissions", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      setFormStatus("Could not send. Please try again.");
-      return;
-    }
-
-    const payload = (await response.json()) as {
-      emailRouting?: {
-        to?: string;
-        from?: string;
-        sent?: boolean;
-      };
-    };
-    const emailRouting = payload.emailRouting;
-    const deliveryText = emailRouting
-      ? ` Sent to: ${emailRouting.to ?? "-"}. Sent from: ${emailRouting.from ?? "-"}.${emailRouting.sent ? "" : " SMTP is not configured yet."}`
-      : "";
-
-    setFormStatus(`Thanks! Your message was received.${deliveryText}`);
-    form.reset();
-    setPhone("");
-  };
 
   return (
     <main className="company-page" style={{ backgroundColor: "#efefef" }}>
@@ -140,6 +139,22 @@ export default function CompanyPage() {
         </div>
       </section>
 
+      <section className="company-section company-values">
+        <div className="section-head">
+          <p>WHAT DRIVES US</p>
+          <h2>Our Core Values</h2>
+        </div>
+        <div className="core-values-grid">
+          {coreValues.map((v) => (
+            <article key={v.title}>
+              <div className="core-value-icon">{v.icon}</div>
+              <h3>{v.title}</h3>
+              <p>{v.text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="company-section company-team">
         <div className="section-head">
           <p>OUR AGENTS</p>
@@ -147,16 +162,16 @@ export default function CompanyPage() {
           <span>If you want the best care possible for your real estate needs, our certified professionals are here to help.</span>
         </div>
 
-        <div style={{ width: "min(1040px, 100%)", margin: "0 auto", display: "flex", flexWrap: "wrap", gap: "18px", alignItems: "flex-start" }}>
+        <div className="team-grid">
           {content.companyTeam.map((member) => (
-            <article key={member.id} className="team-card" style={{ maxWidth: "unset", width: "250px", display: "flex", flexDirection: "column", minHeight: "440px", flex: "0 0 250px" }}>
+            <article key={member.id} className="team-card">
               <div className="team-logo-wrap">
                 <div
                   role="img"
                   aria-label={member.name}
                   style={{
                     width: "100%",
-                    height: "240px",
+                    height: "100%",
                     backgroundImage: `url('${member.image}')`,
                     backgroundSize: "cover",
                     backgroundPosition: "top center",
@@ -167,23 +182,43 @@ export default function CompanyPage() {
               <p>{member.role}</p>
               <ExpandableDescription
                 description={member.description}
-                maxLength={150}
+                maxLength={55}
                 color="#5f5f5f"
-                fontSize="13px"
-                marginBottom="12px"
+                fontSize="10.5px"
+                marginBottom="8px"
               />
-              <p>
-                <a href={toMailtoHref(member.email)} style={{ color: "#5f5f5f", textDecoration: "none" }}>{member.email}</a>
-              </p>
-              <p>
-                <a href={toTelHref(member.phone)} style={{ color: "#5f5f5f", textDecoration: "none" }}>{member.phone}</a>
-              </p>
-              <p style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
-                {member.facebook && <a href={member.facebook} target="_blank" rel="noreferrer" style={{ color: "#5f5f5f", textDecoration: "none" }}>Facebook</a>}
-                {member.instagram && <a href={member.instagram} target="_blank" rel="noreferrer" style={{ color: "#5f5f5f", textDecoration: "none" }}>Instagram</a>}
-                {member.linkedin && <a href={member.linkedin} target="_blank" rel="noreferrer" style={{ color: "#5f5f5f", textDecoration: "none" }}>LinkedIn</a>}
-                {member.whatsapp && <a href={toWhatsAppHref(member.whatsapp, content.contactActions.whatsappMessage)} target="_blank" rel="noreferrer" style={{ color: "#5f5f5f", textDecoration: "none" }}>WhatsApp</a>}
-              </p>
+              <div className="team-icon-row">
+                {member.email && (
+                  <a href={toMailtoHref(member.email)} title={member.email} aria-label="Email">
+                    <FaEnvelope size={9} />
+                  </a>
+                )}
+                {member.phone && (
+                  <a href={toTelHref(member.phone)} title={member.phone} aria-label="Phone">
+                    <FaPhone size={9} />
+                  </a>
+                )}
+                {member.whatsapp && (
+                  <a href={toWhatsAppHref(member.whatsapp, content.contactActions.whatsappMessage)} target="_blank" rel="noreferrer" aria-label="WhatsApp">
+                    <FaWhatsapp size={9} />
+                  </a>
+                )}
+                {member.facebook && (
+                  <a href={member.facebook} target="_blank" rel="noreferrer" aria-label="Facebook">
+                    <FaFacebookF size={9} />
+                  </a>
+                )}
+                {member.instagram && (
+                  <a href={member.instagram} target="_blank" rel="noreferrer" aria-label="Instagram">
+                    <FaInstagram size={9} />
+                  </a>
+                )}
+                {member.linkedin && (
+                  <a href={member.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn">
+                    <FaLinkedinIn size={9} />
+                  </a>
+                )}
+              </div>
             </article>
           ))}
         </div>
@@ -197,8 +232,14 @@ export default function CompanyPage() {
         <div className="testimonial-grid" style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "flex-start" }}>
           {content.companyTestimonials.map((item) => (
             <article key={item.id} style={{ display: "flex", flexDirection: "column", minHeight: "320px", flex: "1 1 280px" }}>
-              <h3>{item.name}</h3>
-              <p className="role">{item.role}</p>
+              <div className="testimonial-quote">&rdquo;</div>
+              <div className="testimonial-head">
+                <div className="testimonial-avatar">{item.name.slice(0, 1).toUpperCase()}</div>
+                <div>
+                  <h3>{item.name}</h3>
+                  <p className="role">{item.role}</p>
+                </div>
+              </div>
               <ExpandableDescription
                 description={item.text}
                 maxLength={200}
@@ -209,6 +250,26 @@ export default function CompanyPage() {
               <div className="stars">{"★".repeat(Math.max(1, item.stars))}</div>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="company-section company-stats">
+        <div className="stats-grid">
+          {companyStats.map((s) => (
+            <div key={s.label}>
+              <p className="stat-value">{s.value}</p>
+              <p className="stat-label">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="company-section company-cta">
+        <h2>Ready to Start Your Property Journey?</h2>
+        <p>Talk to our team today — we&apos;re ready to help you find, buy, or invest in the right property in Zanzibar.</p>
+        <div className="cta-buttons">
+          <a href="/properties" className="cta-primary">View Properties</a>
+          <a href="/contact" className="cta-secondary">Contact Us</a>
         </div>
       </section>
 
@@ -224,56 +285,6 @@ export default function CompanyPage() {
               <p>{item.a}</p>
             </details>
           ))}
-        </div>
-      </section>
-
-      <section className="company-section company-contact">
-        <div className="contact-card">
-          <div className="contact-photo" />
-          <div className="contact-form-wrap">
-            <h2>Get in touch with us to plan your next transaction</h2>
-            <p>Our experts and developers would love to contribute their expertise and insights and help you today.</p>
-            <form onSubmit={handleCompanySubmit}>
-              <input type="hidden" name="source" value="company" />
-              <div className="form-grid">
-                <label>
-                  Last name*
-                  <input type="text" name="lastName" placeholder="Last name" required />
-                </label>
-                <label>
-                  First name*
-                  <input type="text" name="firstName" placeholder="First name" required />
-                </label>
-                <label>
-                  Email*
-                  <input type="email" name="email" placeholder="Email" required />
-                </label>
-                <label>
-                  Mobile
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder="255772818324"
-                    inputMode="tel"
-                    pattern="^[1-9]\d{7,14}$"
-                    title="Digits only, start with country code (e.g. 255772818324)"
-                    value={phone}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      const sanitized = val.replace(/\D/g, "");
-                      setPhone(sanitized);
-                    }}
-                  />
-                </label>
-              </div>
-              <label className="message-field">
-                Message
-                <textarea name="message" rows={4} placeholder="Message" required />
-              </label>
-              <button type="submit">Send Email</button>
-              <p style={{ marginTop: "10px", fontSize: "12px", color: "#555" }}>{formStatus}</p>
-            </form>
-          </div>
         </div>
       </section>
 

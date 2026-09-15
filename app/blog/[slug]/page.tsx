@@ -41,9 +41,9 @@ export default function BlogPostPage() {
     return (
       <>
         <Navbar forceWhite />
-        <div style={{ paddingTop: "120px", textAlign: "center", minHeight: "60vh" }}>
-          <h1 style={{ fontSize: "28px", color: "#333" }}>Post not found</h1>
-          <a href="/blog" style={{ color: "#c49a6c", fontSize: "15px" }}>← Back to Blog</a>
+        <div style={{ paddingTop: "160px", textAlign: "center", minHeight: "60vh" }}>
+          <h1 style={{ fontSize: "28px", fontFamily: "var(--font-display)", color: "var(--ink)" }}>Post not found</h1>
+          <a href="/blog" style={{ color: "var(--accent-dark)", fontSize: "15px", fontWeight: 600 }}>← Back to Blog</a>
         </div>
         <Footer />
       </>
@@ -53,32 +53,32 @@ export default function BlogPostPage() {
   return (
     <>
       <Navbar forceWhite />
-      <div style={{ paddingTop: "70px", backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-        <div style={{ maxWidth: "860px", margin: "0 auto", padding: "36px 24px" }}>
+      <div style={{ paddingTop: "110px", backgroundColor: "var(--background)", minHeight: "100vh" }}>
+        <div style={{ maxWidth: "860px", margin: "0 auto", padding: "0 clamp(16px, 3vw, 24px) clamp(40px, 6vw, 60px)" }}>
           {/* Breadcrumb */}
-          <div style={{ fontSize: "13px", color: "#888", marginBottom: "20px" }}>
-            <a href="/" style={{ color: "#555", textDecoration: "none" }}>Home</a>
+          <div style={{ fontSize: "13px", color: "var(--muted)", marginBottom: "20px" }}>
+            <a href="/" style={{ color: "var(--ink-soft)", textDecoration: "none" }}>Home</a>
             <span style={{ margin: "0 6px" }}>›</span>
-            <a href="/blog" style={{ color: "#555", textDecoration: "none" }}>Blog List</a>
+            <a href="/blog" style={{ color: "var(--ink-soft)", textDecoration: "none" }}>Blog List</a>
             <span style={{ margin: "0 6px" }}>›</span>
-            <span style={{ color: "#c49a6c", fontWeight: 600 }}>{post.title}</span>
+            <span style={{ color: "var(--accent-dark)", fontWeight: 600 }}>{post.title}</span>
           </div>
 
           {/* Post card */}
-          <div style={{ backgroundColor: "#fff", borderRadius: "8px", overflow: "hidden", boxShadow: "0 2px 16px rgba(0,0,0,0.08)" }}>
+          <div style={{ backgroundColor: "var(--surface)", borderRadius: "var(--radius-lg)", overflow: "hidden", boxShadow: "var(--shadow-md)" }}>
             <img src={post.image} alt={post.title} style={{ width: "100%", height: "380px", objectFit: "cover" }} />
-            <div style={{ padding: "36px" }}>
-              <p style={{ fontSize: "12px", color: "#aaa", marginBottom: "12px" }}>{post.date}</p>
-              <h1 style={{ fontSize: "26px", fontWeight: 700, color: "#1a1a2e", marginBottom: "24px", fontFamily: "Georgia, serif", lineHeight: 1.4 }}>
+            <div style={{ padding: "clamp(24px, 4vw, 44px)" }}>
+              <p style={{ fontSize: "12px", color: "var(--accent-dark)", marginBottom: "14px", fontWeight: 700, letterSpacing: "0.5px" }}>{post.date}</p>
+              <h1 style={{ fontSize: "clamp(24px, 4vw, 30px)", fontWeight: 700, color: "var(--ink)", marginBottom: "26px", fontFamily: "var(--font-display)", lineHeight: 1.35 }}>
                 {post.title}
               </h1>
               {post.content.split("\n\n").map((para, i) => (
-                <p key={i} style={{ fontSize: "15px", color: "#555", lineHeight: 1.8, marginBottom: "18px" }}>
+                <p key={i} style={{ fontSize: "15px", color: "var(--ink-soft)", lineHeight: 1.85, marginBottom: "18px" }}>
                   {para}
                 </p>
               ))}
-              <div style={{ marginTop: "32px", paddingTop: "20px", borderTop: "1px solid #eee" }}>
-                <a href="/blog" style={{ color: "#c49a6c", fontSize: "14px", fontWeight: 600, textDecoration: "none", display: "flex", alignItems: "center", gap: "6px" }}>
+              <div style={{ marginTop: "32px", paddingTop: "22px", borderTop: "1px solid var(--border)" }}>
+                <a href="/blog" style={{ color: "var(--accent-dark)", fontSize: "14px", fontWeight: 700, textDecoration: "none", display: "flex", alignItems: "center", gap: "6px" }}>
                   ← Back to Blog List
                 </a>
               </div>

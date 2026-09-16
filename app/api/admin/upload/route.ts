@@ -2,6 +2,9 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse, type NextRequest } from "next/server";
 import { isAdminRequest } from "../../../../lib/adminAuth";
+import { isBlobStoreAvailable, writeBinaryBlob } from "../../../../lib/blobStore";
+
+const UPLOADS_STORE = "site-uploads";
 
 function sanitizeBaseName(fileName: string) {
   const base = path.basename(fileName, path.extname(fileName));
@@ -40,16 +43,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadsDir, { recursive: true });
-
     const extension = path.extname(fileEntry.name) || (isVideo ? ".mp4" : ".jpg");
     const base = sanitizeBaseName(fileEntry.name);
     const uniqueName = `${Date.now()}-${base}${extension}`;
-    const targetPath = path.join(uploadsDir, uniqueName);
-
     const buffer = Buffer.from(await fileEntry.arrayBuffer());
-    await writeFile(targetPath, buffer);
+
+    if (isBlobStoreAvailable(UPLOADS_STORE)) {
+      await writeBinaryBlob(UPLOADS_STORE, uniqueName, buffer, {
+        contentType: fileEntry.type,
+      });
+
+      return NextResponse.json({
+        url: `/api/uploads/${uniqueName}`,
+        contentType: fileEntry.type,
+        size: fileEntry.size,
+      });
+    }
+
+    const uploadsDir = path.join(process.cwd(), "public", "uploads");
+    await mkdir(uploadsDir, { recursive: true });
+    await writeFile(path.join(uploadsDir, uniqueName), buffer);
 
     return NextResponse.json({
       url: `/uploads/${uniqueName}`,

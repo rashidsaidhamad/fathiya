@@ -1,30 +1,15 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { readJsonBlob, writeJsonBlob } from "./blobStore";
+import siteContentSeed from "../data/site-content.json";
 import { defaultSiteContent, type ContactSubmission, type SiteContent } from "./siteContent";
 
-const dataDir = path.join(process.cwd(), "data");
-const siteContentPath = path.join(dataDir, "site-content.json");
-const contactSubmissionsPath = path.join(dataDir, "contact-submissions.json");
-
-async function ensureDir() {
-  await mkdir(dataDir, { recursive: true });
-}
-
-async function ensureFile(filePath: string, content: string) {
-  try {
-    await readFile(filePath, "utf8");
-  } catch {
-    await writeFile(filePath, content, "utf8");
-  }
-}
+const STORE_NAME = "site-data";
+const SITE_CONTENT_KEY = "site-content";
+const CONTACT_SUBMISSIONS_KEY = "contact-submissions";
 
 export async function getSiteContent(): Promise<SiteContent> {
-  await ensureDir();
-  await ensureFile(siteContentPath, JSON.stringify(defaultSiteContent, null, 2));
+  const parsed = (await readJsonBlob<SiteContent>(STORE_NAME, SITE_CONTENT_KEY)) ?? (siteContentSeed as SiteContent);
 
-  const raw = await readFile(siteContentPath, "utf8");
   try {
-    const parsed = JSON.parse(raw) as SiteContent;
     return {
       ...defaultSiteContent,
       ...parsed,
@@ -93,33 +78,23 @@ export async function getSiteContent(): Promise<SiteContent> {
         : defaultSiteContent.articles,
     };
   } catch {
-    await writeFile(siteContentPath, JSON.stringify(defaultSiteContent, null, 2), "utf8");
     return defaultSiteContent;
   }
 }
 
 export async function saveSiteContent(content: SiteContent): Promise<SiteContent> {
-  await ensureDir();
-  await writeFile(siteContentPath, JSON.stringify(content, null, 2), "utf8");
+  await writeJsonBlob(STORE_NAME, SITE_CONTENT_KEY, content);
   return content;
 }
 
 export async function getContactSubmissions(): Promise<ContactSubmission[]> {
-  await ensureDir();
-  await ensureFile(contactSubmissionsPath, JSON.stringify([], null, 2));
-
-  const raw = await readFile(contactSubmissionsPath, "utf8");
-  try {
-    return JSON.parse(raw) as ContactSubmission[];
-  } catch {
-    await writeFile(contactSubmissionsPath, JSON.stringify([], null, 2), "utf8");
-    return [];
-  }
+  const items = await readJsonBlob<ContactSubmission[]>(STORE_NAME, CONTACT_SUBMISSIONS_KEY);
+  return items ?? [];
 }
 
 export async function addContactSubmission(entry: ContactSubmission): Promise<ContactSubmission> {
   const items = await getContactSubmissions();
   items.unshift(entry);
-  await writeFile(contactSubmissionsPath, JSON.stringify(items, null, 2), "utf8");
+  await writeJsonBlob(STORE_NAME, CONTACT_SUBMISSIONS_KEY, items);
   return entry;
 }

@@ -34,6 +34,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# admin credential overrides (should never be committed)
+/data/admin-credentials.json
+
 # vercel
 .vercel
 

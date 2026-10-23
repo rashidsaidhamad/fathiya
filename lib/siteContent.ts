@@ -42,6 +42,12 @@ export type HomePageContent = {
   blogDescription: string;
 };
 
+export type FaqItem = {
+  id: number;
+  question: string;
+  answer: string;
+};
+
 export type PropertyItem = {
   id: number;
   title: string;
@@ -62,6 +68,7 @@ export type PropertyItem = {
   images?: string[];
   videoUrl?: string;
   features?: string[];
+  faqs?: FaqItem[];
   contactEmail: string;
   contactPhone: string;
   otherMobilePhone: string;
@@ -90,6 +97,12 @@ export type CompanyTestimonialItem = {
   stars: number;
 };
 
+export type CompanyFaqSection = {
+  title: string;
+  description: string;
+  items: FaqItem[];
+};
+
 export type TestimonialItem = {
   id: number;
   name: string;
@@ -107,6 +120,7 @@ export type ArticleItem = {
   excerpt: string;
   image: string;
   content: string;
+  faqs?: FaqItem[];
 };
 
 export type BlogSidebarItem = {
@@ -125,6 +139,7 @@ export type SiteContent = {
   properties: PropertyItem[];
   companyTeam: CompanyTeamMember[];
   companyTestimonials: CompanyTestimonialItem[];
+  companyFaqSection: CompanyFaqSection;
   blogSidebarItems: BlogSidebarItem[];
   testimonials: TestimonialItem[];
   articles: ArticleItem[];
@@ -336,6 +351,42 @@ export const defaultSiteContent: SiteContent = {
       stars: 5,
     },
   ],
+  companyFaqSection: {
+    title: "Frequently Asked Questions",
+    description: "You can use this guide to familiarize yourself with rules, taxes, and other important information related to your property.",
+    items: [
+      {
+        id: 1,
+        question: "Why is it considered necessary to register Agreement for Sale?",
+        answer: "Registration protects both buyer and seller by formally recording terms and helping avoid disputes during ownership transfer.",
+      },
+      {
+        id: 2,
+        question: "Do I need to pay stamp duty if the property is transferred as a gift?",
+        answer: "Rules may vary by property type and relationship of parties. Our team can guide you through current Zanzibar requirements.",
+      },
+      {
+        id: 3,
+        question: "What is carpet area?",
+        answer: "Carpet area is the usable floor area inside a property, excluding walls, balconies, and shared spaces.",
+      },
+      {
+        id: 4,
+        question: "What documents should a buyer request?",
+        answer: "Buyers should verify title documents, ownership history, relevant approvals, and payment receipts before finalizing any purchase.",
+      },
+      {
+        id: 5,
+        question: "How can I qualify for exemptions on Capital Gains Tax?",
+        answer: "Tax exemptions depend on transaction details and legal classification. We recommend a case review with a legal advisor.",
+      },
+      {
+        id: 6,
+        question: "How soon can I receive a sale agreement after writing?",
+        answer: "The timeline depends on document readiness and approvals, but most drafts can be prepared quickly after all required details are provided.",
+      },
+    ],
+  },
   blogSidebarItems: [
     {
       id: 1,

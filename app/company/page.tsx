@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { toMailtoHref, toTelHref, toWhatsAppHref } from "../../lib/contactLinks";
 import ExpandableDescription from "../components/ExpandableDescription";
+import { defaultSiteContent } from "../../lib/siteContent";
 
 const companyPillars = [
   {
@@ -26,37 +27,13 @@ const companyPillars = [
   },
 ];
 
-const faqs = [
-  {
-    q: "Why is it considered necessary to register Agreement for Sale?",
-    a: "Registration protects both buyer and seller by formally recording terms and helping avoid disputes during ownership transfer.",
-  },
-  {
-    q: "Do I need to pay stamp duty if the property is transferred as a gift?",
-    a: "Rules may vary by property type and relationship of parties. Our team can guide you through current Zanzibar requirements.",
-  },
-  {
-    q: "What is carpet area?",
-    a: "Carpet area is the usable floor area inside a property, excluding walls, balconies, and shared spaces.",
-  },
-  {
-    q: "What documents should a buyer request?",
-    a: "Buyers should verify title documents, ownership history, relevant approvals, and payment receipts before finalizing any purchase.",
-  },
-  {
-    q: "How can I qualify for exemptions on Capital Gains Tax?",
-    a: "Tax exemptions depend on transaction details and legal classification. We recommend a case review with a legal advisor.",
-  },
-  {
-    q: "How soon can I receive a sale agreement after writing?",
-    a: "The timeline depends on document readiness and approvals, but most drafts can be prepared quickly after all required details are provided.",
-  },
-];
 
 export default function CompanyPage() {
   const [formStatus, setFormStatus] = useState("");
   const [phone, setPhone] = useState("");
   const content = useSiteContent();
+  const faqSection = content.companyFaqSection ?? defaultSiteContent.companyFaqSection;
+  const faqItems = (faqSection.items ?? []).filter((item) => item.question.trim());
 
   const handleCompanySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -212,20 +189,22 @@ export default function CompanyPage() {
         </div>
       </section>
 
+      {faqItems.length > 0 ? (
       <section className="company-section company-faq">
         <div className="section-head">
-          <h2>Frequently Asked Questions</h2>
-          <span>You can use this guide to familiarize yourself with rules, taxes, and other important information related to your property.</span>
+          <h2>{faqSection.title}</h2>
+          {faqSection.description ? <span>{faqSection.description}</span> : null}
         </div>
         <div className="faq-grid">
-          {faqs.map((item) => (
-            <details key={item.q}>
-              <summary>{item.q}</summary>
-              <p>{item.a}</p>
+          {faqItems.map((item) => (
+            <details key={item.id}>
+              <summary>{item.question}</summary>
+              {item.answer.trim() ? <p style={{ whiteSpace: "pre-wrap" }}>{item.answer}</p> : null}
             </details>
           ))}
         </div>
       </section>
+      ) : null}
 
       <section className="company-section company-contact">
         <div className="contact-card">

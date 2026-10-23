@@ -1,6 +1,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { defaultSiteContent, type ContactSubmission, type SiteContent } from "./siteContent";
+import { normalizeFaqs } from "./richText";
+import { sanitizeRichText } from "./sanitizeRichText";
 
 const dataDir = path.join(process.cwd(), "data");
 const siteContentPath = path.join(dataDir, "site-content.json");
@@ -64,6 +66,8 @@ export async function getSiteContent(): Promise<SiteContent> {
               agentFullName: typeof merged.agentFullName === "string" ? merged.agentFullName : "Archipelago Estates Agent",
               agentImage: typeof merged.agentImage === "string" ? merged.agentImage : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80",
               otherMobilePhone: typeof merged.otherMobilePhone === "string" ? merged.otherMobilePhone : "",
+              description: sanitizeRichText(merged.description),
+              faqs: normalizeFaqs((item as Partial<typeof merged>).faqs),
             };
           })
         : defaultSiteContent.properties,
@@ -79,6 +83,13 @@ export async function getSiteContent(): Promise<SiteContent> {
             ...item,
           }))
         : defaultSiteContent.companyTestimonials,
+      companyFaqSection: {
+        ...defaultSiteContent.companyFaqSection,
+        ...(parsed as Partial<SiteContent>).companyFaqSection,
+        items: Array.isArray((parsed as Partial<SiteContent>).companyFaqSection?.items)
+          ? normalizeFaqs((parsed as Partial<SiteContent>).companyFaqSection?.items)
+          : defaultSiteContent.companyFaqSection.items,
+      },
       blogSidebarItems: Array.isArray((parsed as Partial<SiteContent>).blogSidebarItems)
         ? ((parsed as Partial<SiteContent>).blogSidebarItems ?? defaultSiteContent.blogSidebarItems).map((item, index) => ({
             ...defaultSiteContent.blogSidebarItems[index % defaultSiteContent.blogSidebarItems.length],
@@ -89,7 +100,11 @@ export async function getSiteContent(): Promise<SiteContent> {
         ? (parsed as Partial<SiteContent>).testimonials ?? defaultSiteContent.testimonials
         : defaultSiteContent.testimonials,
       articles: Array.isArray((parsed as Partial<SiteContent>).articles)
-        ? (parsed as Partial<SiteContent>).articles ?? defaultSiteContent.articles
+        ? ((parsed as Partial<SiteContent>).articles ?? defaultSiteContent.articles).map((item) => ({
+            ...item,
+            content: sanitizeRichText(item.content),
+            faqs: normalizeFaqs(item.faqs),
+          }))
         : defaultSiteContent.articles,
     };
   } catch {

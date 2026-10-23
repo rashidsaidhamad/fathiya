@@ -6,6 +6,8 @@ import PropertyContactActions from "../../components/PropertyContactActions";
 import PropertyGalleryViewer from "../../components/PropertyGalleryViewer";
 import { FaPhone, FaEnvelope, FaWhatsapp, FaPlayCircle, FaMapMarkerAlt } from "react-icons/fa";
 import { toTelHref, toWhatsAppHref } from "../../../lib/contactLinks";
+import { sanitizeRichText } from "../../../lib/sanitizeRichText";
+import FaqSection from "../../components/FaqSection";
 
 export default async function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: idParam } = await params;
@@ -71,7 +73,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 <p style={{ margin: 0, color: "#c49a6c", fontWeight: 800, letterSpacing: 1.2, textTransform: "uppercase", fontSize: 12 }}>Property Details</p>
                 <h1 style={{ margin: "8px 0 10px", fontSize: 32, lineHeight: 1.1, fontFamily: "Georgia, serif", color: "#111827" }}>{property.title}</h1>
                 <p style={{ margin: 0, fontSize: 22, fontWeight: 800, color: "#c49a6c" }}>{property.price}</p>
-                <p style={{ marginTop: 10, color: "#555", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>{property.description}</p>
+                <div className="rich-content" style={{ marginTop: 10 }} dangerouslySetInnerHTML={{ __html: sanitizeRichText(property.description) }} />
 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12, marginTop: 18 }}>
                   <div style={{ background: "#f9fafb", borderRadius: 14, padding: 14 }}><strong>Bed</strong><div style={{ marginTop: 4 }}>{property.beds}</div></div>
@@ -88,6 +90,8 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   <div style={{ color: "#444" }}><strong>Active:</strong> {property.active}</div>
                 </div>
               </article>
+
+              <FaqSection faqs={property.faqs} title="Questions about this property" />
 
               <section id="gallery" className="gallery-section" style={{ background: "#fff", borderRadius: 18, padding: 20, boxShadow: "0 14px 36px rgba(0,0,0,0.08)", scrollMarginTop: 110 }}>
                 <p style={{ margin: 0, color: "#c49a6c", fontWeight: 800, letterSpacing: 1.2, textTransform: "uppercase", fontSize: 12 }}>Gallery</p>

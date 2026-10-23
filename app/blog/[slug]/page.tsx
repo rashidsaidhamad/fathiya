@@ -3,7 +3,11 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import { defaultSiteContent, type ArticleItem } from "../../../lib/siteContent";
+import { defaultSiteContent, type ArticleItem, type FaqItem } from "../../../lib/siteContent";
+import { toRichHtml } from "../../../lib/richText";
+import FaqSection from "../../components/FaqSection";
+
+type PostView = { title: string; date: string; image: string; content: string; faqs: FaqItem[] };
 
 function toMap(items: ArticleItem[]) {
   return Object.fromEntries(
@@ -14,15 +18,16 @@ function toMap(items: ArticleItem[]) {
         date: item.date,
         image: item.image,
         content: item.content,
+        faqs: item.faqs ?? [],
       },
     ])
-  ) as Record<string, { title: string; date: string; image: string; content: string }>;
+  ) as Record<string, PostView>;
 }
 
 export default function BlogPostPage() {
   const params = useParams();
   const slug = params?.slug as string;
-  const [posts, setPosts] = useState<Record<string, { title: string; date: string; image: string; content: string }>>(
+  const [posts, setPosts] = useState<Record<string, PostView>>(
     toMap(defaultSiteContent.articles)
   );
 
@@ -72,11 +77,12 @@ export default function BlogPostPage() {
               <h1 style={{ fontSize: "26px", fontWeight: 700, color: "#1a1a2e", marginBottom: "24px", fontFamily: "Georgia, serif", lineHeight: 1.4 }}>
                 {post.title}
               </h1>
-              {post.content.split("\n\n").map((para, i) => (
-                <p key={i} style={{ fontSize: "15px", color: "#555", lineHeight: 1.8, marginBottom: "18px" }}>
-                  {para}
-                </p>
-              ))}
+              <div className="rich-content" dangerouslySetInnerHTML={{ __html: toRichHtml(post.content) }} />
+              {post.faqs.some((faq) => faq.question.trim()) ? (
+                <div style={{ marginTop: "32px" }}>
+                  <FaqSection faqs={post.faqs} />
+                </div>
+              ) : null}
               <div style={{ marginTop: "32px", paddingTop: "20px", borderTop: "1px solid #eee" }}>
                 <a href="/blog" style={{ color: "#c49a6c", fontSize: "14px", fontWeight: 600, textDecoration: "none", display: "flex", alignItems: "center", gap: "6px" }}>
                   ← Back to Blog List

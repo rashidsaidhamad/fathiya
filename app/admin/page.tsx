@@ -2,8 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { ArticleItem, BlogSidebarItem, CompanyTeamMember, CompanyTestimonialItem, ContactSubmission, PropertyItem, SiteContent } from "../../lib/siteContent";
+import type { ArticleItem, BlogSidebarItem, CompanyFaqSection, CompanyTeamMember, CompanyTestimonialItem, ContactSubmission, PropertyItem, SiteContent } from "../../lib/siteContent";
 import { defaultSiteContent } from "../../lib/siteContent";
+import RichTextEditor from "../components/RichTextEditor";
+import FaqEditor from "../components/FaqEditor";
 type AdminSection = "home" | "properties" | "company" | "blog" | "contact";
 
 function JsonEditor({
@@ -89,7 +91,8 @@ export default function AdminPage() {
     return { total: submissions.length, home, contact, company };
   }, [submissions]);
 
-  const contactFormOptions = content.contactFormSettings?.hearAboutUsOptions ?? defaultSiteContent.contactFormSettings.hearAboutUsOptions;
+  const companyFaqSection = content.companyFaqSection ?? defaultSiteContent.companyFaqSection;
+  const contactFormOptions =content.contactFormSettings?.hearAboutUsOptions ?? defaultSiteContent.contactFormSettings.hearAboutUsOptions;
   const companyLogoUrl = content.homePage.companyLogoUrl?.trim() || "/logo.webp";
   const heroPreviewUrl = content.homePage.heroBackgroundImage?.trim() ?? "";
   const heroPreviewBackground = heroPreviewUrl ? `url("${heroPreviewUrl.replace(/"/g, '\\"')}")` : "none";
@@ -614,7 +617,8 @@ export default function AdminPage() {
           agentFullName: "Archipelago Estates Agent",
           agentImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80",
           mapUrl: "https://maps.google.com/?q=Zanzibar",
-          description: "Property description",
+          description: "<p>Property description</p>",
+          faqs: [],
           image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80",
           images: ["https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80"],
           videoUrl: "",
@@ -675,6 +679,16 @@ export default function AdminPage() {
     setContent((prev) => ({
       ...prev,
       companyTestimonials: prev.companyTestimonials.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)),
+    }));
+  }
+
+  function updateCompanyFaqSection(patch: Partial<CompanyFaqSection>) {
+    setContent((prev) => ({
+      ...prev,
+      companyFaqSection: {
+        ...(prev.companyFaqSection ?? defaultSiteContent.companyFaqSection),
+        ...patch,
+      },
     }));
   }
 
@@ -753,7 +767,8 @@ export default function AdminPage() {
           date: new Date().toLocaleDateString(),
           excerpt: "Short article summary",
           image: "https://images.unsplash.com/photo-1494526585095-c41746248156?w=1200&q=80",
-          content: "Article content goes here.",
+          content: "<p>Article content goes here.</p>",
+          faqs: [],
         },
       ],
     }));
@@ -1333,15 +1348,12 @@ export default function AdminPage() {
                         ))}
                       </div>
 
-                      <label style={{ display: "grid", gap: "6px" }}>
+                      <div style={{ display: "grid", gap: "6px" }}>
                         <span style={{ fontSize: "12px", color: "#555", fontWeight: 600 }}>Description</span>
-                        <textarea
-                          value={item.description}
-                          onChange={(e) => updateProperty(index, { description: e.target.value })}
-                          rows={3}
-                          style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px", resize: "vertical" }}
-                        />
-                      </label>
+                        <RichTextEditor value={item.description} onChange={(html) => updateProperty(index, { description: html })} />
+                      </div>
+
+                      <FaqEditor faqs={item.faqs ?? []} onChange={(faqs) => updateProperty(index, { faqs })} />
 
                       <div style={{ border: "1px solid #e5e7eb", borderRadius: "10px", padding: "12px", backgroundColor: "#f9fafb", display: "grid", gap: "10px" }}>
                         <p style={{ margin: 0, fontSize: "13px", color: "#374151", fontWeight: 700 }}>Agent Contact</p>
@@ -1767,6 +1779,33 @@ export default function AdminPage() {
                     ))}
                   </div>
                 </section>
+
+                <section style={{ backgroundColor: "#fff", borderRadius: "14px", padding: "20px 22px", boxShadow: "0 4px 22px rgba(0,0,0,0.06)", display: "grid", gap: "14px" }}>
+                  <div>
+                    <h2 style={{ margin: 0, fontSize: "20px", color: "#111827" }}>Company FAQs</h2>
+                    <p style={{ margin: "6px 0 0", color: "#6b7280", fontSize: "13px" }}>The Frequently Asked Questions section on the Our Company page. The section is hidden when there are no questions.</p>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "12px" }}>
+                    <label style={{ display: "grid", gap: "6px" }}>
+                      <span style={{ fontSize: "12px", color: "#555", fontWeight: 600 }}>Section Title</span>
+                      <input
+                        value={companyFaqSection.title}
+                        onChange={(e) => updateCompanyFaqSection({ title: e.target.value })}
+                        style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "9px 10px", fontSize: "13px" }}
+                      />
+                    </label>
+                    <label style={{ display: "grid", gap: "6px" }}>
+                      <span style={{ fontSize: "12px", color: "#555", fontWeight: 600 }}>Section Description</span>
+                      <textarea
+                        value={companyFaqSection.description}
+                        onChange={(e) => updateCompanyFaqSection({ description: e.target.value })}
+                        rows={2}
+                        style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px", resize: "vertical" }}
+                      />
+                    </label>
+                  </div>
+                  <FaqEditor faqs={companyFaqSection.items} onChange={(items) => updateCompanyFaqSection({ items })} />
+                </section>
               </>
             )}
 
@@ -1845,15 +1884,12 @@ export default function AdminPage() {
                               />
                             </label>
 
-                            <label style={{ display: "grid", gap: "6px" }}>
+                            <div style={{ display: "grid", gap: "6px" }}>
                               <span style={{ fontSize: "12px", color: "#555", fontWeight: 600 }}>Article Content</span>
-                              <textarea
-                                value={item.content}
-                                onChange={(e) => updateArticle(index, { content: e.target.value })}
-                                rows={6}
-                                style={{ border: "1px solid #d1d5db", borderRadius: "8px", padding: "10px", fontSize: "13px", resize: "vertical" }}
-                              />
-                            </label>
+                              <RichTextEditor value={item.content} onChange={(html) => updateArticle(index, { content: html })} minHeight={260} />
+                            </div>
+
+                            <FaqEditor faqs={item.faqs ?? []} onChange={(faqs) => updateArticle(index, { faqs })} />
                           </div>
                         </div>
                       </article>

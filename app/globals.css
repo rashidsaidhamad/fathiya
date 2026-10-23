@@ -914,3 +914,35 @@ body {
   }
 }
 
+
+/* Rich text (admin editor output) */
+.rich-content { color: #555; line-height: 1.8; font-size: 15px; word-break: break-word; }
+.rich-content > * + * { margin-top: 0.85em; }
+.rich-content p { margin: 0; }
+.rich-content p + p { margin-top: 0.85em; }
+.rich-content h2 { font-family: Georgia, serif; font-size: 1.45em; line-height: 1.3; color: #111827; font-weight: 700; margin-top: 1.3em; }
+.rich-content h3 { font-family: Georgia, serif; font-size: 1.2em; line-height: 1.35; color: #1f2937; font-weight: 700; margin-top: 1.1em; }
+.rich-content > :first-child { margin-top: 0; }
+.rich-content strong, .rich-content b { color: #222; font-weight: 700; }
+.rich-content em, .rich-content i { font-style: italic; }
+.rich-content u { text-decoration: underline; }
+.rich-content s { text-decoration: line-through; }
+.rich-content a { color: #b7844c; text-decoration: underline; text-underline-offset: 2px; }
+.rich-content ul, .rich-content ol { padding-left: 1.4em; }
+.rich-content ul { list-style: disc; }
+.rich-content ol { list-style: decimal; }
+.rich-content li + li { margin-top: 0.3em; }
+.rich-content li > p { margin: 0; }
+.rich-content blockquote { border-left: 3px solid #c49a6c; background: #faf6f1; padding: 10px 16px; border-radius: 0 8px 8px 0; color: #4b5563; font-style: italic; }
+.rich-content hr { border: none; border-top: 1px solid #e5e7eb; margin: 1.4em 0; }
+
+.rich-editor-surface { padding: 12px 14px; font-size: 14px; outline: none; }
+.rich-editor-surface:focus { box-shadow: inset 0 0 0 2px rgba(183, 132, 76, 0.35); }
+
+/* FAQ accordion */
+.faq-item { border: 1px solid #ece7e1; border-radius: 12px; background: #fcfbf9; overflow: hidden; }
+.faq-item summary { cursor: pointer; list-style: none; padding: 14px 44px 14px 16px; position: relative; font-weight: 700; color: #1f2937; font-size: 15px; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "+"; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #c49a6c; font-size: 20px; font-weight: 700; transition: transform 0.2s ease; }
+.faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+.faq-item p { margin: 0; padding: 0 16px 16px; color: #555; line-height: 1.75; font-size: 14px; white-space: pre-wrap; }
